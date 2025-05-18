@@ -42,7 +42,7 @@ jobs:
         script: |
           DEPLOY_PATH="/home/${{ secrets.EC2_USER }}/app" # Đường dẫn triển khai trên EC2
           FRONTEND_BUILD_PATH="${{ github.workspace }}/frontend/build"
-          BACKEND_PUBLISH_PATH="${{ github.workspace }}/backend/publish"
+          BACKEND_PUBLISH_PATH="${{ github.workspace }}/Backend.Api/publish"
 
           echo "Deleting old frontend files..."
           ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }} -p ${{ secrets.EC2_PORT || 22 }} "rm -rf $DEPLOY_PATH/frontend/*"
