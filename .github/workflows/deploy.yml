@@ -75,8 +75,10 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          echo "Source path: /home/${{ secrets.EC2_USER }}/webclient/dist/*"
+          echo "Target path: /var/www/html/"
           sudo rm -rf /var/www/html/*
-          sudo mv /home/${{ secrets.EC2_USER }}/webclient/dist/* /var/www/html/
+          sudo mv /home/${{ secrets.EC2_USER }}/webclient/dist /var/www/html/
           sudo chown -R www-data:www-data /var/www/html
           sudo chmod -R 755 /var/www/html
 
