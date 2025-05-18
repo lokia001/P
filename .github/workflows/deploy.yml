@@ -9,29 +9,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: ✅ Checkout code
       uses: actions/checkout@v3
 
-    - name: Setup Node.js
+    # ----------- FRONTEND ----------
+    - name: 🔧 Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '22'
-        working-directory: Frontend/WebClient
 
-    - name: Build Frontend
-      run: npm install && npm run build
-      working-directory: Frontend/WebClient
+    - name: 📦 Install & Build Frontend
+      run: |
+        cd Frontend/WebClient
+        npm install
+        npm run build
 
-    - name: Setup .NET
+    # ----------- BACKEND -----------
+    - name: 🔧 Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.x'
 
-    - name: Publish Backend
+    - name: 📦 Publish Backend
       run: dotnet publish -c Release -o publish
       working-directory: Backend.Api
 
-    - name: Upload frontend to EC2
+    # ---------- UPLOAD FRONTEND ----------
+    - name: 🚀 Upload Frontend to EC2
       uses: appleboy/scp-action@v0.1.4
       with:
         host: ${{ secrets.EC2_IP }}
@@ -40,26 +44,31 @@ jobs:
         source: ./Frontend/WebClient/build/**
         target: /var/www/html/
         overwrite: true
+        rm: true
 
-
-    - name: Upload backend to EC2
+    # ---------- UPLOAD BACKEND ----------
+    - name: 🚀 Upload Backend to EC2
       uses: appleboy/scp-action@v0.1.4
       with:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: Backend.Api/publish/*
+        source: ./Backend.Api/publish/**
         target: /home/${{ secrets.EC2_USER }}/app/backend/
         overwrite: true
 
-    - name: Restart services on EC2
+    # ---------- SSH & RESTART ----------
+    - name: 🔄 Restart Services on EC2
       uses: appleboy/ssh-action@v0.1.10
       with:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          echo "Restarting backend..."
+          echo "Restarting backend service..."
           sudo systemctl restart your-backend-service
-          echo "Restarting web server..."
+
+          echo "Restarting Nginx..."
           sudo systemctl restart nginx
+
+          echo "✅ Deployment done!"
