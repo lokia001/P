@@ -24,6 +24,9 @@ jobs:
         npm install
         npm run build
 
+    - name: Debug frontend build files
+      run: ls -la Frontend/WebClient/build/
+  
     # ----------- BACKEND -----------
     - name: 🔧 Setup .NET
       uses: actions/setup-dotnet@v3
@@ -41,7 +44,7 @@ jobs:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: Frontend/WebClient/build/**
+        source: Frontend/WebClient/build/
         target: /var/www/html/
         overwrite: true
         rm: true
