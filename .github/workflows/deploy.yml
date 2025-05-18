@@ -68,6 +68,9 @@ jobs:
         source: "./Frontend/WebClient/dist"
         target: "/home/${{ secrets.EC2_USER }}/webclient"
 
+    - name: 📂 Check workspace content
+      run: ls -la
+  
     - name: 🔍 Check uploaded frontend files
       uses: appleboy/scp-action@v0.1.4 # Đảm bảo dùng phiên bản mới
       with:
