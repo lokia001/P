@@ -75,10 +75,8 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          echo "Listing content of /home/***/webclient ON EC2:"
-          ls -la /home/***/webclient/
-          echo "Listing content of /home/***/webclient/dist ON EC2:"
-          ls -la /home/***/webclient/dist/
+         echo "Listing content of /home/***/webclient ON EC2:"
+         ls -la /home/***/webclient/
 
     - name: 🚚 Move Frontend to Nginx folder
       uses: appleboy/scp-action@v0.1.4 # Đảm bảo dùng phiên bản mới
