@@ -37,11 +37,10 @@ jobs:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: Frontend/WebClient/build/*
+        source: ./Frontend/WebClient/build/**
         target: /var/www/html/
-        strip_components: 3
-        rm: true
         overwrite: true
+
 
     - name: Upload backend to EC2
       uses: appleboy/scp-action@v0.1.4
