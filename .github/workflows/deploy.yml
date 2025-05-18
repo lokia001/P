@@ -1,0 +1,65 @@
+name: Auto Deploy to EC2 on Push to Main
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' # Điều chỉnh theo phiên bản Node.js của bạn
+        working-directory: frontend # Nếu frontend của bạn ở thư mục 'frontend'
+
+    - name: Build Frontend
+      run: npm install && npm run build # Hoặc yarn install && yarn build
+      working-directory: frontend
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.x' # Điều chỉnh theo phiên bản .NET của bạn
+        working-directory: backend # Nếu backend của bạn ở thư mục 'backend'
+
+    - name: Publish Backend
+      run: dotnet publish -c Release -o publish
+      working-directory: backend
+
+    - name: Deploy to EC2 via SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_IP }}          # Lưu IP EC2 instance trong Secrets của GitHub
+        username: ${{ secrets.EC2_USER }}      # Lưu username SSH cho EC2 trong Secrets
+        key: ${{ secrets.SSH_PRIVATE_KEY }} # Lưu private key SSH trong Secrets
+        port: ${{ secrets.EC2_PORT || 22 }} # Lưu port SSH (mặc định 22) trong Secrets nếu khác
+        script: |
+          DEPLOY_PATH="/home/${{ secrets.EC2_USER }}/app" # Đường dẫn triển khai trên EC2
+          FRONTEND_BUILD_PATH="${{ github.workspace }}/frontend/build"
+          BACKEND_PUBLISH_PATH="${{ github.workspace }}/backend/publish"
+
+          echo "Deleting old frontend files..."
+          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }} -p ${{ secrets.EC2_PORT || 22 }} "rm -rf $DEPLOY_PATH/frontend/*"
+
+          echo "Copying frontend build to EC2..."
+          scp -r "$FRONTEND_BUILD_PATH/*" "${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }}:$DEPLOY_PATH/frontend/"
+
+          echo "Deleting old backend files..."
+          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }} -p ${{ secrets.EC2_PORT || 22 }} "rm -rf $DEPLOY_PATH/backend/*"
+
+          echo "Copying backend publish to EC2..."
+          scp -r "$BACKEND_PUBLISH_PATH/*" "${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }}:$DEPLOY_PATH/backend/"
+
+          echo "Restarting backend application..."
+          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }} -p ${{ secrets.EC2_PORT || 22 }} "sudo systemctl restart your-backend-service" # Thay 'your-backend-service' bằng tên service thực tế
+
+          echo "Restarting web server (if applicable)..."
+          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }} -p ${{ secrets.EC2_PORT || 22 }} "sudo systemctl restart nginx" # Hoặc apache2, tùy thuộc vào web server
+
+          echo "Deployment to EC2 completed!"
