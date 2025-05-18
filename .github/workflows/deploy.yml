@@ -15,12 +15,12 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '18' # Điều chỉnh theo phiên bản Node.js của bạn
-        working-directory: frontend # Nếu frontend của bạn ở thư mục 'frontend'
+        node-version: '22' # Điều chỉnh theo phiên bản Node.js của bạn
+        working-directory: Frontend/WebClient # Nếu frontend của bạn ở thư mục 'frontend'
 
     - name: Build Frontend
       run: npm install && npm run build # Hoặc yarn install && yarn build
-      working-directory: frontend
+      working-directory: Frontend/WebClient
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -30,7 +30,7 @@ jobs:
 
     - name: Publish Backend
       run: dotnet publish -c Release -o publish
-      working-directory: backend
+      working-directory: Backend.Api
 
     - name: Deploy to EC2 via SSH
       uses: appleboy/ssh-action@master
