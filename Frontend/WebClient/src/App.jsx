@@ -3,7 +3,6 @@ import AppRouter from './router';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux'; // Import useSelector
 import { BrowserRouter } from 'react-router-dom';
-import Footer from './components/Footer/Footer';
 
 function App() {
   const dispatch = useDispatch();
