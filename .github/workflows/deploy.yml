@@ -23,8 +23,8 @@ jobs:
         cd Frontend/WebClient
         npm install
         npm run build
-        ls -la
-  
+        ls -la dist
+
     # ----------- BACKEND -----------
     - name: 🔧 Setup .NET
       uses: actions/setup-dotnet@v3
@@ -32,10 +32,11 @@ jobs:
         dotnet-version: '8.x'
 
     - name: 📦 Publish Backend
-      run: dotnet publish -c Release -o publish
-      working-directory: Backend.Api
+      run: dotnet publish -c Release -o ../publish
+      working-directory: Backend/Backend.Api
 
-    - name: Clean remote folder
+    # ----------- CLEAN REMOTE (optional) -----------
+    - name: 🧹 Clean remote frontend folder
       uses: appleboy/ssh-action@v0.1.10
       with:
         host: ${{ secrets.EC2_IP }}
@@ -44,16 +45,26 @@ jobs:
         script: |
           sudo rm -rf /var/www/html/*
 
-
     # ---------- UPLOAD FRONTEND ----------
-    - name: Upload Frontend to EC2
+    - name: 📤 Upload Frontend to EC2 (~/webclient)
       uses: appleboy/scp-action@v0.1.4
       with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
+        host: ${{ secrets.EC2_IP }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
         source: "./Frontend/WebClient/dist/**"
-        target: "/home/debian/webclient"
+        target: "/home/${{ secrets.EC2_USER }}/webclient"
+
+    - name: 🚚 Move Frontend to Nginx folder
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.EC2_IP }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          sudo rm -rf /var/www/html/*
+          sudo mv /home/${{ secrets.EC2_USER }}/webclient/* /var/www/html/
+          sudo chown -R www-data:www-data /var/www/html
 
     # ---------- UPLOAD BACKEND ----------
     - name: 🚀 Upload Backend to EC2
@@ -62,7 +73,7 @@ jobs:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: Backend.Api/publish/
+        source: Backend/publish/
         target: /home/${{ secrets.EC2_USER }}/app/backend/
         overwrite: true
 
