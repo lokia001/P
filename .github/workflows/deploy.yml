@@ -26,7 +26,7 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.x' # Điều chỉnh theo phiên bản .NET của bạn
-        working-directory: backend # Nếu backend của bạn ở thư mục 'backend'
+        working-directory: Backend.Api # Nếu backend của bạn ở thư mục 'backend'
 
     - name: Publish Backend
       run: dotnet publish -c Release -o publish
