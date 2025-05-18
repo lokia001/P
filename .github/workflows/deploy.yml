@@ -32,10 +32,10 @@ jobs:
         dotnet-version: '8.x'
 
     - name: 📦 Publish Backend
-      run: dotnet publish -c Release -o ../publish
-      working-directory: Backend/Backend.Api
+      run: dotnet publish -c Release -o publish
+      working-directory: Backend.Api
 
-    # ----------- CLEAN REMOTE (optional) -----------
+    # ----------- CLEAN REMOTE -----------
     - name: 🧹 Clean remote frontend folder
       uses: appleboy/ssh-action@v0.1.10
       with:
@@ -73,7 +73,7 @@ jobs:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: Backend/publish/
+        source: Backend.Api/publish/
         target: /home/${{ secrets.EC2_USER }}/app/backend/
         overwrite: true
 
