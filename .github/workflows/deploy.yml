@@ -70,7 +70,14 @@ jobs:
 
     - name: 📂 Check workspace content
       run: ls -la
-  
+    - name: 📂 Check Frontend folder content
+      run: ls -la Frontend/
+
+    - name: 📂 Check Frontend/WebClient folder content
+      run: ls -la Frontend/WebClient/
+
+    - name: 📂 Check Frontend/WebClient/dist folder content
+      run: ls -la Frontend/WebClient/dist/
     - name: 🔍 Check uploaded frontend files
       uses: appleboy/scp-action@v0.1.4 # Đảm bảo dùng phiên bản mới
       with:
