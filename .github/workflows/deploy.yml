@@ -33,7 +33,7 @@ jobs:
       working-directory: Backend.Api
 
     - name: Deploy to EC2 via SSH
-      uses: appleboy/ssh-action@latest
+      uses: appleboy/ssh-action@v4
       with:
         host: ${{ secrets.EC2_IP }}          # Lưu IP EC2 instance trong Secrets của GitHub
         username: ${{ secrets.EC2_USER }}      # Lưu username SSH cho EC2 trong Secrets
