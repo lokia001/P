@@ -49,7 +49,6 @@ const AppRouter = () => {
                     <Route path="/community" element={<Community />} />
                     <Route path="/community/create" element={<CreateGroupPage />} />
 
-
                     {/* ---mangage space*/}
                     <Route path="manage-space" element={<SpaceList />} />
                     {/* <Route path="/space/:Id" element={<SpaceDetailPage />} /> */}
@@ -84,11 +83,10 @@ const AppRouter = () => {
                 </Route>
 
                 <Route path="/" element={<AuthLayout />}>
-                    <Route path="register" element={<AdminRegistration />} />
+                    <Route path="/register" element={<AdminRegistration />} />
                     <Route path="/login" element={<UserLogin />} />
                     <Route path="/user/register" element={<RegistrationForm />} />
                     <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-
 
 
                     {/* <Route path="login" index element={<LoginPage />} /> */}

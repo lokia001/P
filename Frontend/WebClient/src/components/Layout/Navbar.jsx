@@ -1,8 +1,19 @@
+// src/components/Navbar.jsx (hoặc tương tự)
 import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectIsAuthenticated, selectUserRole, selectUser, selectRehydrated } from '../../store/selectors/authSelectors';
+// Đảm bảo import đúng các selectors và actions
+import {
+    selectIsAuthenticated,
+    selectUserRole,
+    selectUser,
+    selectAccessToken, // Hoặc selectAuthToken nếu bạn vẫn dùng tên đó
+    selectRefreshToken,
+    selectRehydrated // <<<< THÊM DÒNG NÀY
+} from '../../store/selectors/authSelectors'; // Điều chỉnh đường dẫn nếu cần
+
 import { logout } from '../../store/reducers/authSlice';
+import api from '../../services/api'; // Import api instance để gọi API logout
 import { useTranslation } from 'react-i18next';
 import styles from './Navbar.module.css';
 
@@ -10,18 +21,27 @@ function Navbar() {
     const { t, i18n } = useTranslation();
     const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
     const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
+
     const isAuthenticated = useSelector(selectIsAuthenticated);
     const userRole = useSelector(selectUserRole);
     const user = useSelector(selectUser);
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const isRehydrated = useSelector(selectRehydrated);
+
     const location = useLocation();
     const [navItems, setNavItems] = useState([]);
     const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
     const toggleAccountDropdown = () => {
         setIsAccountDropdownOpen(!isAccountDropdownOpen);
     };
+    const currentRefreshToken = useSelector(selectRefreshToken); // Lấy refreshToken từ store
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+
     useEffect(() => {
+        if (!isRehydrated) {
+            return; // Nếu chưa rehydrate, không làm gì cả, đợi lần render sau
+        }
         let newNavItems = [];
 
         if (isAuthenticated) {
@@ -29,13 +49,22 @@ function Navbar() {
             switch (lowerCaseUserRole) {
                 case 'owner':
                     newNavItems = [
-                        { path: '/dashboard', label: 'dashboard' },
-                        { path: '/manage-space', label: 'manage_space' },
-                        { path: '/manage-customer', label: 'manage_customer' },
-                        { path: '/manage-employee', label: 'manage_employee' },
+                        { path: '/OwnerDashboard', label: 'dashboard' },
+                        { path: '/SpaceManagement', label: 'manage_space' },
+                        { path: '/CustomerManagement', label: 'manage_customer' },
+                        // { path: '/StaffManagement', label: 'manage_employee' },
+                        { path: '/ManageFacilitiesServices', label: 'manage_A&S' },
+                        // { path: '/SpacePolicyManagement', label: 'manage_policy' },
+                        // { path: '/PricingAndOffersPage', label: 'manage_offer' },
+                        // { path: '/ReportPage', label: 'Report & statistic' },
+                        // { path: '/UserReportPage', label: 'feedback' },
+                        { path: '/BookingManagement', label: 'BookingManagement' },
                         { path: '/community', label: 'community' },
                         // { path: '/community', label: 'community' },
-                        { path: '/profile', label: 'profile' },
+                        { path: '/ProfilePage', label: 'profile' },
+                        { path: '/SettingsPage', label: 'Setting' },
+
+
                     ];
                     break;
                 case 'sysadmin':
@@ -70,7 +99,8 @@ function Navbar() {
             ];
         }
         setNavItems(newNavItems);
-    }, [isAuthenticated, userRole, location.pathname, t, selectRehydrated(useSelector(state => state))]);
+    },
+        [isAuthenticated, userRole, user, location.pathname, t, isRehydrated]); // Thêm 
 
     const toggleLanguageDropdown = () => {
         setIsLanguageDropdownOpen(!isLanguageDropdownOpen);
@@ -82,9 +112,26 @@ function Navbar() {
         setIsLanguageDropdownOpen(false);
     };
 
-    const handleLogout = () => {
-        dispatch(logout());
-        navigate('/login');
+    const handleLogout = async () => {
+        if (currentRefreshToken) {
+            try {
+                console.log("Đang gọi API logout của backend với refresh token...");
+                // Gọi API logout của backend với refreshToken
+                // Backend của bạn yêu cầu body: { "token": "your_refresh_token_string" }
+                await api.post('/auth/logout', { token: currentRefreshToken });
+                console.log("API logout của backend đã được gọi.");
+            } catch (error) {
+                // Lỗi khi gọi API logout của backend không quá nghiêm trọng ở client,
+                // vì client vẫn sẽ tiến hành xóa token cục bộ.
+                console.error("Lỗi khi gọi API logout của backend:", error);
+            }
+        } else {
+            console.warn("Không tìm thấy refresh token để gọi API logout của backend.");
+        }
+
+        // Dù API backend có thành công hay không, client vẫn tiến hành logout
+        dispatch(logout()); // Dispatch action logout của Redux để xóa token ở client
+        navigate('/login');   // Chuyển hướng về trang login
     };
 
     return (

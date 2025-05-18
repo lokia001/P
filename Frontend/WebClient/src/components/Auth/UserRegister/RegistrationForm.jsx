@@ -1,109 +1,134 @@
-import React, { useState } from 'react';
+// ----- PHẦN 2: REACT COMPONENT CHO FORM ĐĂNG KÝ (Ví dụ: RegistrationForm.jsx) -----
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { registerUser, resetRegistrationState, selectRegistrationLoading, selectRegistrationSuccess, selectRegistrationError } from '../../../features/auth/registrationSlice'; // Giả sử slice ở cùng thư mục hoặc điều chỉnh đường dẫn
 
-// GIẢ LẬP ICON (bạn sẽ thay thế bằng thư viện icon thực tế như react-icons)
-const GoogleIcon = () => <span style={{ marginRight: '8px', color: '#DB4437' }}>G</span>;
-const FacebookIcon = () => <span style={{ marginRight: '8px', color: '#4267B2' }}>F</span>;
-
-// --- BẮT ĐẦU COMPONENT CHÍNH: RegistrationForm ---
+// --- COMPONENT ĐĂNG KÝ ---
 const RegistrationForm = () => {
-    // --- PHẦN STATE MANAGEMENT ---
-    // (Sau này có thể tách ra custom hook nếu logic phức tạp)
+    // --- State cho Form Inputs ---
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [retypePassword, setRetypePassword] = useState('');
-    const [errors, setErrors] = useState({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    // --- KẾT THÚC PHẦN STATE MANAGEMENT ---
+    const [confirmPassword, setConfirmPassword] = useState(''); // API yêu cầu confirmPassword
+    const [fullName, setFullName] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [formErrors, setFormErrors] = useState({}); // Lỗi validation phía client
 
-    // --- PHẦN VALIDATION LOGIC ---
-    // (Sau này có thể tách ra một utility function hoặc hook riêng)
+    // --- Hooks từ Redux và React Router ---
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    // --- Lấy state từ Redux store ---
+    const isLoading = useSelector(selectRegistrationLoading);
+    const registrationSuccess = useSelector(selectRegistrationSuccess);
+    const registrationError = useSelector(selectRegistrationError); // Lỗi từ API
+
+    // --- Effect để xử lý sau khi đăng ký thành công hoặc khi component unmount ---
+    useEffect(() => {
+        if (registrationSuccess) {
+            alert('Đăng ký thành công! Bạn sẽ được chuyển đến trang đăng nhập.'); // Hoặc dùng một component Toast/Notification
+            dispatch(resetRegistrationState()); // Reset trạng thái Redux
+            navigate('/login'); // Chuyển hướng đến trang đăng nhập
+        }
+
+        // Cleanup: Reset trạng thái Redux khi component unmount
+        return () => {
+            dispatch(resetRegistrationState());
+        };
+    }, [registrationSuccess, dispatch, navigate]);
+
+    // --- Logic Validate Form phía Client ---
     const validateForm = () => {
         const newErrors = {};
-        if (!email) {
-            newErrors.email = 'Email không được để trống';
-        } else if (!/\S+@\S+\.\S+/.test(email)) {
-            newErrors.email = 'Email không hợp lệ';
-        }
+        if (!email) newErrors.email = 'Email không được để trống';
+        else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email không hợp lệ';
 
-        if (!username) {
-            newErrors.username = 'Username không được để trống';
-        } else if (username.length < 3) {
-            newErrors.username = 'Username phải có ít nhất 3 ký tự';
-        }
-        // Thêm các rule khác cho username nếu cần (VD: không chứa ký tự đặc biệt)
+        if (!username) newErrors.username = 'Username không được để trống';
+        else if (username.length < 3) newErrors.username = 'Username phải có ít nhất 3 ký tự';
 
-        if (!password) {
-            newErrors.password = 'Mật khẩu không được để trống';
-        } else if (password.length < 6) {
-            newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
-        }
-        // Thêm các rule khác cho password (VD: độ mạnh mật khẩu)
+        if (!password) newErrors.password = 'Mật khẩu không được để trống';
+        else if (password.length < 6) newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
 
-        if (!retypePassword) {
-            newErrors.retypePassword = 'Vui lòng nhập lại mật khẩu';
-        } else if (password !== retypePassword) {
-            newErrors.retypePassword = 'Mật khẩu không khớp';
-        }
+        if (!confirmPassword) newErrors.confirmPassword = 'Vui lòng nhập lại mật khẩu';
+        else if (password !== confirmPassword) newErrors.confirmPassword = 'Mật khẩu không khớp';
 
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0; // Trả về true nếu không có lỗi
+        if (!fullName) newErrors.fullName = 'Họ và tên không được để trống';
+        // Thêm validation cho phoneNumber nếu cần (ví dụ: định dạng số)
+        if (!phoneNumber) newErrors.phoneNumber = 'Số điện thoại không được để trống';
+
+
+        setFormErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
-    // --- KẾT THÚC PHẦN VALIDATION LOGIC ---
 
-    // --- PHẦN XỬ LÝ SUBMIT FORM ---
-    const handleSubmit = async (event) => {
+    // --- Xử lý Submit Form ---
+    const handleSubmit = (event) => {
         event.preventDefault();
+        setFormErrors({}); // Reset lỗi client trước
+        // dispatch(resetRegistrationState()); // Reset lỗi API trước khi thử lại (tùy chọn)
+
         if (validateForm()) {
-            setIsSubmitting(true);
-            console.log('Form is valid, submitting data:', { email, username, password });
-            // TODO: Gọi API đăng ký ở đây
-            // Ví dụ:
-            // try {
-            //   const response = await api.register({ email, username, password });
-            //   // Xử lý thành công (chuyển trang, hiển thị thông báo,...)
-            // } catch (error) {
-            //   // Xử lý lỗi từ API (hiển thị thông báo lỗi chung,...)
-            //   setErrors({ api: "Đã có lỗi xảy ra. Vui lòng thử lại." });
-            // } finally {
-            //   setIsSubmitting(false);
-            // }
-            setTimeout(() => { // Giả lập API call
-                alert('Đăng ký thành công! (Đây là giả lập)');
-                setIsSubmitting(false);
-                // Reset form (tùy chọn)
-                setEmail('');
-                setUsername('');
-                setPassword('');
-                setRetypePassword('');
-                setErrors({});
-            }, 1500);
-        } else {
-            console.log('Form has errors:', errors);
+            const userData = {
+                username,
+                email,
+                password,
+                confirmPassword, // Gửi confirmPassword như API yêu cầu
+                fullName,
+                phoneNumber,
+            };
+            dispatch(registerUser(userData));
         }
     };
-    // --- KẾT THÚC PHẦN XỬ LÝ SUBMIT FORM ---
 
-    // --- PHẦN XỬ LÝ SOCIAL LOGIN ---
-    // (Mỗi social login button có thể là một component riêng)
-    const handleSocialLogin = (provider) => {
-        console.log(`Attempting to login with ${provider}`);
-        // TODO: Implement social login logic (Firebase Auth, OAuth2, etc.)
-        alert(`Chức năng đăng nhập với ${provider} chưa được triển khai.`);
+    // --- JSX Rendering ---
+    // (Sử dụng inline styles đơn giản cho mục đích demo, bạn có thể dùng CSS Modules hoặc styled-components)
+    const styles = { /* ... copy styles từ form bạn đã cung cấp và điều chỉnh nếu cần ... */
+        container: { maxWidth: '450px', margin: '40px auto', padding: '30px', border: '1px solid #ddd', borderRadius: '8px', fontFamily: 'Arial, sans-serif' },
+        title: { textAlign: 'center', marginBottom: '25px' },
+        inputGroup: { marginBottom: '15px' },
+        label: { display: 'block', marginBottom: '5px', fontWeight: 'bold' },
+        input: { width: '100%', padding: '10px', boxSizing: 'border-box', border: '1px solid #ccc', borderRadius: '4px' },
+        inputError: { borderColor: 'red' },
+        errorMessage: { color: 'red', fontSize: '0.9em', marginTop: '5px' },
+        apiError: { color: 'red', textAlign: 'center', marginBottom: '15px', padding: '10px', border: '1px solid red', borderRadius: '4px', backgroundColor: '#ffe0e0' },
+        submitButton: { width: '100%', padding: '12px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '16px' },
+        loadingText: { textAlign: 'center', fontStyle: 'italic' }
     };
-    // --- KẾT THÚC PHẦN XỬ LÝ SOCIAL LOGIN ---
 
-
-    // --- PHẦN JSX RENDERING ---
-    // (Mỗi InputField, Button có thể là component riêng)
     return (
         <div style={styles.container}>
-            <h2 style={styles.title}>Tạo tài khoản</h2>
+            <h2 style={styles.title}>Tạo tài khoản người dùng</h2>
 
-            {/* --- BẮT ĐẦU FORM INPUTS --- */}
+            {/* Hiển thị lỗi từ API */}
+            {registrationError && (
+                <div style={styles.apiError}>
+                    <p>Lỗi đăng ký:</p>
+                    {typeof registrationError === 'string' ? <p>{registrationError}</p> :
+                        (registrationError.message ? <p>{registrationError.message}</p> :
+                            (registrationError.errors ? <ul>{Object.entries(registrationError.errors).map(([field, messages]) => messages.map((msg, idx) => <li key={`${field}-${idx}`}>{msg}</li>))}</ul> :
+                                <p>Đã có lỗi không xác định xảy ra.</p>
+                            )
+                        )}
+                </div>
+            )}
+
             <form onSubmit={handleSubmit} noValidate>
-                {/* --- INPUT FIELD: Email --- */}
-                {/* (Có thể tách thành <InputField type="email" ... />) */}
+                {/* Full Name */}
+                <div style={styles.inputGroup}>
+                    <label htmlFor="fullName" style={styles.label}>Họ và Tên</label>
+                    <input
+                        type="text"
+                        id="fullName"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="Nhập họ và tên"
+                        style={formErrors.fullName ? { ...styles.input, ...styles.inputError } : styles.input}
+                    />
+                    {formErrors.fullName && <p style={styles.errorMessage}>{formErrors.fullName}</p>}
+                </div>
+
+                {/* Email */}
                 <div style={styles.inputGroup}>
                     <label htmlFor="email" style={styles.label}>Email</label>
                     <input
@@ -111,16 +136,13 @@ const RegistrationForm = () => {
                         id="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Nhập địa chỉ email của bạn"
-                        style={errors.email ? { ...styles.input, ...styles.inputError } : styles.input}
-                        aria-invalid={errors.email ? "true" : "false"}
-                        aria-describedby={errors.email ? "email-error" : undefined}
+                        placeholder="Nhập địa chỉ email"
+                        style={formErrors.email ? { ...styles.input, ...styles.inputError } : styles.input}
                     />
-                    {errors.email && <p id="email-error" style={styles.errorMessage}>{errors.email}</p>}
+                    {formErrors.email && <p style={styles.errorMessage}>{formErrors.email}</p>}
                 </div>
-                {/* --- KẾT THÚC INPUT FIELD: Email --- */}
 
-                {/* --- INPUT FIELD: Username --- */}
+                {/* Username */}
                 <div style={styles.inputGroup}>
                     <label htmlFor="username" style={styles.label}>Username</label>
                     <input
@@ -129,15 +151,26 @@ const RegistrationForm = () => {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         placeholder="Chọn tên đăng nhập"
-                        style={errors.username ? { ...styles.input, ...styles.inputError } : styles.input}
-                        aria-invalid={errors.username ? "true" : "false"}
-                        aria-describedby={errors.username ? "username-error" : undefined}
+                        style={formErrors.username ? { ...styles.input, ...styles.inputError } : styles.input}
                     />
-                    {errors.username && <p id="username-error" style={styles.errorMessage}>{errors.username}</p>}
+                    {formErrors.username && <p style={styles.errorMessage}>{formErrors.username}</p>}
                 </div>
-                {/* --- KẾT THÚC INPUT FIELD: Username --- */}
 
-                {/* --- INPUT FIELD: Password --- */}
+                {/* Phone Number */}
+                <div style={styles.inputGroup}>
+                    <label htmlFor="phoneNumber" style={styles.label}>Số điện thoại</label>
+                    <input
+                        type="tel"
+                        id="phoneNumber"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        placeholder="Nhập số điện thoại"
+                        style={formErrors.phoneNumber ? { ...styles.input, ...styles.inputError } : styles.input}
+                    />
+                    {formErrors.phoneNumber && <p style={styles.errorMessage}>{formErrors.phoneNumber}</p>}
+                </div>
+
+                {/* Password */}
                 <div style={styles.inputGroup}>
                     <label htmlFor="password" style={styles.label}>Mật khẩu</label>
                     <input
@@ -146,205 +179,36 @@ const RegistrationForm = () => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="Tạo mật khẩu"
-                        style={errors.password ? { ...styles.input, ...styles.inputError } : styles.input}
-                        aria-invalid={errors.password ? "true" : "false"}
-                        aria-describedby={errors.password ? "password-error" : undefined}
+                        style={formErrors.password ? { ...styles.input, ...styles.inputError } : styles.input}
                     />
-                    {errors.password && <p id="password-error" style={styles.errorMessage}>{errors.password}</p>}
+                    {formErrors.password && <p style={styles.errorMessage}>{formErrors.password}</p>}
                 </div>
-                {/* --- KẾT THÚC INPUT FIELD: Password --- */}
 
-                {/* --- INPUT FIELD: Retype Password --- */}
+                {/* Confirm Password */}
                 <div style={styles.inputGroup}>
-                    <label htmlFor="retypePassword" style={styles.label}>Nhập lại mật khẩu</label>
+                    <label htmlFor="confirmPassword" style={styles.label}>Nhập lại mật khẩu</label>
                     <input
                         type="password"
-                        id="retypePassword"
-                        value={retypePassword}
-                        onChange={(e) => setRetypePassword(e.target.value)}
+                        id="confirmPassword"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="Xác nhận mật khẩu"
-                        style={errors.retypePassword ? { ...styles.input, ...styles.inputError } : styles.input}
-                        aria-invalid={errors.retypePassword ? "true" : "false"}
-                        aria-describedby={errors.retypePassword ? "retypePassword-error" : undefined}
+                        style={formErrors.confirmPassword ? { ...styles.input, ...styles.inputError } : styles.input}
                     />
-                    {errors.retypePassword && <p id="retypePassword-error" style={styles.errorMessage}>{errors.retypePassword}</p>}
+                    {formErrors.confirmPassword && <p style={styles.errorMessage}>{formErrors.confirmPassword}</p>}
                 </div>
-                {/* --- KẾT THÚC INPUT FIELD: Retype Password --- */}
 
-                {errors.api && <p style={{ ...styles.errorMessage, textAlign: 'center' }}>{errors.api}</p>}
-
-                {/* --- SUBMIT BUTTON --- */}
-                {/* (Có thể tách thành <Button type="submit" ... />) */}
-                <button type="submit" style={styles.submitButton} disabled={isSubmitting}>
-                    {isSubmitting ? 'Đang xử lý...' : 'Đăng ký'}
+                <button type="submit" style={styles.submitButton} disabled={isLoading}>
+                    {isLoading ? 'Đang xử lý...' : 'Đăng ký'}
                 </button>
-                {/* --- KẾT THÚC SUBMIT BUTTON --- */}
             </form>
-            {/* --- KẾT THÚC FORM INPUTS --- */}
 
-
-            {/* --- PHẦN SOCIAL LOGIN --- */}
-            {/* (Có thể tách thành <SocialLoginSection />) */}
-            <div style={styles.socialLoginContainer}>
-                <p style={styles.dividerText}>Hoặc đăng ký bằng</p>
-                {/* --- SOCIAL LOGIN BUTTON: Google --- */}
-                {/* (Có thể tách thành <SocialButton provider="Google" ... />) */}
-                <button
-                    onClick={() => handleSocialLogin('Google')}
-                    style={{ ...styles.socialButton, ...styles.googleButton }}
-                    aria-label="Đăng ký bằng Google"
-                >
-                    <GoogleIcon /> Đăng ký với Google
-                </button>
-                {/* --- KẾT THÚC SOCIAL LOGIN BUTTON: Google --- */}
-
-                {/* --- SOCIAL LOGIN BUTTON: Facebook --- */}
-                <button
-                    onClick={() => handleSocialLogin('Facebook')}
-                    style={{ ...styles.socialButton, ...styles.facebookButton }}
-                    aria-label="Đăng ký bằng Facebook"
-                >
-                    <FacebookIcon /> Đăng ký với Facebook
-                </button>
-                {/* --- KẾT THÚC SOCIAL LOGIN BUTTON: Facebook --- */}
-            </div>
-            {/* --- KẾT THÚC PHẦN SOCIAL LOGIN --- */}
-
-            {/* --- PHẦN LINK ĐĂNG NHẬP --- */}
-            {/* (Có thể tách thành <LoginLink />) */}
-            <p style={styles.loginLink}>
-                Đã có tài khoản? <a href="/login" style={styles.link}>Đăng nhập</a>
+            {/* Link to Login (nếu cần) */}
+            <p style={{ textAlign: 'center', marginTop: '20px' }}>
+                Đã có tài khoản? <a href="/login" onClick={(e) => { e.preventDefault(); navigate('/login'); }}>Đăng nhập</a>
             </p>
-            {/* --- KẾT THÚC PHẦN LINK ĐĂNG NHẬP --- */}
         </div>
     );
-    // --- KẾT THÚC PHẦN JSX RENDERING ---
-};
-// --- KẾT THÚC COMPONENT CHÍNH: RegistrationForm ---
-
-// --- PHẦN STYLES ---
-// (Sau này nên tách ra file CSS/SCSS riêng hoặc dùng styled-components/Tailwind CSS)
-// Đây là inline styles cho mục đích demo single-file.
-const styles = {
-    container: {
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-        maxWidth: '400px',
-        margin: '40px auto',
-        padding: '30px',
-        backgroundColor: '#ffffff',
-        borderRadius: '10px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-    },
-    title: {
-        textAlign: 'center',
-        color: '#333',
-        marginBottom: '25px',
-        fontSize: '24px',
-        fontWeight: '600',
-    },
-    inputGroup: {
-        marginBottom: '20px',
-    },
-    label: {
-        display: 'block',
-        marginBottom: '8px',
-        color: '#555',
-        fontSize: '14px',
-        fontWeight: '500',
-    },
-    input: {
-        width: '100%',
-        padding: '12px 15px',
-        border: '1px solid #ddd',
-        borderRadius: '6px',
-        boxSizing: 'border-box', // Quan trọng để padding không làm tăng width
-        fontSize: '16px',
-        transition: 'border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
-    },
-    inputError: {
-        borderColor: '#e74c3c', // Màu đỏ cho lỗi
-        boxShadow: '0 0 0 0.2rem rgba(231, 76, 60, 0.25)',
-    },
-    errorMessage: {
-        color: '#e74c3c',
-        fontSize: '13px',
-        marginTop: '6px',
-    },
-    submitButton: {
-        width: '100%',
-        padding: '14px',
-        backgroundColor: '#007bff', // Màu xanh dương chính
-        color: 'white',
-        border: 'none',
-        borderRadius: '6px',
-        cursor: 'pointer',
-        fontSize: '16px',
-        fontWeight: '600',
-        transition: 'background-color 0.2s ease-in-out',
-        marginTop: '10px', // Thêm khoảng cách trước button
-    },
-    // submitButton:hover (không thể làm inline, cần CSS Modules hoặc styled-components)
-    // submitButton:disabled (có thể style qua JS)
-    socialLoginContainer: {
-        marginTop: '30px',
-        textAlign: 'center',
-    },
-    dividerText: {
-        margin: '20px 0',
-        color: '#777',
-        fontSize: '14px',
-        display: 'flex',
-        alignItems: 'center',
-        textAlign: 'center',
-    },
-    // dividerText::before, dividerText::after (không thể làm inline)
-    socialButton: {
-        width: '100%',
-        padding: '12px',
-        border: '1px solid #ddd',
-        borderRadius: '6px',
-        cursor: 'pointer',
-        fontSize: '15px',
-        fontWeight: '500',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: '12px',
-        transition: 'background-color 0.2s ease-in-out, border-color 0.2s ease-in-out',
-    },
-    googleButton: {
-        backgroundColor: '#fff',
-        color: '#444',
-        // Thêm style hover nếu dùng thư viện styling
-    },
-    facebookButton: {
-        backgroundColor: '#fff', // Hoặc #4267B2 nếu muốn nền xanh
-        color: '#444', // Hoặc #fff nếu nền xanh
-        // Thêm style hover nếu dùng thư viện styling
-    },
-    loginLink: {
-        textAlign: 'center',
-        marginTop: '25px',
-        fontSize: '14px',
-        color: '#555',
-    },
-    link: {
-        color: '#007bff',
-        textDecoration: 'none',
-        fontWeight: '500',
-    },
-    // link:hover (không thể làm inline)
 };
 
-// Để sử dụng component này, bạn sẽ import và render nó trong App.js hoặc file tương tự:
-// import RegistrationForm from './RegistrationForm'; // (giả sử bạn lưu file này là RegistrationForm.js)
-// function App() {
-//   return (
-//     <div className="App">
-//       <RegistrationForm />
-//     </div>
-//   );
-// }
-// export default App;
-
-export default RegistrationForm; // Để có thể import trong các file khác
+export default RegistrationForm;
