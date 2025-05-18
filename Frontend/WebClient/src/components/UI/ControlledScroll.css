@@ -1,0 +1,11 @@
+/* src/components/ControlledInfiniteScroll.css */
+.controlled-infinite-scroll-container {
+    /* Các style cho container */
+}
+
+.load-more-trigger {
+    /* Style cho phần tử kích hoạt tải thêm (có thể là một div rỗng hoặc một indicator) */
+    padding: 20px;
+    text-align: center;
+    color: #777;
+}

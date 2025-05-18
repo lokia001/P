@@ -1,0 +1,50 @@
+/* src/components/AmenityForm.css */
+.amenity-form {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.amenity-form h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.amenity-form>div {
+    margin-bottom: 15px;
+}
+
+.amenity-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.amenity-form input[type="text"],
+.amenity-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.amenity-form button {
+    padding: 10px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.amenity-form button:hover {
+    background-color: #367c39;
+}
+
+.amenity-form .error {
+    color: red;
+    margin-bottom: 10px;
+}

@@ -1,0 +1,86 @@
+/* ProfilePage.css */
+
+.profile-page .avatar-preview {
+    width: 100px;
+    /* Kích thước ảnh đại diện lớn */
+    height: 100px;
+    border-radius: 50%;
+    /* Ảnh tròn */
+    object-fit: cover;
+    /* Đảm bảo ảnh không bị méo */
+    /* border: 3px solid #dee2e6; // Bootstrap img-thumbnail đã có border */
+}
+
+/* Nếu muốn ảnh vuông:
+.profile-page .avatar-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 0.25rem; // Bo góc nhẹ cho ảnh vuông
+  object-fit: cover;
+  border: 3px solid #dee2e6;
+}
+*/
+
+.profile-page .card-header h5 {
+    font-size: 1.05rem;
+    /* Điều chỉnh kích thước tiêu đề section nếu cần */
+    font-weight: 500;
+}
+
+/* Căn chỉnh văn bản tĩnh (form-control-plaintext) cho đẹp hơn khi đứng cạnh input */
+.profile-page .form-control-plaintext {
+    padding-top: 0.375rem;
+    /* Giống form-control-sm */
+    padding-bottom: 0.375rem;
+    line-height: 1.5;
+    /* Giống form-control-sm */
+    min-height: calc(1.5em + 0.5rem + 2px);
+    /* Giống form-control-sm */
+}
+
+.profile-page .btn .bi {
+    vertical-align: text-bottom;
+    /* Căn chỉnh icon trong button */
+    margin-right: 0.25em;
+    /* Khoảng cách nhỏ nếu icon đứng trước text */
+}
+
+.profile-page .btn .bi-pencil-fill {
+    /* Chỉ áp dụng cho icon bút chì nếu không có text */
+    margin-right: 0;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+
+    /* Small devices (landscape phones, md breakpoint) */
+    .profile-page .col-sm-3.col-form-label {
+        text-align: left;
+        margin-bottom: 0.25rem;
+        /* Thêm khoảng cách nhỏ giữa label và input trên mobile */
+    }
+
+    .profile-page .d-flex.align-items-center .form-control-sm,
+    .profile-page .d-flex.align-items-center .form-control-plaintext {
+        /* Input/text chiếm phần lớn không gian, button chiếm phần còn lại */
+    }
+}
+
+@media (max-width: 575.98px) {
+
+    /* Extra small devices (portrait phones, sm breakpoint) */
+    .profile-page .avatar-preview {
+        width: 80px;
+        height: 80px;
+    }
+
+    .profile-page .d-flex.align-items-center {
+        /* Có thể cần flex-wrap nếu không đủ không gian */
+    }
+
+    .profile-page .d-flex.align-items-center .btn {
+        margin-left: auto;
+        /* Đẩy nút Sửa sang phảiสุด */
+    }
+}

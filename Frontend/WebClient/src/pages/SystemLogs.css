@@ -1,0 +1,140 @@
+.system-logs-page {
+    background-color: #f8f9fa;
+    /* Màu nền nhẹ cho toàn trang */
+}
+
+.filters-bar {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    /* Giống card của Bootstrap */
+}
+
+/* Căn chỉnh label và input trong filter bar cho đẹp hơn trên mobile */
+.filters-bar .form-label {
+    margin-bottom: 0.25rem;
+    font-size: 0.875em;
+}
+
+/* Định nghĩa màu sắc cho mức độ nghiêm trọng */
+.badge.severity-error {
+    background-color: #dc3545;
+    /* Màu đỏ của Bootstrap (danger) */
+    color: white;
+}
+
+.badge.severity-warning {
+    background-color: #ffc107;
+    /* Màu vàng của Bootstrap (warning) */
+    color: #212529;
+    /* Màu chữ tối để dễ đọc trên nền vàng */
+}
+
+.badge.severity-info {
+    background-color: #0dcaf0;
+    /* Màu xanh dương của Bootstrap (info) */
+    color: white;
+}
+
+.badge.severity-debug {
+    background-color: #6c757d;
+    /* Màu xám của Bootstrap (secondary) */
+    color: white;
+}
+
+/* Kiểu chữ Monospace cho nội dung nhật ký */
+.log-message-content {
+    font-family: 'Consolas', 'Courier New', monospace;
+    white-space: pre-wrap;
+    /* Giữ khoảng trắng và xuống dòng */
+    word-break: break-all;
+    /* Ngăn text quá dài làm vỡ layout */
+    font-size: 0.9em;
+}
+
+/* Giới hạn chiều rộng cột và cho phép nowrap khi cần */
+.logs-table-container .table th.col-time,
+.logs-table-container .table td.col-time {
+    width: 160px;
+}
+
+.logs-table-container .table th.col-severity,
+.logs-table-container .table td.col-severity {
+    width: 100px;
+    text-align: center;
+}
+
+.logs-table-container .table th.col-source,
+.logs-table-container .table td.col-source {
+    width: 150px;
+}
+
+/* Cột nội dung chiếm phần còn lại */
+.logs-table-container .table th.col-message {
+    /* Không cần width cụ thể, nó sẽ tự động mở rộng */
+}
+
+
+/* Responsive cho bảng */
+.table-responsive {
+    overflow-x: auto;
+    /* Thêm scroll ngang cho bảng trên màn hình nhỏ */
+}
+
+.logs-table-container .table {
+    min-width: 800px;
+    /* Đảm bảo bảng có chiều rộng tối thiểu trước khi scroll */
+}
+
+/* Nút tìm kiếm, giả sử dùng text vì icon có thể cần setup thêm */
+.filters-bar .input-group .btn {
+    /* Nếu dùng icon, có thể cần padding khác */
+}
+
+/* Style cho header table để trông "sắp xếp được" */
+.logs-table-container .table thead th {
+    cursor: pointer;
+    user-select: none;
+    /* Ngăn chọn text khi click */
+}
+
+.logs-table-container .table thead th:hover {
+    background-color: #e9ecef;
+    /* Màu nền khi hover */
+}
+
+.pagination-controls .go-to-page .form-control,
+.pagination-controls .go-to-page .btn {
+    font-size: 0.875rem;
+    /* Làm cho input và button nhỏ hơn, phù hợp với pagination */
+}
+
+
+/* Responsive cho filter bar */
+@media (max-width: 767.98px) {
+    .filters-bar .row>div {
+        margin-bottom: 1rem;
+        /* Thêm khoảng cách giữa các filter items trên mobile */
+    }
+
+    .pagination-controls {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+
+    .pagination-controls>div:first-child {
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+
+    .pagination-controls .pagination {
+        justify-content: center;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .pagination-controls .go-to-page {
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-top: 0.5rem;
+    }
+}

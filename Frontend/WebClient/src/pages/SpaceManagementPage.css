@@ -1,0 +1,300 @@
+/* General Page Styles */
+.space-management-page .page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+/* Stats Cards */
+.stat-card .card-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+    display: flex;
+    /* For aligning icon and text if needed */
+    align-items: center;
+}
+
+.stat-card .card-title svg {
+    /* Style for icons in stat card titles */
+    margin-right: 0.4rem;
+}
+
+.stat-card .card-body {
+    padding: 0.8rem 1rem;
+}
+
+.stat-card.status-available-card {
+    border-left: 5px solid var(--bs-success);
+    background-color: var(--bs-success-bg-subtle, rgba(25, 135, 84, 0.1));
+    /* Fallback for older Bootstrap */
+}
+
+.stat-card.status-booked-card {
+    border-left: 5px solid var(--bs-warning);
+    background-color: var(--bs-warning-bg-subtle, rgba(255, 193, 7, 0.1));
+}
+
+.stat-card.status-maintenance-card {
+    border-left: 5px solid var(--bs-danger);
+    background-color: var(--bs-danger-bg-subtle, rgba(220, 53, 69, 0.1));
+}
+
+.stat-card.status-inactive-card {
+    border-left: 5px solid var(--bs-secondary);
+    background-color: var(--bs-secondary-bg-subtle, rgba(108, 117, 125, 0.1));
+}
+
+/* Filter Controls Card */
+.filter-controls-card {
+    background-color: #f8f9fa;
+}
+
+.filter-controls-card .form-label {
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.filter-controls-card .row.border-top {
+    border-top-color: #dee2e6 !important;
+    /* Bootstrap default border color */
+}
+
+/* Align button group and advanced filter button in filter section */
+.filter-controls-card .col-md-3.text-md-end .d-flex {
+    /* Target the flex container */
+    height: 100%;
+    /* Ensure it takes full height of the form group if needed */
+}
+
+
+/* Spaces Table (List View) */
+.spaces-table th {
+    background-color: #e9ecef;
+    font-weight: 600;
+}
+
+.spaces-table .btn-group .btn {
+    margin-right: 5px;
+}
+
+.spaces-table .btn-group .btn:last-child {
+    margin-right: 0;
+}
+
+.spaces-table .btn-group .btn .d-md-inline {
+    /* For text labels in buttons */
+    vertical-align: middle;
+}
+
+/* Visual Overview Grid & Space Cards */
+.visual-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    /* Min width for cards */
+    gap: 1.25rem;
+    /* Slightly more gap */
+    padding-top: 1rem;
+}
+
+.space-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 190px;
+    /* Adjusted min height */
+    position: relative;
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s ease-out;
+    border: 1px solid #dee2e6;
+    border-radius: var(--bs-card-border-radius, 0.375rem);
+    /* Bootstrap card border radius */
+    background-color: #fff;
+    /* Default background */
+}
+
+.space-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+    /* Adjusted shadow */
+    background-color: var(--bs-tertiary-bg, #f8f9fa);
+    /* Light hover background */
+}
+
+/* Status borders for the entire card */
+.space-card.status-border-available {
+    border-left: 5px solid var(--bs-success);
+}
+
+.space-card.status-border-booked {
+    border-left: 5px solid var(--bs-warning);
+}
+
+.space-card.status-border-maintenance {
+    border-left: 5px solid var(--bs-danger);
+}
+
+.space-card.status-border-inactive {
+    border-left: 5px solid var(--bs-secondary);
+}
+
+.space-card-clickable-content {
+    cursor: pointer;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Prevent content spill */
+}
+
+.space-card .card-header {
+    padding: 0.6rem 0.85rem;
+    /* Adjusted padding */
+    border-bottom: 1px solid rgba(0, 0, 0, .08);
+}
+
+/* Background colors for card headers based on status */
+.space-card .card-header.status-bg-available {
+    background-color: var(--bs-success-bg-subtle, rgba(25, 135, 84, 0.07));
+}
+
+.space-card .card-header.status-bg-booked {
+    background-color: var(--bs-warning-bg-subtle, rgba(255, 193, 7, 0.07));
+}
+
+.space-card .card-header.status-bg-maintenance {
+    background-color: var(--bs-danger-bg-subtle, rgba(220, 53, 69, 0.07));
+}
+
+.space-card .card-header.status-bg-inactive {
+    background-color: var(--bs-secondary-bg-subtle, rgba(108, 117, 125, 0.07));
+}
+
+.space-card .space-card-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.space-card .card-body {
+    padding: 0.85rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.space-card .card-body .text-muted {
+    font-size: 0.8rem;
+}
+
+.space-card .card-body .fw-bold {
+    font-size: 0.9rem;
+}
+
+.space-card .card-body .badge {
+    /* Badge inside card body */
+    font-size: 0.75rem;
+    padding: 0.3em 0.5em;
+}
+
+/* Action Footer for Space Cards (appears on hover) */
+.space-card-actions-footer {
+    background-color: rgba(255, 255, 255, 0.95);
+    /* Slightly transparent white background */
+    backdrop-filter: blur(2px);
+    /* Optional: blur effect for browsers that support it */
+    border-top: 1px solid #e9ecef;
+    padding: 0.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    /* Start slightly lower */
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out, transform 0.2s ease-in-out;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    border-bottom-left-radius: var(--bs-card-border-radius, 0.375rem);
+    border-bottom-right-radius: var(--bs-card-border-radius, 0.375rem);
+}
+
+.space-card:hover .space-card-actions-footer {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.space-card-actions-footer .btn-group .btn {
+    font-size: 0.8rem;
+    padding: 0.3rem 0.6rem;
+    /* Adjusted padding for buttons */
+}
+
+.space-card-actions-footer .btn-group .btn svg {
+    vertical-align: middle;
+}
+
+/* Responsive adjustments if needed */
+@media (max-width: 768px) {
+    .visual-overview-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        /* Smaller min width on mobile */
+    }
+
+    .stat-card .fs-2,
+    .stat-card .fs-3 {
+        font-size: 1.5rem !important;
+        /* Smaller font for stats on mobile */
+    }
+
+    .filter-controls-card .col-md-3.text-md-end {
+        /* Stack buttons on mobile */
+        align-items: stretch;
+        /* Make buttons take full width */
+    }
+
+    .filter-controls-card .col-md-3.text-md-end .d-flex {
+        flex-direction: column;
+        gap: 0.5rem;
+        /* Space between advanced filter button and view mode buttons */
+    }
+
+    .filter-controls-card .col-md-3.text-md-end .btn-group,
+    .filter-controls-card .col-md-3.text-md-end .btn {
+        width: 100%;
+    }
+}
+
+.space-card .card-body {
+    padding: 0.85rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    /* START: ĐẢM BẢO CÁC MỤC CĂN CHỈNH */
+    justify-content: space-between;
+    /* Đẩy badge trạng thái xuống dưới nếu có không gian */
+    /* END: ĐẢM BẢO CÁC MỤC CĂN CHỈNH */
+}
+
+.space-card .card-body .mb-1 {
+    /* Cho tên loại không gian */
+    margin-bottom: 0.25rem !important;
+    /* Giảm khoảng cách dưới loại không gian một chút */
+}
+
+.space-card .card-body .d-flex.align-items-center.mb-2 {
+    /* Cho dòng chứa sức chứa và giá */
+    margin-bottom: 0.5rem !important;
+    /* Điều chỉnh khoảng cách dưới dòng này */
+}
+
+.space-card .card-body .d-flex.align-items-center .text-muted.ms-auto {
+    /* Giá */
+    /* Nếu cần căn phải giá một cách chính xác hơn */
+}
+
+
+.space-card .card-body .mt-auto {
+    /* Cho badge trạng thái */
+    margin-top: 0.5rem !important;
+    /* Đảm bảo có khoảng cách trên badge nếu nó bị đẩy xuống */
+}

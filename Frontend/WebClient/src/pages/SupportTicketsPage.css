@@ -1,0 +1,112 @@
+/* SupportTicketsPage.css */
+
+/* Màu sắc cho trạng thái */
+.status-moi {
+    background-color: #dc3545 !important;
+    /* Đỏ (Bootstrap danger) hoặc cam #fd7e14 */
+    color: white;
+}
+
+.status-dang-xu-ly {
+    background-color: #ffc107 !important;
+    /* Vàng (Bootstrap warning) */
+    color: #212529;
+    /* Chữ tối để dễ đọc trên nền vàng */
+}
+
+.status-da-phan-hoi {
+    background-color: #0dcaf0 !important;
+    /* Xanh dương nhạt (Bootstrap info) */
+    color: white;
+}
+
+.status-da-giai-quyet {
+    background-color: #198754 !important;
+    /* Xanh lá cây (Bootstrap success) */
+    color: white;
+}
+
+.status-da-dong {
+    background-color: #6c757d !important;
+    /* Xám (Bootstrap secondary) */
+    color: white;
+}
+
+/* Màu sắc/style cho mức độ ưu tiên (có thể dùng badge Bootstrap trực tiếp nếu màu mặc định ổn) */
+.priority-cao {
+    background-color: #dc3545 !important;
+    /* Đỏ */
+    color: white;
+}
+
+.priority-trung-binh {
+    background-color: #ffc107 !important;
+    /* Vàng */
+    color: #212529;
+}
+
+.priority-thap {
+    background-color: #0dcaf0 !important;
+    /* Xanh dương nhạt */
+    color: white;
+}
+
+/* Cải thiện hiển thị table trên mobile */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Style cho khu vực lịch sử trao đổi trong modal */
+.chat-history {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 0.25rem;
+    background-color: #f8f9fa;
+}
+
+.chat-message .message-bubble {
+    padding: 8px 12px;
+    border-radius: 15px;
+    margin-bottom: 5px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.user-message .message-bubble {
+    background-color: #e9ecef;
+    /* Màu nền cho tin nhắn người dùng */
+    margin-left: auto;
+    /* Căn phải */
+    border-bottom-right-radius: 3px;
+}
+
+.admin-message .message-bubble {
+    background-color: #d1e7fd;
+    /* Màu nền cho tin nhắn admin (Bootstrap info-light) */
+    margin-right: auto;
+    /* Căn trái */
+    border-bottom-left-radius: 3px;
+}
+
+/* Đảm bảo modal hiển thị đúng khi có class 'show' */
+.modal.show {
+    display: block;
+}
+
+.modal-dialog-scrollable .modal-body {
+    overflow-y: auto;
+}
+
+/* Thêm chút padding cho container chính */
+.support-tickets-container {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* Icon (Nếu bạn dùng Bootstrap Icons, hãy đảm bảo đã import CDN hoặc cài package) */
+/* Ví dụ: <i class="bi bi-eye"></i> */
+/* Nếu chưa có, bạn có thể thêm link CDN Bootstrap Icons vào file public/index.html:
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+*/

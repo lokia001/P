@@ -1,0 +1,71 @@
+@startuml
+title Sơ đồ Tuần tự: Chủ sở hữu Tạo mới Không gian
+
+actor "Chủ sở hữu" as Owner
+boundary "Frontend App (Owner Panel)" as FE
+control "WorkspacesController" as WSCtrl <<Backend Controller>>
+control "IWorkspaceService" as WSSvcItf <<Backend Service Interface>>
+entity "WorkspaceService" as WSSvcImpl <<Backend Service Impl>>
+entity "WorkspaceDbContext" as WSDbCtx <<EF Core Context>>
+database "Database" as DB
+' Giả sử có dịch vụ upload ảnh nếu việc tạo space kèm upload ảnh ngay
+' control "IFileStorageService" as FileSvcItf
+' entity "FileStorageService" as FileSvcImpl
+
+autonumber "<b>[0]"
+
+Owner -> FE : 1. Yêu cầu trang/form Tạo mới Không gian
+activate FE
+FE --> Owner : 2. Hiển thị Form Tạo mới Không gian
+deactivate FE
+
+Owner -> FE : 3. Điền thông tin không gian (tên, địa chỉ, mô tả, giá, tiện nghi, ảnh,...)
+activate FE
+FE -> WSCtrl : 4. POST /api/workspaces\n(Gửi yêu cầu Tạo mới [CreateWorkspaceDTO], ownerUserId từ token)
+deactivate FE
+activate WSCtrl
+
+WSCtrl -> WSSvcItf : 5. CreateWorkspace(createWorkspaceDTO, ownerUserId)
+activate WSSvcItf
+WSSvcItf -> WSSvcImpl : 6. CreateWorkspace(createWorkspaceDTO, ownerUserId)
+activate WSSvcImpl
+
+WSSvcImpl -> WSSvcImpl : 7. Validate dữ liệu đầu vào (ví dụ: địa chỉ hợp lệ, giá không âm,...)
+' Giả sử validation thành công
+
+' Nếu có upload ảnh kèm theo
+' loop cho mỗi file ảnh được upload
+'   WSSvcImpl -> FileSvcItf : 8a. UploadImage(imageFile)
+'   activate FileSvcItf
+'   FileSvcItf -> FileSvcImpl : 9a. StoreImage(imageFile)
+'   ... (lưu vào cloud storage hoặc local) ...
+'   FileSvcImpl --> FileSvcItf : 10a. imageUrl
+'   deactivate FileSvcItf
+'   WSSvcImpl -> WSSvcImpl : 11a. Lưu trữ imageUrl
+' end
+
+WSSvcImpl -> WSDbCtx : 8. CreateWorkspaceEntity(workspaceData, ownerUserId)
+activate WSDbCtx
+WSDbCtx -> DB : 9. INSERT INTO Workspaces (...)
+activate DB
+DB --> WSDbCtx : 10. WorkspaceId (Sau khi lưu)
+deactivate DB
+WSDbCtx --> WSSvcImpl : 11. Workspace Entity (đã lưu)
+deactivate WSDbCtx
+
+' Nếu có lưu thông tin tiện nghi (Amenities) hoặc SpaceServices liên quan ngay lúc tạo
+' WSSvcImpl -> WSDbCtx : 12. SaveRelatedEntities(workspaceId, amenitiesData, servicesData)
+' ...
+
+WSSvcImpl --> WSSvcItf : 12. return WorkspaceDTO (Thông tin space vừa tạo)
+deactivate WSSvcImpl
+WSSvcItf --> WSCtrl : 13. return WorkspaceDTO
+deactivate WSSvcItf
+WSCtrl --> FE : 14. HTTP 201 Created\nResponse: [WorkspaceDTO]
+deactivate WSCtrl
+activate FE
+
+FE --> Owner : 15. Hiển thị thông báo Tạo không gian thành công và chi tiết không gian vừa tạo (hoặc chuyển hướng đến trang quản lý)
+deactivate FE
+
+@enduml

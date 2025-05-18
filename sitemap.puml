@@ -1,0 +1,34 @@
+@startmindmap
+title Sơ đồ Trang (Sitemap) Website
+
+* Trang Chủ
+** Không Gian Làm Việc
+*** Danh sách Không Gian
+**** Bộ lọc & Sắp xếp
+*** Chi tiết Không Gian
+**** Hình ảnh
+**** Mô tả & Tiện nghi
+**** Đánh giá & Bình luận
+**** (Đặt chỗ)
+** Đăng nhập / Đăng ký
+** Tài Khoản Người Dùng (Sau đăng nhập)
+*** Quản lý Thông tin cá nhân
+*** (Lịch sử Đặt chỗ)
+*** (Danh sách Yêu thích)
+*** (Đăng xuất)
+** (Cộng đồng)
+*** (Diễn đàn/Blog)
+*** (Sự kiện)
+** Thông tin Chung
+*** Giới thiệu
+*** Liên hệ
+*** Chính sách Bảo mật
+*** Điều khoản Sử dụng
+*** FAQ
+** (Trang Quản trị - Admin/Owner)
+*** (Quản lý Không gian)
+*** (Quản lý Người dùng)
+*** (Quản lý Đánh giá)
+
+caption Hình 2.6: Sơ đồ trang (Sitemap) của website
+@endmindmap

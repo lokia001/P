@@ -1,0 +1,60 @@
+@startuml
+title Sơ đồ Tuần tự: Đăng ký Người dùng mới
+
+actor "Khách truy cập" as Guest
+participant "Frontend App" as FE
+participant "UsersController" as UserCtrl <<Backend Controller>>
+participant "IUserService" as UserSvcItf <<Backend Service Interface>>
+participant "UserService" as UserSvcImpl <<Backend Service Impl>>
+participant "UserDbContext" as DbCtx <<EF Core Context>>
+database "Database" as DB
+
+autonumber "<b>[0]"
+
+Guest -> FE : 1. Yêu cầu trang Đăng ký
+activate FE
+FE --> Guest : 2. Hiển thị Form Đăng ký
+deactivate FE
+
+Guest -> FE : 3. Điền thông tin (username, email, password, ...)
+activate FE
+FE -> UserCtrl : 4. Gửi yêu cầu Đăng ký (POST /api/users/register)\n[UserDataDTO]
+deactivate FE
+activate UserCtrl
+
+UserCtrl -> UserSvcItf : 5. RegisterUser(userDataDTO)
+activate UserSvcItf
+UserSvcItf -> UserSvcImpl : 6. RegisterUser(userDataDTO)
+activate UserSvcImpl
+
+UserSvcImpl -> DbCtx : 7. Kiểm tra Username/Email tồn tại
+activate DbCtx
+DbCtx -> DB : 8. Truy vấn dữ liệu
+activate DB
+DB --> DbCtx : 9. Kết quả kiểm tra
+deactivate DB
+DbCtx --> UserSvcImpl : 10. Username/Email chưa tồn tại
+deactivate DbCtx
+
+UserSvcImpl -> UserSvcImpl : 11. Băm (Hash) mật khẩu
+UserSvcImpl -> DbCtx : 12. Tạo đối tượng User mới
+activate DbCtx
+DbCtx -> DB : 13. Lưu User mới
+activate DB
+DB --> DbCtx : 14. Lưu thành công
+deactivate DB
+DbCtx --> UserSvcImpl : 15. User đã được lưu
+deactivate DbCtx
+
+UserSvcImpl --> UserSvcItf : 16. Đăng ký thành công [UserDTO]
+deactivate UserSvcImpl
+UserSvcItf --> UserCtrl : 17. Kết quả đăng ký [UserDTO]
+deactivate UserSvcItf
+UserCtrl --> FE : 18. Phản hồi: Đăng ký thành công (201 Created)\n[UserDTO]
+deactivate UserCtrl
+activate FE
+
+FE --> Guest : 19. Hiển thị thông báo Đăng ký thành công
+deactivate FE
+
+@enduml

@@ -1,0 +1,128 @@
+/* SystemDashboard.css */
+
+.system-dashboard-page {
+    background-color: #f4f6f9;
+    /* Light gray background for the page */
+    min-height: 100vh;
+}
+
+.system-widget {
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    /* Softer corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    height: 100%;
+    /* Make widgets in the same row have same height */
+    display: flex;
+    flex-direction: column;
+}
+
+.system-widget .card-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    /* Allows card body to fill widget height */
+}
+
+.system-widget .card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+    /* More space below title */
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+}
+
+.status-highlight {
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    /* Light background for the highlight itself */
+}
+
+.status-highlight .status-icon-large {
+    font-size: 2rem;
+    /* Larger icon for main status */
+}
+
+/* Placeholder for charts */
+.chart-placeholder {
+    width: 100%;
+    min-height: 150px;
+    /* Give some space for the placeholder */
+    border: 2px dashed #ccc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #fdfdfd;
+    border-radius: 0.25rem;
+    color: #888;
+}
+
+.chart-placeholder .chart-percentage {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+/* Status icons for lists (e.g., Service Status) */
+.status-icon {
+    font-size: 0.8em;
+    /* Smaller dots */
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.status-icon-success {
+    color: #28a745;
+    /* Bootstrap success green */
+}
+
+.status-icon-danger {
+    color: #dc3545;
+    /* Bootstrap danger red */
+}
+
+.status-icon-warning {
+    color: #ffc107;
+    /* Bootstrap warning yellow */
+}
+
+.status-icon-muted {
+    color: #6c757d;
+    /* Bootstrap muted grey */
+}
+
+.list-group-item {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+.log-message {
+    word-break: break-word;
+    /* Prevent long log messages from breaking layout */
+}
+
+/* Ensure progress bar text is visible */
+.progress-bar {
+    color: #fff;
+    font-weight: 500;
+}
+
+.progress {
+    font-size: .75rem;
+    /* Make progress text smaller if needed */
+}
+
+/* Responsive adjustments if Bootstrap defaults aren't enough */
+@media (max-width: 768px) {
+    .system-dashboard-page h1 {
+        font-size: 1.75rem;
+        /* Smaller title on smaller screens */
+    }
+
+    .card-title {
+        font-size: 1rem;
+    }
+}

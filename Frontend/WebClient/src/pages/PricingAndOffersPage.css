@@ -1,0 +1,136 @@
+/* PricingAndOffersPage.css */
+
+.pricing-offers-page .page-title {
+    color: #333;
+    border-bottom: 2px solid #0d6efd;
+    /* Bootstrap primary color */
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem !important;
+    /* Override Bootstrap if needed */
+}
+
+.pricing-offers-page .nav-tabs .nav-link {
+    color: #495057;
+}
+
+.pricing-offers-page .nav-tabs .nav-link.active {
+    color: #0d6efd;
+    border-color: #dee2e6 #dee2e6 #fff;
+    font-weight: bold;
+}
+
+.tab-content-wrapper {
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 0.25rem 0.25rem;
+    background-color: #fff;
+}
+
+.tab-section-title {
+    font-size: 1.5rem;
+    color: #343a40;
+    margin-bottom: 1rem;
+}
+
+.price-input {
+    min-width: 100px;
+    max-width: 150px;
+    /* Hoặc tùy chỉnh theo nhu cầu */
+}
+
+.table th {
+    background-color: #f8f9fa;
+    /* Light grey for table headers */
+    font-weight: 600;
+}
+
+/* Status badges for offers */
+.status-badge {
+    padding: 0.3em 0.6em;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    font-size: 0.85em;
+    color: #fff;
+}
+
+.status-active {
+    background-color: #198754;
+    /* Bootstrap success green */
+}
+
+.status-expired {
+    background-color: #dc3545;
+    /* Bootstrap danger red */
+}
+
+.status-paused {
+    background-color: #ffc107;
+    /* Bootstrap warning yellow */
+    color: #000;
+    /* Text color for better contrast on yellow */
+}
+
+.actions-cell {
+    min-width: 150px;
+    /* Ensure enough space for action buttons */
+    text-align: center;
+}
+
+.actions-cell .action-icon {
+    margin: 0 2px;
+}
+
+.actions-cell .form-check-input {
+    /* margin-top: 0.1rem;  */
+    /* Adjust vertical alignment of switch if needed */
+    vertical-align: middle;
+}
+
+/* Form thêm ưu đãi mới */
+.modal-body .form-label {
+    font-weight: 500;
+}
+
+.modal-body .text-danger {
+    font-weight: normal;
+}
+
+.checkbox-group {
+    max-height: 150px;
+    /* Giới hạn chiều cao cho nhóm checkbox */
+    overflow-y: auto;
+    /* Thêm thanh cuộn nếu nhiều item */
+    border: 1px solid #ced4da;
+    padding: 10px;
+    border-radius: 0.25rem;
+}
+
+.checkbox-group .form-check {
+    margin-bottom: 0.5rem !important;
+    /* Thêm khoảng cách giữa các checkbox */
+}
+
+/* Nút bấm trong bảng */
+.table .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Responsive adjustments if needed */
+@media (max-width: 768px) {
+    .price-input {
+        min-width: 80px;
+    }
+
+    .actions-cell {
+        min-width: auto;
+        /* Allow shrinking on smaller screens */
+    }
+
+    .actions-cell .btn,
+    .actions-cell .form-check {
+        margin-bottom: 5px;
+        /* Stack buttons on small screens if they wrap */
+    }
+}

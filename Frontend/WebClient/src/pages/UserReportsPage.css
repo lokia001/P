@@ -1,0 +1,99 @@
+.user-reports-page {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.filters-section {
+    background-color: #f8f9fa;
+    /* Light gray background for filters */
+    border-radius: 0.5rem;
+}
+
+.report-list-section .list-group-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.report-list-section .list-group-item:hover {
+    background-color: #f0f0f0;
+}
+
+.report-list-section .list-group-item.active {
+    background-color: #0d6efd;
+    /* Bootstrap primary blue */
+    border-color: #0d6efd;
+}
+
+.report-list-section .list-group-item.active .report-title,
+.report-list-section .list-group-item.active p,
+.report-list-section .list-group-item.active small {
+    color: white !important;
+    /* Ensure text is readable on active background */
+}
+
+.report-list-section .list-group-item.active .badge {
+    /* Make badges on active item more distinct or use default badge styling */
+}
+
+
+.list-item-unread {
+    border-left: 5px solid #0d6efd;
+    /* Blue left border for unread items */
+    font-weight: bold;
+    /* Make unread items slightly bolder */
+}
+
+.list-item-unread .report-title {
+    font-weight: 600;
+    /* Bolder title for unread items */
+}
+
+
+.report-title {
+    font-weight: 500;
+    /* Make titles stand out a bit */
+}
+
+.report-detail-section .card {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.report-detail-section .card-header {
+    background-color: #e9ecef;
+    /* Slightly darker header for detail card */
+}
+
+.report-content {
+    white-space: pre-wrap;
+    /* Preserve line breaks in content */
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+}
+
+/* Badge styles for specific status/priority if Bootstrap defaults aren't enough */
+/* Example:
+.badge.bg-danger { color: white !important; }
+.badge.bg-warning { color: #212529 !important; } ensure text contrast
+*/
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+
+    .report-list-section,
+    .report-detail-section {
+        margin-bottom: 1rem;
+        /* Add space between list and detail on small screens */
+    }
+
+    .report-detail-section {
+        margin-top: 1rem;
+        /* Add space above detail section if it stacks below list */
+    }
+}
+
+/* Ensure select dropdowns in detail view don't take full width unless intended */
+.report-detail-section .form-select-sm.w-auto {
+    min-width: 150px;
+    /* Give some minimum width for better appearance */
+}

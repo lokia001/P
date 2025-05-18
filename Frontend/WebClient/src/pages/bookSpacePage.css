@@ -1,0 +1,301 @@
+/* CSS cho trang Book Space */
+.book-space-page {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+    min-height: calc(100vh - 60px - 150px);
+    /* Điều chỉnh theo header và footer */
+    flex-direction: column;
+    /* Mặc định là cột trên mobile */
+}
+
+/* CSS cho bộ lọc bên trái */
+.filter-sidebar {
+    padding: 15px;
+    border-right: 1px solid #eee;
+}
+
+.filter-sidebar h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.filter-sidebar>div {
+    margin-bottom: 20px;
+}
+
+.filter-sidebar h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.filter-sidebar label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.filter-sidebar input[type="checkbox"],
+.filter-sidebar input[type="radio"],
+.filter-sidebar select {
+    margin-right: 5px;
+}
+
+.filter-sidebar button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+}
+
+/* CSS cho container tìm kiếm vị trí */
+.location-search-container {
+    padding: 15px;
+    margin-bottom: 20px;
+    display: flex;
+    /* Để căn giữa input */
+    justify-content: center;
+    width: 100%;
+    /* Đảm bảo chiếm toàn bộ chiều rộng của .book-space-page */
+}
+
+.location-search-container>div {
+    /* Style trực tiếp div chứa input và dropdown */
+    max-width: 600px;
+    /* Điều chỉnh chiều rộng tối đa của input */
+    width: 100%;
+    position: relative;
+    /* Cho phép định vị tuyệt đối cho dropdown */
+}
+
+.location-search-container label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.location-search-container input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.location-search-container .suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.location-search-container .suggestions-dropdown li {
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.location-search-container .suggestions-dropdown li:hover {
+    background-color: #f0f0f0;
+}
+
+.location-search-container .attribution {
+    font-size: 0.9em;
+    color: #777;
+    margin-top: 10px;
+}
+
+/* CSS cho vùng kết quả */
+.results-area {
+    padding: 15px;
+    width: 100%;
+    /* Chiếm toàn bộ chiều rộng */
+}
+
+.results-area h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.results-area .space-item {
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    /* Các phần tử con xếp theo chiều dọc */
+    width: 100%;
+    /* Chiếm toàn bộ chiều rộng của container cha */
+    /* Loại bỏ hoặc điều chỉnh max-width nếu có */
+}
+
+/* Responsive Design */
+@media (min-width: 769px) {
+
+    /* Áp dụng cho màn hình lớn hơn mobile */
+    .book-space-page {
+        flex-direction: row;
+        /* Chuyển thành hàng ngang */
+    }
+
+    .filter-sidebar {
+        flex-basis: 250px;
+        /* Điều chỉnh chiều rộng sidebar */
+    }
+
+    .location-search-container {
+        flex: 1;
+        /* Chiếm không gian còn lại ở giữa */
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .results-area {
+        width: 100%;
+        /* Kết quả trải dài dưới thanh tìm kiếm */
+    }
+}
+
+/* bookSpacePage.css */
+/* bookSpacePage.css */
+
+/* ... Các style hiện có ... */
+
+.location-sort-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 10px;
+    width: 100%;
+    /* Chiếm toàn bộ chiều rộng */
+}
+
+.location-search-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-grow: 1;
+    /* Cho phép ô nhập vị trí kéo dài */
+}
+
+.location-search-container label {
+    white-space: nowrap;
+}
+
+.sort-options {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* flex-grow: 1; */
+    /* Tùy chọn: cho phép dropdown sắp xếp kéo dài */
+}
+
+.sort-options label {
+    white-space: nowrap;
+}
+
+.map-results-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    /* Chiếm toàn bộ chiều rộng */
+    min-height: 400px;
+    /* Đặt chiều cao tối thiểu */
+    /* Loại bỏ chiều cao cố định */
+}
+
+.results-area-container {
+    flex: 1;
+    /* Chiếm tỷ lệ 1 (ví dụ: 50% nếu map cũng flex: 1) */
+    padding-right: 10px;
+    overflow-y: auto;
+    width: 50%;
+    /* Chiếm 50% chiều rộng của container cha */
+}
+
+.map-container-wrapper {
+    flex: 1;
+    /* Chiếm tỷ lệ 1 */
+    padding-left: 10px;
+    width: 50%;
+    /* Chiếm 50% chiều rộng của container cha */
+    height: 100%;
+    /* Chiếm toàn bộ chiều cao của container cha */
+}
+
+.map-container {
+    height: 100%;
+    width: 100%;
+    border-radius: 5px;
+}
+
+/* bookSpacePage.css */
+
+/* ... Các style hiện có ... */
+
+/* Trên màn hình nhỏ hơn (ví dụ: chiều rộng tối đa 768px) */
+@media (max-width: 768px) {
+    .map-results-container {
+        flex-direction: column;
+        /* Xếp chồng lên nhau trên màn hình nhỏ */
+        min-height: auto;
+        /* Loại bỏ chiều cao tối thiểu */
+    }
+
+    .results-area-container {
+        width: 100%;
+        /* Chiếm toàn bộ chiều rộng */
+        height: auto;
+        /* Chiều cao tự động */
+        padding-right: 0;
+        margin-bottom: 10px;
+        /* Thêm khoảng cách bên dưới kết quả */
+    }
+
+    .map-container-wrapper {
+        width: 100%;
+        /* Chiếm toàn bộ chiều rộng */
+        height: 300px;
+        /* Đặt chiều cao cố định cho bản đồ trên màn hình nhỏ */
+        padding-left: 0;
+    }
+}
+
+
+/* src/components/Filter/activeFilters.css */
+.active-filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    /* Cho phép các item xuống dòng khi không đủ chỗ */
+    align-items: center;
+    /* Căn giữa theo chiều dọc */
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+}
+
+.clear-all-filters-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 15px;
+    cursor: pointer;
+    font-size: 0.9em;
+    outline: none;
+    margin-left: 10px;
+}
+
+.clear-all-filters-button:hover {
+    background-color: #d32f2f;
+}

@@ -1,0 +1,70 @@
+# .gitignore (Root)
+
+# Frontend/WebClient (Vite React)
+/Frontend/WebClient/node_modules
+/Frontend/WebClient/build
+/Frontend/WebClient/dist
+/Frontend/WebClient/coverage
+/Frontend/WebClient/.turbo
+/Frontend/WebClient/.cache
+/Frontend/WebClient/vite-env.d.ts
+/Frontend/WebClient/.yarn
+/Frontend/WebClient/.pnpm
+/Frontend/WebClient/.DS_Store
+/Frontend/WebClient/.env.local
+/Frontend/WebClient/.env.development.local
+/Frontend/WebClient/.env.test.local
+/Frontend/WebClient/.env.production.local
+
+# Backend.Api (.NET)
+/Backend.Api.Api/bin
+/Backend.Api/obj
+/Backend.Api/.vs
+/Backend.Api/*.csproj.user
+/Backend.Api/*.sln.docstates
+/Backend.Api/TestResults
+/Backend.Api/_PublishedWebsites
+/Backend.Api/publish
+/Backend.Api/.DS_Store
+/Backend.Api/.env.local
+/Backend.Api/.env.development.local
+/Backend.Api/.env.test.local
+/Backend.Api/.env.production.local
+/Backend.Api/Properties/launchSettings.json
+/Backend.Api/artifacts
+
+# General OS and IDE related
+.DS_Store
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln.docstates
+*.userprefs
+/node_modules
+
+# Deployment related
+/build
+/dist
+/publish
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.bak
+*.dump
+
+# Environment files (keep your sensitive info safe!)
+.env
+*.env.local
+*.env.*.local
+
+# Package manager specific
+yarn-error.log
+package-lock.json
+pnpm-lock.yaml
+
+# Other
+# Add any other project-specific files or directories you want to ignore here
