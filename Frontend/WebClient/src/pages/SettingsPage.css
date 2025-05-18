@@ -1,0 +1,160 @@
+/* SettingsPage.css */
+
+.settings-page-container {
+    /* Ensure it can take full height if needed, but Bootstrap's d-flex handles children height */
+}
+
+.settings-sidebar {
+    width: 280px;
+    /* Fixed width for the sidebar */
+    background-color: #f8f9fa;
+    /* Light grey, common for sidebars */
+    border-right: 1px solid #dee2e6;
+    /* Subtle border */
+    flex-shrink: 0;
+    /* Prevent sidebar from shrinking */
+    overflow-y: auto;
+    /* Allow scrolling if content overflows */
+}
+
+.settings-sidebar .sidebar-title {
+    font-size: 1.5rem;
+    /* Larger title for "Cài Đặt" */
+    font-weight: 600;
+    color: #333;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.settings-sidebar .nav-link {
+    color: #343a40;
+    /* Dark grey for text */
+    padding: 0.75rem 1.25rem;
+    /* Spacing for nav items */
+    border-radius: 0;
+    /* Remove default Bootstrap nav-link radius if any */
+    border-left: 3px solid transparent;
+    /* For active indicator */
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-left-color 0.2s ease-in-out;
+}
+
+.settings-sidebar .nav-link i {
+    font-size: 1.1rem;
+    /* Icon size */
+    min-width: 25px;
+    /* Ensure icons align nicely */
+}
+
+.settings-sidebar .nav-link:hover {
+    background-color: #e9ecef;
+    /* Light hover effect */
+    color: #0056b3;
+    /* Darker blue on hover */
+}
+
+.settings-sidebar .nav-link.active {
+    background-color: #e6f0ff;
+    /* Lighter blue for active background */
+    color: #0056b3;
+    /* Bootstrap primary color for text */
+    font-weight: 500;
+    border-left-color: #0056b3;
+    /* Active indicator */
+}
+
+.settings-sidebar .nav-link.active i {
+    color: #0056b3;
+    /* Match text color for icon */
+}
+
+.settings-content-area {
+    background-color: #ffffff;
+    /* White background for content */
+    overflow-y: auto;
+    /* Allow content area to scroll independently */
+    padding-bottom: 100px;
+    /* Space for the fixed save button */
+    position: relative;
+    /* Needed if save button is absolute to this container */
+}
+
+.settings-content-area .content-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+.settings-section {
+    margin-bottom: 2.5rem;
+    /* Space between sections */
+}
+
+.settings-section .section-subtitle {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+    color: #495057;
+}
+
+.settings-section .section-subtitle:first-of-type {
+    margin-top: 0;
+    /* No top margin for the very first subtitle in a section */
+}
+
+.save-button-container {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    /* Will be relative to viewport */
+    width: calc(100% - 280px);
+    /* Adjust width to not overlay sidebar */
+    background-color: rgba(255, 255, 255, 0.9);
+    /* Slight transparency */
+    padding: 15px 25px;
+    /* Padding for the button */
+    border-top: 1px solid #dee2e6;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: flex-end;
+    /* Align button to the right */
+    z-index: 1000;
+}
+
+/* Adjust save button container width if sidebar width changes or on smaller screens */
+@media (max-width: 768px) {
+    .settings-sidebar {
+        /* On smaller screens, you might want to hide it or make it an off-canvas */
+        /* For now, let's just reduce width or make it stack */
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .settings-page-container .d-flex {
+        flex-direction: column;
+    }
+
+    .settings-content-area {
+        padding-bottom: 120px;
+        /* More space for save button on mobile */
+    }
+
+    .save-button-container {
+        width: 100%;
+        /* Full width on smaller screens */
+        padding: 15px;
+    }
+
+    .save-button-container .btn {
+        width: 100%;
+        /* Full width button on mobile */
+    }
+}
+
+/* Ensure Bootstrap form elements get some breathing room */
+.form-label {
+    font-weight: 500;
+}

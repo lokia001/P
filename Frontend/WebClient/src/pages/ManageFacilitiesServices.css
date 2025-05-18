@@ -1,0 +1,63 @@
+/* ManageFacilitiesServices.css */
+
+/* Màu sắc cho trạng thái */
+.status-active {
+    background-color: #d1e7dd;
+    /* Bootstrap success light */
+    color: #0f5132;
+    /* Bootstrap success dark */
+    border: 1px solid #badbcc;
+}
+
+.status-maintenance {
+    background-color: #fff3cd;
+    /* Bootstrap warning light */
+    color: #664d03;
+    /* Bootstrap warning dark */
+    border: 1px solid #ffecb5;
+}
+
+.status-inactive {
+    background-color: #e2e3e5;
+    /* Bootstrap secondary light */
+    color: #41464b;
+    /* Bootstrap secondary dark */
+    border: 1px solid #d3d6d8;
+}
+
+/* Căn chỉnh các nút hành động và select trạng thái */
+.table td .btn,
+.table td .form-select-sm {
+    vertical-align: middle;
+}
+
+/* Giới hạn chiều rộng và hiển thị dấu ... cho mô tả dài */
+.description-truncate {
+    max-width: 250px;
+    /* Điều chỉnh tùy theo nhu cầu */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: help;
+    /* Gợi ý cho người dùng có thể hover để xem tooltip */
+}
+
+/* Đảm bảo các filter và nút Thêm mới hiển thị tốt trên màn hình nhỏ */
+.filters>* {
+    margin-bottom: 0.5rem;
+    /* Thêm khoảng cách dưới cho các item filter khi wrap */
+}
+
+@media (min-width: 768px) {
+
+    /* md breakpoint */
+    .filters>* {
+        margin-bottom: 0;
+        /* Bỏ margin khi không wrap */
+    }
+}
+
+/* Tùy chỉnh thêm nếu cần */
+.nav-tabs .nav-link {
+    cursor: pointer;
+}

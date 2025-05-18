@@ -1,0 +1,148 @@
+/* BookingManagementPage.css */
+
+.booking-management-page {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+        Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* Màu sắc cho các trạng thái đặt chỗ */
+.status-confirmed {
+    background-color: #d1e7dd;
+    /* Bootstrap success-bg-subtle */
+    color: #0a3622;
+    /* Bootstrap success-text-emphasis */
+    border: 1px solid #a3cfbb;
+    /* Bootstrap success-border-subtle */
+}
+
+.status-pending-confirmation {
+    background-color: #fff3cd;
+    /* Bootstrap warning-bg-subtle */
+    color: #664d03;
+    /* Bootstrap warning-text-emphasis */
+    border: 1px solid #ffe69c;
+    /* Bootstrap warning-border-subtle */
+}
+
+.status-checked-in {
+    background-color: #cff4fc;
+    /* Bootstrap info-bg-subtle */
+    color: #055160;
+    /* Bootstrap info-text-emphasis */
+    border: 1px solid #9eeaf9;
+    /* Bootstrap info-border-subtle */
+}
+
+.status-checked-out {
+    background-color: #e2e3e5;
+    /* Bootstrap secondary-bg-subtle */
+    color: #41464b;
+    /* Bootstrap secondary-text-emphasis */
+    border: 1px solid #c6c8ca;
+    /* Bootstrap secondary-border-subtle */
+}
+
+.status-cancelled {
+    background-color: #f8d7da;
+    /* Bootstrap danger-bg-subtle */
+    color: #58151c;
+    /* Bootstrap danger-text-emphasis */
+    border: 1px solid #f1aeb5;
+    /* Bootstrap danger-border-subtle */
+}
+
+.status-pending-payment {
+    background-color: #f0e6ff;
+    /* Màu tím nhạt tùy chỉnh */
+    color: #4c0bce;
+    /* Màu tím đậm tùy chỉnh */
+    border: 1px solid #d3bcf2;
+}
+
+/* Đảm bảo bảng không bị tràn nếu nội dung quá dài trên màn hình nhỏ */
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Căn chỉnh icon sắp xếp trong a */
+.table th i.bi-arrow-down-up {
+    opacity: 0.6;
+    font-size: 0.8em;
+    margin-left: 4px;
+}
+
+.table th:hover i.bi-arrow-down-up {
+    opacity: 1;
+}
+
+/* Giữ cho nút thêm mới luôn ở trên cùng khi cuộn (nếu cần) */
+/* .booking-management-page .btn-primary {
+  position: sticky;
+  top: 1rem;
+  z-index: 10;
+} */
+
+/* Cải thiện một chút cho dropdown hành động */
+.table .dropdown-menu {
+    min-width: 180px;
+    /* Đảm bảo đủ rộng cho các mục menu */
+}
+
+.card-header small {
+    font-size: 0.85rem;
+}
+
+/* Đảm bảo các input group và select có chiều cao đồng đều */
+.form-control,
+.form-select,
+.input-group-text {
+    /* height: calc(2.25rem + 2px); Bootstrap default form control height */
+}
+
+/* Style cho nút lọc nâng cao */
+.btn-outline-info {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+/* Tùy chỉnh nhỏ cho pagination */
+.pagination .page-link {
+    cursor: pointer;
+}
+
+.pagination .page-item.disabled .page-link {
+    cursor: not-allowed;
+}
+
+/* BookingManagementPage.css - Thêm vào cuối file */
+
+.status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    border-width: 1px;
+    border-style: solid;
+}
+
+/* Cải thiện tooltip mặc định của trình duyệt cho hàng (tùy chọn) */
+/* trình duyệt thường xử lý tốt, không cần thiết lắm */
+/* tr[title]:hover {
+  cursor: help;
+} */
+
+/* Đảm bảo dropdown action không bị quá nhỏ */
+.table .dropdown-menu-end {
+    /* Hoặc .dropdown-menu nói chung nếu cần */
+    min-width: 200px;
+    /* Tăng kích thước nếu cần */
+}
+
+.dropdown-header {
+    font-size: 0.875rem;
+    color: #6c757d;
+    /* text-muted */
+    padding-top: 0.5rem;
+    padding-bottom: 0.25rem;
+}

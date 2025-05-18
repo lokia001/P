@@ -1,0 +1,76 @@
+@startuml
+title Sơ đồ Tuần tự: Tìm kiếm và Xem chi tiết Không gian
+
+actor "Người dùng" as User ' Có thể là Guest hoặc RegisteredUser
+participant "Frontend App" as FE
+participant "WorkspacesController" as WSCtrl <<Backend Controller>>
+participant "IWorkspaceService" as WSSvcItf <<Backend Service Interface>>
+participant "WorkspaceService" as WSSvcImpl <<Backend Service Impl>>
+participant "WorkspaceDbContext" as WSDbCtx <<EF Core Context>>
+database "Database" as DB
+
+autonumber "<b>[0]"
+
+User -> FE : 1. Nhập từ khóa tìm kiếm / Chọn bộ lọc
+activate FE
+FE -> WSCtrl : 2. Gửi yêu cầu Tìm kiếm (GET /api/workspaces?query=...)\n[SearchCriteriaDTO]
+deactivate FE
+activate WSCtrl
+
+WSCtrl -> WSSvcItf : 3. SearchWorkspaces(searchCriteriaDTO)
+activate WSSvcItf
+WSSvcItf -> WSSvcImpl : 4. SearchWorkspaces(searchCriteriaDTO)
+activate WSSvcImpl
+
+WSSvcImpl -> WSDbCtx : 5. Xây dựng và thực thi truy vấn tìm kiếm
+activate WSDbCtx
+WSDbCtx -> DB : 6. Truy vấn danh sách không gian
+activate DB
+DB --> WSDbCtx : 7. Danh sách không gian phù hợp
+deactivate DB
+WSDbCtx --> WSSvcImpl : 8. Kết quả [List<WorkspaceSummaryDTO>]
+deactivate WSDbCtx
+
+WSSvcImpl --> WSSvcItf : 9. Trả về danh sách kết quả
+deactivate WSSvcImpl
+WSSvcItf --> WSCtrl : 10. Kết quả [List<WorkspaceSummaryDTO>]
+deactivate WSSvcItf
+WSCtrl --> FE : 11. Phản hồi: Danh sách không gian (200 OK)\n[List<WorkspaceSummaryDTO>]
+deactivate WSCtrl
+activate FE
+
+FE --> User : 12. Hiển thị danh sách kết quả tìm kiếm
+deactivate FE
+
+User -> FE : 13. Chọn một không gian để xem chi tiết
+activate FE
+FE -> WSCtrl : 14. Yêu cầu Chi tiết Không gian (GET /api/workspaces/{id})
+deactivate FE
+activate WSCtrl
+
+WSCtrl -> WSSvcItf : 15. GetWorkspaceDetails(workspaceId)
+activate WSSvcItf
+WSSvcItf -> WSSvcImpl : 16. GetWorkspaceDetails(workspaceId)
+activate WSSvcImpl
+
+WSSvcImpl -> WSDbCtx : 17. Truy vấn chi tiết không gian (bao gồm Reviews, Amenities, Images,...)
+activate WSDbCtx
+WSDbCtx -> DB : 18. Truy vấn dữ liệu chi tiết
+activate DB
+DB --> WSDbCtx : 19. Dữ liệu chi tiết không gian
+deactivate DB
+WSDbCtx --> WSSvcImpl : 20. Thông tin chi tiết [WorkspaceDetailDTO]
+deactivate WSDbCtx
+
+WSSvcImpl --> WSSvcItf : 21. Trả về chi tiết không gian
+deactivate WSSvcImpl
+WSSvcItf --> WSCtrl : 22. Kết quả [WorkspaceDetailDTO]
+deactivate WSSvcItf
+WSCtrl --> FE : 23. Phản hồi: Chi tiết không gian (200 OK)\n[WorkspaceDetailDTO]
+deactivate WSCtrl
+activate FE
+
+FE --> User : 24. Hiển thị trang chi tiết không gian
+deactivate FE
+
+@enduml

@@ -1,0 +1,141 @@
+.staff-management-page {
+    background-color: #f8f9fa;
+    /* Màu nền nhẹ cho toàn trang */
+}
+
+/* Kiểu cho các tiêu đề cột có thể sắp xếp */
+.sortable {
+    cursor: pointer;
+    user-select: none;
+    /* Ngăn chọn văn bản khi nhấp nhanh */
+}
+
+.sortable:hover {
+    background-color: #e9ecef;
+    /* Màu nền khi hover */
+}
+
+/* Màu sắc trạng thái */
+.status-working {
+    background-color: #28a745 !important;
+    /* Bootstrap green */
+    color: white;
+}
+
+.status-on-leave {
+    background-color: #ffc107 !important;
+    /* Bootstrap yellow */
+    color: #212529;
+    /* Dark text for yellow background */
+}
+
+.status-terminated {
+    background-color: #6c757d !important;
+    /* Bootstrap secondary/gray */
+    color: white;
+}
+
+/* Căn chỉnh nút "Thêm Nhân Viên Mới" nếu cần */
+/* Ví dụ: nếu dùng d-flex cho hàng filter */
+/* .filter-bar .btn-primary {
+  align-self: flex-end;
+} */
+
+/* Tùy chỉnh bảng nếu cần */
+.table th,
+.table td {
+    vertical-align: middle;
+    /* Căn giữa nội dung trong ô theo chiều dọc */
+}
+
+/* Để dropdown hành động không bị cắt bởi table-responsive */
+.table-responsive {
+    overflow-x: visible;
+    /* Hoặc overflow: visible; nếu không muốn scroll ngang */
+}
+
+/* Nếu vẫn bị cắt, có thể cần điều chỉnh z-index cho dropdown hoặc position của row */
+
+/* Responsive adjustments (ví dụ) */
+@media (max-width: 768px) {
+    .staff-management-page .row.g-3>div[class*="col-md-"] {
+        margin-bottom: 0.5rem;
+        /* Thêm khoảng cách dưới cho các cột filter trên mobile */
+    }
+
+    .staff-management-page .row.g-3 .col-md-auto {
+        width: 100%;
+        /* Nút "Thêm nhân viên" chiếm toàn bộ chiều rộng trên mobile */
+        margin-top: 0.5rem;
+    }
+
+    .staff-management-page .row.g-3 .btn-primary {
+        width: 100%;
+    }
+}
+
+.staff-management-page {
+    background-color: #f8f9fa;
+}
+
+.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.sortable:hover {
+    background-color: #e9ecef;
+}
+
+.sort-indicator {
+    /* CSS cho biểu tượng sắp xếp nếu cần tùy chỉnh thêm */
+    opacity: 0.7;
+}
+
+.sortable:hover .sort-indicator {
+    opacity: 1;
+}
+
+/* Căn chỉnh các nút hành động icon */
+.table td .d-flex.gap-1>.btn {
+    /* line-height: 1;  Nếu icon không thẳng hàng với text trong button */
+    /* padding: 0.25rem 0.5rem;  Tùy chỉnh padding cho nút icon nếu p-1 của bootstrap chưa ổn */
+}
+
+/* Responsive cho bộ lọc (ví dụ) */
+@media (max-width: 991.98px) {
+
+    /* lg breakpoint */
+    .staff-management-page .card-body .row.g-2>div {
+        margin-bottom: 0.5rem !important;
+        /* Thêm !important nếu cần ghi đè Bootstrap */
+    }
+}
+
+/* Đảm bảo tooltip hiển thị đúng và đẹp */
+.tooltip-inner {
+    background-color: #333;
+    /* Màu nền tooltip */
+    color: white;
+    /* Màu chữ tooltip */
+    border-radius: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875em;
+}
+
+.tooltip.bs-tooltip-top .tooltip-arrow::before {
+    border-top-color: #333;
+    /* Màu mũi tên tooltip */
+}
+
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+    border-bottom-color: #333;
+}
+
+.tooltip.bs-tooltip-start .tooltip-arrow::before {
+    border-left-color: #333;
+}
+
+.tooltip.bs-tooltip-end .tooltip-arrow::before {
+    border-right-color: #333;
+}

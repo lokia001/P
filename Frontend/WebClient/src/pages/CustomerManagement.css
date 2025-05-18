@@ -1,0 +1,119 @@
+.customer-management-page {
+    padding-bottom: 2rem;
+    /* Thêm khoảng trống ở cuối trang */
+}
+
+.customer-management-page .card {
+    border: none;
+    /* Bỏ border mặc định của card nếu muốn */
+}
+
+.customer-management-page .form-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.customer-management-page .table th.sortable {
+    cursor: pointer;
+    user-select: none;
+    /* Ngăn chặn việc chọn text khi click */
+}
+
+.customer-management-page .table th.sortable:hover {
+    background-color: #f8f9fa;
+    /* Màu nền nhẹ khi hover */
+}
+
+.customer-management-page .table td a {
+    text-decoration: none;
+}
+
+.customer-management-page .table td a:hover {
+    text-decoration: underline;
+}
+
+/* Căn chỉnh nút thêm mới khách hàng (nếu cần) */
+.customer-management-page .text-end .btn-success {
+    /* Ví dụ: margin-top: 20px; */
+}
+
+/* Responsive cho các nút action trong bảng */
+@media (max-width: 992px) {
+    .customer-management-page .table .btn-sm {
+        display: block;
+        /* Các nút action thành block trên màn hình nhỏ */
+        width: 100%;
+        margin-bottom: 0.25rem !important;
+        /* Thêm !important để ghi đè Bootstrap nếu cần */
+    }
+
+    .customer-management-page .table .btn-sm:last-child {
+        margin-bottom: 0 !important;
+    }
+}
+
+/* CSS cho quick date filter buttons */
+.customer-management-page .btn-sm.btn-outline-secondary {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.4rem;
+}
+
+/* CustomerManagement.css */
+
+.customer-management-page .page-title {
+    color: #333;
+    /* Hoặc màu bạn muốn */
+}
+
+.customer-management-page .filter-card .form-label {
+    font-size: 0.85rem;
+    /* Kích thước label nhỏ hơn một chút */
+    margin-bottom: 0.25rem;
+}
+
+.customer-management-page .quick-filters .btn-xs {
+    font-size: 0.75rem;
+    padding: 0.15rem 0.4rem;
+}
+
+.customer-management-page .table th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.customer-management-page .table th.sortable:hover {
+    background-color: #e9ecef;
+}
+
+.customer-management-page .table td a {
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.customer-management-page .table td a:hover {
+    text-decoration: underline;
+}
+
+.customer-management-page .action-buttons .btn {
+    min-width: 60px;
+    /* Đảm bảo các nút có chiều rộng tối thiểu nhất định */
+}
+
+/* Responsive cho các nút action trong bảng nếu cần thêm */
+@media (max-width: 768px) {
+    .customer-management-page .action-buttons .btn {
+        /* Có thể làm cho các nút chiếm full width trên mobile nếu muốn */
+        /* display: block; 
+       width: 100%; */
+        margin-bottom: 0.25rem !important;
+    }
+
+    .customer-management-page .action-buttons .btn:last-child {
+        margin-bottom: 0 !important;
+    }
+}
+
+.customer-management-page .customer-list-card .card-header h5 {
+    font-size: 1.1rem;
+    /* Kích thước tiêu đề danh sách */
+}

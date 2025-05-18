@@ -1,0 +1,136 @@
+.alert-management-page {
+    /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
+    /* Hoặc font bạn đã chọn */
+}
+
+.alert-management-page .page-title {
+    color: #333;
+    border-bottom: 2px solid #0d6efd;
+    /* Bootstrap primary color */
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem !important;
+}
+
+/* Tab styling */
+.alert-management-page .nav-tabs .nav-link {
+    color: #495057;
+    /* Bootstrap default text color */
+    border-bottom-width: 2px;
+}
+
+.alert-management-page .nav-tabs .nav-link.active {
+    color: #0d6efd;
+    /* Bootstrap primary color */
+    border-color: #dee2e6 #dee2e6 #fff;
+    font-weight: 500;
+}
+
+/* Table styling enhancements */
+.alert-management-page table th {
+    background-color: #f8f9fa;
+    /* Light grey background for table headers */
+    font-weight: 500;
+}
+
+.alert-management-page .table td,
+.alert-management-page .table th {
+    vertical-align: middle;
+}
+
+/* Severity level colors & icons */
+.severity-critical {
+    background-color: #dc3545 !important;
+    /* Bootstrap danger */
+    color: white;
+}
+
+.severity-high {
+    background-color: #ffc107 !important;
+    /* Bootstrap warning */
+    color: #212529;
+    /* Dark text for better contrast on yellow */
+}
+
+.severity-medium {
+    background-color: #0dcaf0 !important;
+    /* Bootstrap info */
+    color: white;
+}
+
+.severity-low {
+    background-color: #6c757d !important;
+    /* Bootstrap secondary */
+    color: white;
+}
+
+/* Status processing colors for select dropdown text (simple approach) */
+.status-pending-select {
+    color: #dc3545;
+    /* Red */
+    /* border-color: #dc3545; */
+    /* Optional: if you want border color to match */
+}
+
+.status-in-progress-select {
+    color: #ffc107;
+    /* Yellow */
+    /* border-color: #ffc107; */
+}
+
+.status-resolved-select {
+    color: #198754;
+    /* Green */
+    /* border-color: #198754; */
+}
+
+.status-closed-select {
+    color: #6c757d;
+    /* Grey */
+    /* border-color: #6c757d; */
+}
+
+/* Ensure select dropdown text color takes precedence */
+.alert-management-page .form-select.status-pending-select option[value="Chưa xử lý"],
+.alert-management-page .form-select.status-in-progress-select option[value="Đang xử lý"],
+.alert-management-page .form-select.status-resolved-select option[value="Đã giải quyết"],
+.alert-management-page .form-select.status-closed-select option[value="Đã đóng"] {
+    /* This helps if the browser styles selected option differently, but mostly for the select itself */
+}
+
+/* Action buttons styling */
+.alert-management-page .btn-outline-primary:hover i,
+.alert-management-page .btn-outline-danger:hover i,
+.alert-management-page .btn-outline-info:hover i,
+.alert-management-page .btn-outline-success:hover i {
+    color: white;
+    /* Ensure icon color changes with button hover text color */
+}
+
+.alert-management-page .filters-bar {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
+.alert-management-page .filters-bar .card-title {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+
+/* Toggle switch label alignment */
+.form-check-label {
+    padding-left: 0.25rem;
+    /* Add some space between switch and label */
+}
+
+/* Responsive adjustments (Example) */
+@media (max-width: 768px) {
+    .alert-management-page .filters-bar .row>div {
+        margin-bottom: 0.5rem;
+        /* Add some space between filter items on small screens */
+    }
+
+    .alert-management-page .table-responsive {
+        /* You might need to wrap tables in <div class="table-responsive"> */
+        /* Bootstrap handles this well, but you can add custom styles */
+    }
+}

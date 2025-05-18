@@ -1,0 +1,66 @@
+.space-policy-manager {
+    /* Có thể thêm global styles cho toàn bộ trang quản lý ở đây nếu cần */
+}
+
+.sidebar {
+    background-color: #f8f9fa;
+    /* Màu nền nhẹ cho sidebar */
+    padding: 15px;
+    border-right: 1px solid #dee2e6;
+    height: calc(100vh - 56px);
+    /* Giả sử navbar cao 56px, điều chỉnh nếu cần */
+    overflow-y: auto;
+}
+
+.sidebar .list-group-item.active {
+    background-color: #0d6efd;
+    /* Màu primary của Bootstrap */
+    border-color: #0d6efd;
+    color: white;
+}
+
+.sidebar .list-group-item:not(.active):hover {
+    background-color: #e9ecef;
+}
+
+.content-area {
+    padding: 20px;
+    height: calc(100vh - 56px);
+    /* Giả sử navbar cao 56px */
+    overflow-y: auto;
+}
+
+.content-area h4 {
+    margin-bottom: 1rem;
+}
+
+.nav-tabs .nav-link {
+    cursor: pointer;
+}
+
+/* Tùy chỉnh nhỏ cho bảng phụ phí */
+.table th,
+.table td {
+    vertical-align: middle;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+
+    .sidebar,
+    .content-area {
+        height: auto;
+        /* Cho phép chiều cao tự động trên màn hình nhỏ */
+    }
+
+    .sidebar {
+        margin-bottom: 20px;
+        border-right: none;
+        border-bottom: 1px solid #dee2e6;
+    }
+}
+
+/* Styling cho input trong tiện nghi/dịch vụ */
+.border.rounded .form-control-sm {
+    margin-top: 0.25rem;
+}

@@ -1,0 +1,233 @@
+/* ReportPage.css */
+body {
+    background-color: #f0f2f5;
+    /* Màu nền tổng thể nhẹ nhàng */
+}
+
+.report-page {
+    max-width: 1600px;
+    /* Giới hạn chiều rộng tối đa cho dễ nhìn */
+    margin: 0 auto;
+}
+
+.report-header {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.report-header h1 {
+    color: #343a40;
+}
+
+.card {
+    border: none;
+    /* Loại bỏ viền mặc định của card, dựa vào shadow */
+}
+
+.time-filter-section .card-body,
+.report-display-area .card-body {
+    background-color: #ffffff;
+}
+
+.time-filter-section h5,
+.report-display-area h3 {
+    color: #495057;
+}
+
+/* Time Filter specific styles */
+.time-options .btn-group .btn {
+    min-width: 90px;
+    /* Đảm bảo các nút có chiều rộng nhất định */
+}
+
+.custom-range-picker .form-label {
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.custom-range-picker .form-control {
+    font-size: 0.875rem;
+}
+
+.form-check-label {
+    font-size: 0.9rem;
+}
+
+/* Report Type Selector (Tabs) */
+.report-tabs .nav-link {
+    cursor: pointer;
+    color: #007bff;
+    font-weight: 500;
+    padding: 0.75rem 1.25rem;
+}
+
+.report-tabs .nav-link.active {
+    color: #495057;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+    border-bottom: 2px solid #007bff;
+    /* Nhấn mạnh tab active */
+}
+
+.report-tabs {
+    border-bottom: 1px solid #dee2e6;
+    /* Đường kẻ dưới của dải tab */
+}
+
+/* KPI Cards */
+.kpi-container {
+    margin-bottom: 20px;
+}
+
+.kpi-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    /* Bo tròn hơn một chút */
+    background-color: #fff;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, .10) !important;
+}
+
+.kpi-card .card-body {
+    padding: 1.25rem;
+}
+
+.kpi-card .card-subtitle {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.kpi-card .card-title {
+    font-size: 2rem;
+    /* Làm cho số liệu KPI nổi bật hơn */
+    font-weight: 600;
+    color: #28a745;
+    /* Màu xanh lá cho số liệu chính */
+    margin-bottom: 5px;
+}
+
+.kpi-card .comparison {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+}
+
+.kpi-card .comparison.text-success {
+    /* Bootstrap classes */
+    color: #28a745 !important;
+}
+
+.kpi-card .comparison.text-danger {
+    /* Bootstrap classes */
+    color: #dc3545 !important;
+}
+
+
+/* Chart Placeholders */
+.chart-placeholder {
+    width: 100%;
+    background-color: #f8f9fa;
+    /* Màu nền nhạt hơn cho placeholder */
+    border: 1px dashed #adb5bd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    border-radius: 0.25rem;
+    font-style: italic;
+    font-size: 1.1rem;
+}
+
+/* Tables */
+.report-table {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    /* Giảm kích thước font cho bảng */
+}
+
+.report-table th {
+    background-color: #e9ecef;
+    /* Màu nền cho header của bảng */
+    font-weight: 600;
+}
+
+.report-table td,
+.report-table th {
+    vertical-align: middle;
+}
+
+/* Export Button */
+.report-header .dropdown-toggle {
+    min-width: 160px;
+}
+
+.report-header .dropdown-menu {
+    font-size: 0.9rem;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+
+    /* Medium devices (tablets, less than 992px) */
+    .time-options .btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        /* Cho phép các nút xuống dòng */
+    }
+
+    .time-options .btn-group .btn {
+        flex-grow: 1;
+        /* Các nút sẽ cố gắng chiếm không gian đều nhau */
+        margin-bottom: 5px;
+        /* Khoảng cách giữa các nút khi xuống dòng */
+    }
+
+    .custom-range-picker .row {
+        flex-direction: column;
+    }
+
+    .custom-range-picker .col {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .kpi-card .card-title {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+
+    /* Small devices (landscape phones, less than 768px) */
+    .report-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+
+    .report-header h1 {
+        margin-bottom: 0.5rem;
+    }
+
+    .report-header .dropdown {
+        align-self: flex-start;
+        /* Đẩy nút export sang trái trên mobile */
+        margin-top: 10px;
+    }
+
+    .time-options .btn-group {
+        width: 100%;
+    }
+
+    .kpi-card .card-title {
+        font-size: 1.5rem;
+    }
+
+    .report-tabs .nav-link {
+        padding: 0.5rem 0.75rem;
+        /* Giảm padding cho tab trên mobile */
+        font-size: 0.9rem;
+    }
+}

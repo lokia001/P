@@ -1,0 +1,205 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Loại bỏ hoặc điều chỉnh стили cho container nếu cần */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    /* padding: 20px; */
+    /* Bạn có thể giữ padding nếu các phần khác cần */
+}
+
+/* Phần 1: Hero Section */
+.hero-section {
+    width: 100vw;
+    /* Sử dụng viewport width để đảm bảo full width */
+    background-image: url('/path/to/your/hero-background.jpg');
+    /* **ĐÂY LÀ CHỖ BẠN ĐẶT ĐƯỜNG DẪN ẢNH NỀN** */
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+    padding: 80px 20px 120px;
+    /* Thêm padding để có không gian cho nội dung */
+    box-sizing: border-box;
+    margin: 0;
+    /* Loại bỏ margin mặc định */
+}
+
+.hero-content {
+    max-width: 960px;
+    /* Giữ chiều rộng tối đa cho nội dung bên trong hero */
+    margin: 0 auto;
+    /* Căn giữa nội dung bên trong hero */
+    padding: 40px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    color: #333;
+    box-sizing: border-box;
+    width: 100%;
+    /* Đảm bảo hero-content không bị nhỏ hơn phần cha */
+}
+
+/* Các стили khác của bạn giữ nguyên */
+.why-book {
+    padding: 40px 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.why-book-item {
+    text-align: center;
+    margin-bottom: 20px;
+    max-width: 45%;
+}
+
+.workplace-anywhere {
+    padding: 40px 20px;
+    text-align: left;
+}
+
+.helped-companies {
+    padding: 40px 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.company-logo {
+    margin: 10px;
+}
+
+.top-cities {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.cities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.city-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    /* overflow: hidden; */
+}
+
+.city-card img {
+    width: 100%;
+    display: block;
+}
+
+.city-info {
+    padding: 15px;
+    text-align: left;
+}
+
+.newest-offices {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.offices-list {
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.office-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    /* overflow: hidden; */
+    margin-bottom: 20px;
+    max-width: 300px;
+}
+
+.office-card img {
+    width: 100%;
+    display: block;
+    height: auto;
+}
+
+.office-details {
+    padding: 15px;
+    text-align: left;
+}
+
+.find-anywhere {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.world-map {
+    margin-top: 20px;
+}
+
+.what-is-coworker {
+    padding: 40px 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.coworker-info {
+    max-width: 50%;
+    padding: 20px;
+}
+
+.coworker-image img {
+    max-width: 100%;
+    height: auto;
+}
+
+.coworking-details {
+    padding: 40px 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.detail-card {
+    border: 1px solid #eee;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .why-book-item {
+        max-width: 100%;
+    }
+
+    .helped-companies .company-logo {
+        max-width: 45%;
+        margin: 10px auto;
+        text-align: center;
+    }
+
+    .offices-list {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .office-card {
+        max-width: 100%;
+    }
+
+    .what-is-coworker .coworker-info,
+    .what-is-coworker .coworker-image {
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+}

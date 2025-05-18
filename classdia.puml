@@ -1,0 +1,75 @@
+@startuml
+title Sơ đồ Quan hệ Entity Tổng quan (Chỉ Tên Lớp)
+
+class User
+class OwnerProfile
+class Space
+
+class Booking
+class BookingExtraCharge
+class BookingPolicy
+class BookingServiceItem
+class Payment
+class Service
+
+class Review
+class Comment
+class Reaction
+class Report
+
+class Community
+class CommunityMember
+class CommunityPolicy
+class Post
+
+class SpaceAmenity
+class Amenity
+class SpaceDamageReport
+class SpaceImage
+class SpaceService
+
+User "1" -- "0..1" OwnerProfile : has profile
+OwnerProfile "1" -- "*" Space : owns
+User "1" -- "*" Space : can book/view
+
+User "1" -- "*" Booking : makes
+Space "1" -- "*" Booking : is for
+Booking "1" -- "*" BookingServiceItem : includes
+Booking "1" -- "*" BookingExtraCharge : has
+Booking "1" -- "0..1" BookingPolicy : adheres to
+Service "1" -- "*" BookingServiceItem : is a
+
+Booking "1" -- "1..*" Payment : requires
+User "1" -- "*" Payment : makes
+
+User "1" -- "*" Review : writes
+Space "1" -- "*" Review : receives
+User "1" -- "*" Comment : writes
+Review "1" -- "*" Comment : has
+Post "1" -- "*" Comment : has
+User "1" -- "*" Reaction : gives
+Post "1" -- "*" Reaction : receives
+Comment "1" -- "*" Reaction : receives
+User "1" -- "*" Report : submits
+Space "1" -- "*" Report : is about
+User "1" -- "*" Report : is about
+Review "1" -- "*" Report : is about
+Comment "1" -- "*" Report : is about
+
+User "1" -- "*" Community : creates/joins
+Community "1" -- "*" CommunityMember : has
+User "1" -- "*" CommunityMember : is a
+Community "1" -- "0..1" CommunityPolicy : has
+Community "1" -- "*" Post : contains
+User "1" -- "*" Post : creates
+
+Space "1" -- "*" SpaceImage : has
+Space "1" -- "*" SpaceDamageReport : has
+User "1" -- "*" SpaceDamageReport : reports
+
+Space "1" -- "*" SpaceAmenity : has
+Amenity "1" -- "*" SpaceAmenity : is part of
+
+Space "1" -- "*" SpaceService : offers
+
+@enduml

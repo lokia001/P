@@ -1,0 +1,80 @@
+@startuml
+title Sơ đồ Tuần tự: Tìm kiếm và Xem chi tiết Không gian (Cải thiện)
+
+actor "Người dùng" as User
+boundary "Frontend App" as FE
+control "WorkspacesController" as WSCtrl <<Backend Controller>>
+control "IWorkspaceService" as WSSvcItf <<Backend Service Interface>>
+entity "WorkspaceService" as WSSvcImpl <<Backend Service Impl>>
+entity "WorkspaceDbContext" as WSDbCtx <<EF Core Context>>
+database "Database" as DB
+
+autonumber "<b>[0]"
+
+== Tìm kiếm Không gian ==
+User -> FE : 1. Nhập từ khóa tìm kiếm / Áp dụng bộ lọc
+activate FE
+FE -> WSCtrl : 2. GET /api/workspaces?query=...&filter=...\n(Gửi yêu cầu tìm kiếm với các tham số)
+deactivate FE
+activate WSCtrl
+
+WSCtrl -> WSSvcItf : 3. SearchWorkspaces(searchParams)
+activate WSSvcItf
+WSSvcItf -> WSSvcImpl : 4. SearchWorkspaces(searchParams)
+activate WSSvcImpl
+
+WSSvcImpl -> WSDbCtx : 5. BuildSearchQuery(searchParams)
+activate WSDbCtx
+WSDbCtx -> DB : 6. ExecuteQuery("SELECT ... FROM Workspaces WHERE ...")
+activate DB
+DB --> WSDbCtx : 7. ResultSet (Danh sách không gian thô)
+deactivate DB
+WSDbCtx --> WSSvcImpl : 8. List<Workspace> (Entities)
+deactivate WSDbCtx
+
+WSSvcImpl -> WSSvcImpl : 9. Map Entities to List<WorkspaceSummaryDTO>
+WSSvcImpl --> WSSvcItf : 10. return List<WorkspaceSummaryDTO>
+deactivate WSSvcImpl
+WSSvcItf --> WSCtrl : 11. return List<WorkspaceSummaryDTO>
+deactivate WSSvcItf
+WSCtrl --> FE : 12. HTTP 200 OK\nResponse: [List<WorkspaceSummaryDTO>]
+deactivate WSCtrl
+activate FE
+
+FE --> User : 13. Hiển thị danh sách kết quả tìm kiếm
+deactivate FE
+
+== Xem Chi tiết Không gian ==
+User -> FE : 14. Chọn một không gian từ danh sách
+activate FE
+FE -> WSCtrl : 15. GET /api/workspaces/{workspaceId}\n(Yêu cầu chi tiết không gian)
+deactivate FE
+activate WSCtrl
+
+WSCtrl -> WSSvcItf : 16. GetWorkspaceDetails(workspaceId)
+activate WSSvcItf
+WSSvcItf -> WSSvcImpl : 17. GetWorkspaceDetails(workspaceId)
+activate WSSvcImpl
+
+WSSvcImpl -> WSDbCtx : 18. FindWorkspaceByIdWithDetails(workspaceId)\n(bao gồm Reviews, Amenities, Images,...)
+activate WSDbCtx
+WSDbCtx -> DB : 19. ExecuteQuery("SELECT ... FROM Workspaces W JOIN Reviews R ... WHERE W.Id = {workspaceId}")
+activate DB
+DB --> WSDbCtx : 20. ResultSet (Dữ liệu chi tiết không gian thô)
+deactivate DB
+WSDbCtx --> WSSvcImpl : 21. Workspace (Entity với các navigation properties được load)
+deactivate WSDbCtx
+
+WSSvcImpl -> WSSvcImpl : 22. Map Entity to WorkspaceDetailDTO
+WSSvcImpl --> WSSvcItf : 23. return WorkspaceDetailDTO
+deactivate WSSvcImpl
+WSSvcItf --> WSCtrl : 24. return WorkspaceDetailDTO
+deactivate WSSvcItf
+WSCtrl --> FE : 25. HTTP 200 OK\nResponse: [WorkspaceDetailDTO]
+deactivate WSCtrl
+activate FE
+
+FE --> User : 26. Hiển thị trang chi tiết không gian
+deactivate FE
+
+@enduml
