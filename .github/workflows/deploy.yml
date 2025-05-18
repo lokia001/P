@@ -68,6 +68,31 @@ jobs:
         source: "./Frontend/WebClient/dist"
         target: "/home/${{ secrets.EC2_USER }}/webclient"
 
+    - name: 🔍 Check uploaded frontend files ON EC2 AFTER UPLOAD
+      uses: appleboy/scp-action@v0.1.4 # Đảm bảo dùng phiên bản mới
+      with:
+        host: ${{ secrets.EC2_IP }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          echo "Listing content of /home/***/webclient ON EC2:"
+          ls -la /home/***/webclient/
+          echo "Listing content of /home/***/webclient/dist ON EC2:"
+          ls -la /home/***/webclient/dist/
+
+    - name: 🚚 Move Frontend to Nginx folder
+      uses: appleboy/scp-action@v0.1.4 # Đảm bảo dùng phiên bản mới
+      with:
+        host: ${{ secrets.EC2_IP }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          sudo rm -rf /var/www/html/*
+          sudo mv /home/***/webclient/dist/* /var/www/html/
+          sudo chown -R www-data:www-data /var/www/html
+          sudo chmod -R 755 /var/www/html
+    
+    
     - name: 📂 Check workspace content
       run: ls -la
     - name: 📂 Check Frontend folder content
@@ -89,19 +114,6 @@ jobs:
           ls -la /home/***/webclient/
           echo "Listing content of /home/***/webclient/dist:"
           ls -la /home/***/webclient/dist/
-
-    - name: 🚚 Move Frontend to Nginx folder
-      uses: appleboy/ssh-action@v0.1.4  # Đảm bảo dùng phiên bản mới
-      with:
-        host: ${{ secrets.EC2_IP }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          sudo rm -rf /var/www/html/*
-          sudo mv /home/***/webclient/dist/* /var/www/html/
-          sudo chown -R www-data:www-data /var/www/html
-          sudo chmod -R 755 /var/www/html
-  
 
     # ---------- UPLOAD BACKEND ----------
     - name: 🚀 Upload Backend to EC2
