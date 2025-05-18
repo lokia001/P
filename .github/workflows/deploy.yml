@@ -35,7 +35,7 @@ jobs:
       run: dotnet publish -c Release -o publish
       working-directory: Backend.Api
 
-    # ----------- CLEAN REMOTE -----------
+    # ----------- CLEAN REMOTE FOLDERS -----------
     - name: 🧹 Clean remote frontend folder
       uses: appleboy/ssh-action@v0.1.10
       with:
@@ -44,6 +44,19 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           sudo rm -rf /var/www/html/*
+          sudo mkdir -p /var/www/html
+          sudo chown -R ${{ secrets.EC2_USER }}:${{ secrets.EC2_USER }} /var/www/html
+
+    - name: 🧹 Clean remote backend folder
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.EC2_IP }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          sudo rm -rf /home/${{ secrets.EC2_USER }}/app/backend/*
+          sudo mkdir -p /home/${{ secrets.EC2_USER }}/app/backend
+          sudo chown -R ${{ secrets.EC2_USER }}:${{ secrets.EC2_USER }} /home/${{ secrets.EC2_USER }}/app/backend
 
     # ---------- UPLOAD FRONTEND ----------
     - name: 📤 Upload Frontend to EC2 (~/webclient)
@@ -65,6 +78,7 @@ jobs:
           sudo rm -rf /var/www/html/*
           sudo mv /home/${{ secrets.EC2_USER }}/webclient/* /var/www/html/
           sudo chown -R www-data:www-data /var/www/html
+          sudo chmod -R 755 /var/www/html
 
     # ---------- UPLOAD BACKEND ----------
     - name: 🚀 Upload Backend to EC2
@@ -86,9 +100,10 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           echo "Restarting backend service..."
+          sudo systemctl daemon-reload
           sudo systemctl restart my-backend.service
 
           echo "Restarting Nginx..."
-          sudo systemctl restart nginx
+          sudo systemctl reload nginx
 
           echo "✅ Deployment done!"
