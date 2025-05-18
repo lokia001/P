@@ -52,7 +52,7 @@ jobs:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: Frontend/WebClient/dist/
+        source: Frontend/WebClient/dist/**
         target: /var/www/html/
         overwrite: true
         # rm: true  <-- bỏ dòng này đi
