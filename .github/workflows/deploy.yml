@@ -35,6 +35,16 @@ jobs:
       run: dotnet publish -c Release -o publish
       working-directory: Backend.Api
 
+    - name: Clean remote folder
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.EC2_IP }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          sudo rm -rf /var/www/html/*
+
+
     # ---------- UPLOAD FRONTEND ----------
     - name: 🚀 Upload Frontend to EC2
       uses: appleboy/scp-action@v0.1.4
@@ -45,7 +55,8 @@ jobs:
         source: Frontend/WebClient/dist/
         target: /var/www/html/
         overwrite: true
-        rm: true
+        # rm: true  <-- bỏ dòng này đi
+
 
     # ---------- UPLOAD BACKEND ----------
     - name: 🚀 Upload Backend to EC2
