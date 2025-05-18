@@ -46,17 +46,14 @@ jobs:
 
 
     # ---------- UPLOAD FRONTEND ----------
-    - name: 🚀 Upload Frontend to EC2
+    - name: Upload Frontend to EC2
       uses: appleboy/scp-action@v0.1.4
       with:
-        host: ${{ secrets.EC2_IP }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: Frontend/WebClient/dist/**
-        target: /var/www/html/
-        overwrite: true
-        # rm: true  <-- bỏ dòng này đi
-
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.SSH_KEY }}
+        source: "./Frontend/WebClient/dist/**"
+        target: "/home/debian/webclient"
 
     # ---------- UPLOAD BACKEND ----------
     - name: 🚀 Upload Backend to EC2
