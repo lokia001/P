@@ -23,6 +23,7 @@ jobs:
         cd Frontend/WebClient
         npm install
         npm run build
+        ls -la
 
     - name: Debug frontend build files
       run: ls -la Frontend/WebClient/build/
