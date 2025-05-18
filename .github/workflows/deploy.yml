@@ -15,54 +15,52 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '22' # Điều chỉnh theo phiên bản Node.js của bạn
-        working-directory: Frontend/WebClient # Nếu frontend của bạn ở thư mục 'frontend'
+        node-version: '22'
+        working-directory: Frontend/WebClient
 
     - name: Build Frontend
-      run: npm install && npm run build # Hoặc yarn install && yarn build
+      run: npm install && npm run build
       working-directory: Frontend/WebClient
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '8.x' # Điều chỉnh theo phiên bản .NET của bạn
-        working-directory: Backend.Api # Nếu backend của bạn ở thư mục 'backend'
+        dotnet-version: '8.x'
 
     - name: Publish Backend
       run: dotnet publish -c Release -o publish
       working-directory: Backend.Api
 
-    - name: Deploy to EC2 via SSH
+    - name: Upload frontend to EC2
+      uses: appleboy/scp-action@v0.1.4
+      with:
+        host: ${{ secrets.EC2_IP }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: Frontend/WebClient/build/*
+        target: /var/www/html/
+        strip_components: 3
+        rm: true
+        overwrite: true
+
+    - name: Upload backend to EC2
+      uses: appleboy/scp-action@v0.1.4
+      with:
+        host: ${{ secrets.EC2_IP }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: Backend.Api/publish/*
+        target: /home/${{ secrets.EC2_USER }}/app/backend/
+        overwrite: true
+
+    - name: Restart services on EC2
       uses: appleboy/ssh-action@v0.1.10
       with:
-        host: ${{ secrets.EC2_IP }}          # Lưu IP EC2 instance trong Secrets của GitHub
-        username: ${{ secrets.EC2_USER }}      # Lưu username SSH cho EC2 trong Secrets
-        key: ${{ secrets.SSH_PRIVATE_KEY }} # Lưu private key SSH trong Secrets
-        port: ${{ secrets.EC2_PORT || 22 }} # Lưu port SSH (mặc định 22) trong Secrets nếu khác
-        known_hosts: ${{ secrets.EC2_HOST_KEY }} # Sử dụng secret chứa host key
+        host: ${{ secrets.EC2_IP }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          DEPLOY_PATH="/home/${{ secrets.EC2_USER }}/app" # Đường dẫn triển khai trên EC2
-          FRONTEND_BUILD_PATH="${{ github.workspace }}/frontend/build"
-          BACKEND_PUBLISH_PATH="${{ github.workspace }}/Backend.Api/publish"
-
-          echo "Deleting old frontend files..."
-          rm -rf /var/www/html/*
-          echo "Copying frontend build to EC2..."
-          scp -o StrictHostKeyChecking=no -r ./frontend/build/* ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/var/www/html/
-
-          echo "Copying frontend build to EC2..."
-          scp -r "$FRONTEND_BUILD_PATH/*" "${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }}:$DEPLOY_PATH/frontend/"
-
-          echo "Deleting old backend files..."
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }} -p ${{ secrets.EC2_PORT || 22 }} "rm -rf $DEPLOY_PATH/backend/*"
-
-          echo "Copying backend publish to EC2..."
-          scp -r "$BACKEND_PUBLISH_PATH/*" "${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }}:$DEPLOY_PATH/backend/"
-
-          echo "Restarting backend application..."
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }} -p ${{ secrets.EC2_PORT || 22 }} "sudo systemctl restart your-backend-service" # Thay 'your-backend-service' bằng tên service thực tế
-
-          echo "Restarting web server (if applicable)..."
-          ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_IP }} -p ${{ secrets.EC2_PORT || 22 }} "sudo systemctl restart nginx" # Hoặc apache2, tùy thuộc vào web server
-
-          echo "Deployment to EC2 completed!"
+          echo "Restarting backend..."
+          sudo systemctl restart your-backend-service
+          echo "Restarting web server..."
+          sudo systemctl restart nginx
