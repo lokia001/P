@@ -39,6 +39,7 @@ jobs:
         username: ${{ secrets.EC2_USER }}      # Lưu username SSH cho EC2 trong Secrets
         key: ${{ secrets.SSH_PRIVATE_KEY }} # Lưu private key SSH trong Secrets
         port: ${{ secrets.EC2_PORT || 22 }} # Lưu port SSH (mặc định 22) trong Secrets nếu khác
+        known_hosts: ${{ secrets.EC2_HOST_KEY }} # Sử dụng secret chứa host key
         script: |
           DEPLOY_PATH="/home/${{ secrets.EC2_USER }}/app" # Đường dẫn triển khai trên EC2
           FRONTEND_BUILD_PATH="${{ github.workspace }}/frontend/build"
