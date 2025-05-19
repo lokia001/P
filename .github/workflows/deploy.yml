@@ -67,6 +67,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         source: "./Frontend/WebClient/dist"
         target: "/home/***/webclient/frontend_build"
+        debug: true
 
     - name: 🔍 Check uploaded frontend files ON EC2 AFTER UPLOAD
       uses: appleboy/ssh-action@v0.1.10 # Đảm bảo dùng phiên bản mới
