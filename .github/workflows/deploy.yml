@@ -85,7 +85,7 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         source: "./Frontend/WebClient/dist"
-        target: "/home/***/webclient/frontend_build"
+        target: "/home/${{ secrets.EC2_USER }}/"
         debug: true
 
     - name: 🔍 Check uploaded frontend files ON EC2 AFTER UPLOAD
