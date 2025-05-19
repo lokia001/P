@@ -87,7 +87,7 @@ jobs:
         source: "./Frontend/WebClient/dist"
         target: "/home/***/webclient/"
         debug: true
-      
+        
     - name: 🚚 Move Frontend to Nginx folder
       uses: appleboy/ssh-action@v0.1.10
       with:
@@ -96,9 +96,21 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           sudo rm -rf /var/www/html/*
-          sudo mv /home/***/webclient/* /var/www/html/
+          sudo mv /home/***/webclient/Frontend/WebClient/dist/* /var/www/html/ # Thay đổi đường dẫn mv
           sudo chown -R www-data:www-data /var/www/html
           sudo chmod -R 755 /var/www/html
+      
+    # - name: 🚚 Move Frontend to Nginx folder
+    #   uses: appleboy/ssh-action@v0.1.10
+    #   with:
+    #     host: ${{ secrets.EC2_IP }}
+    #     username: ${{ secrets.EC2_USER }}
+    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+    #     script: |
+    #       sudo rm -rf /var/www/html/*
+    #       sudo mv /home/***/webclient/* /var/www/html/
+    #       sudo chown -R www-data:www-data /var/www/html
+    #       sudo chmod -R 755 /var/www/html
     
 
     # ---------- UPLOAD BACKEND ----------
