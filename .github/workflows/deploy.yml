@@ -99,7 +99,7 @@ jobs:
           ls -la /home/***/
 
     - name: 🚚 Move Frontend to Nginx folder
-      uses: appleboy/ssh-action@v0.1.0
+      uses: appleboy/ssh-action@latest
       with:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
