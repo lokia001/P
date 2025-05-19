@@ -98,8 +98,18 @@ jobs:
           echo "Listing content of /home/***/ ON EC2:"
           ls -la /home/***/
 
+    - name: 🔍 Check content of /home/***/webclient BEFORE move
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.EC2_IP }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          echo "Listing content of /home/***/webclient BEFORE move:"
+          ls -la /home/***/webclient/
+      
     - name: 🚚 Move Frontend to Nginx folder
-      uses: appleboy/ssh-action@latest
+      uses: appleboy/ssh-action@v0.1.10 # Phiên bản hiện tại
       with:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
