@@ -66,7 +66,7 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         source: "./Frontend/WebClient/dist"
-        target: "/home/${{ secrets.EC2_USER }}/webclient"
+        target: "/home/***/webclient/frontend_build"
 
     - name: 🔍 Check uploaded frontend files ON EC2 AFTER UPLOAD
       uses: appleboy/ssh-action@v0.1.10 # Đảm bảo dùng phiên bản mới
@@ -79,14 +79,14 @@ jobs:
           ls -la /home/***/webclient/*
 
     - name: 🚚 Move Frontend to Nginx folder
-      uses: appleboy/scp-action@v0.1.4 # Đảm bảo dùng phiên bản mới
+      uses: appleboy/ssh-action@v0.1.10 # Đảm bảo dùng phiên bản mới
       with:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           sudo rm -rf /var/www/html/*
-          sudo mv /home/***/webclient/dist/* /var/www/html/
+          sudo mv /home/***/webclient/frontend_build/* /var/www/html/
           sudo chown -R www-data:www-data /var/www/html
           sudo chmod -R 755 /var/www/html
     
