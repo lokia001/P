@@ -160,6 +160,13 @@ builder.Services.AddCommentServiceModule(configuration);
 builder.Services.AddReactionServiceModule(configuration);
 var app = builder.Build();
 
+if (app.Environment.IsProduction())
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
+}
+
 
 var startupLogger = app.Services.GetRequiredService<ILogger<Program>>(); // Logger cho Program.cs
 try
