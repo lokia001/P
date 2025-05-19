@@ -98,18 +98,17 @@ jobs:
           echo "Listing content of /home/***/ ON EC2:"
           ls -la /home/***/
 
-    - name: 🚚 Move Frontend to Nginx folder1
-      uses: appleboy/ssh-action@v0.1.10
+    - name: 🚚 Move Frontend to Nginx folder
+      uses: appleboy/ssh-action@v0.1.0
       with:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           sudo rm -rf /var/www/html/*
-          sudo mv /home/***/webclient/* /var/www/html/ # Di chuyển nội dung của webclient
+          sudo mv /home/***/webclient/* /var/www/html/
           sudo chown -R www-data:www-data /var/www/html
           sudo chmod -R 755 /var/www/html
-    
     
     - name: 📂 Check workspace content
       run: ls -la
