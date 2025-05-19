@@ -57,6 +57,25 @@ jobs:
           sudo rm -rf /home/${{ secrets.EC2_USER }}/app/backend/*
           sudo mkdir -p /home/${{ secrets.EC2_USER }}/app/backend
           sudo chown -R ${{ secrets.EC2_USER }}:${{ secrets.EC2_USER }} /home/${{ secrets.EC2_USER }}/app/backend
+          
+    - name: 🧹 Clean target directory on EC2
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+       host: ${{ secrets.EC2_IP }}
+       username: ${{ secrets.EC2_USER }}
+       key: ${{ secrets.SSH_PRIVATE_KEY }}
+       script: |
+         rm -rf /home/***/webclient/frontend_build/
+
+    - name: 🔍 Check target directory on EC2
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.EC2_IP }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          ls -la /home/***/webclient/
+          ls -la /home/***/webclient/frontend_build/ # Kiểm tra cả thư mục đích
 
    # ---------- UPLOAD FRONTEND ----------
     - name: 📤 Upload Frontend to EC2 (~/webclient)
