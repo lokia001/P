@@ -110,7 +110,7 @@ api.interceptors.response.use(
                 // và request body là { refreshToken: "..." }
                 // và response là { accessToken: "...", accessTokenExpiresAt: "..." }
                 // (Có thể có refreshToken mới nếu backend xoay vòng)
-                const refreshResponse = await axios.post(`${API_BASE_URL}/auth/refresh-token`, {
+                const refreshResponse = await api.post(`/auth/refresh-token`, {
                     refreshToken: currentRefreshToken // Gửi đúng key "refreshToken"
                 });
 
