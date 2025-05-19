@@ -69,7 +69,7 @@ jobs:
         target: "/home/${{ secrets.EC2_USER }}/webclient"
 
     - name: 🔍 Check uploaded frontend files ON EC2 AFTER UPLOAD
-      uses: appleboy/scp-action@v0.1.4 # Đảm bảo dùng phiên bản mới
+      uses: appleboy/ssh-action@v0.1.10 # Đảm bảo dùng phiên bản mới
       with:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
