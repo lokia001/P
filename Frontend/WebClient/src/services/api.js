@@ -4,7 +4,7 @@ import store from '../store';
 // const API_BASE_URL = 'http://localhost:5035/api'; // Thay bằng URL backend thực tế của bạn
 const API_BASE_URL = 'http://localhost/api'; // Thay bằng URL backend thực tế của bạn
 const api = axios.create({
-    baseURL: API_BASE_URL,
+    baseURL: import.meta.env.VITE_API_BASE_URL,
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
