@@ -89,7 +89,7 @@ jobs:
         debug: true
 
     - name: 🔍 Check uploaded frontend files ON EC2 AFTER UPLOAD
-      uses: appleboy/ssh-action@v4
+      uses: appleboy/ssh-action@v0.1.0
       with:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
@@ -99,7 +99,7 @@ jobs:
           ls -la /home/***/
 
     - name: 🚚 Move Frontend to Nginx folder
-      uses: appleboy/ssh-action@v4
+      uses: appleboy/ssh-action@v0.1.0
       with:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
