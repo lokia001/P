@@ -8,7 +8,7 @@ export const registerUser = createAsyncThunk(
     async (userData, { rejectWithValue }) => {
         // userData sẽ là object: { username, email, password, confirmPassword, fullName, phoneNumber }
         try {
-            const response = await api.post('http://localhost/api/auth/register', userData);
+            const response = await api.post('http://54.156.75.11/api/auth/register', userData);
             // Giả sử API trả về dữ liệu người dùng hoặc thông báo thành công
             return response.data;
         } catch (error) {
