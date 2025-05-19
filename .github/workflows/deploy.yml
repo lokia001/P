@@ -85,31 +85,11 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         source: "./Frontend/WebClient/dist"
-        target: "/home/${{ secrets.EC2_USER }}/"
+        target: "/home/***/webclient/"
         debug: true
-
-    - name: 🔍 Check uploaded frontend files ON EC2 AFTER UPLOAD
-      uses: appleboy/ssh-action@v0.1.0
-      with:
-        host: ${{ secrets.EC2_IP }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          echo "Listing content of /home/***/ ON EC2:"
-          ls -la /home/***/
-
-    - name: 🔍 Check content of /home/***/webclient BEFORE move
-      uses: appleboy/ssh-action@v0.1.10
-      with:
-        host: ${{ secrets.EC2_IP }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          echo "Listing content of /home/***/webclient BEFORE move:"
-          ls -la /home/***/webclient/
       
     - name: 🚚 Move Frontend to Nginx folder
-      uses: appleboy/ssh-action@v0.1.10 # Phiên bản hiện tại
+      uses: appleboy/ssh-action@v0.1.10
       with:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
@@ -120,28 +100,6 @@ jobs:
           sudo chown -R www-data:www-data /var/www/html
           sudo chmod -R 755 /var/www/html
     
-    - name: 📂 Check workspace content
-      run: ls -la
-    - name: 📂 Check Frontend folder content
-      run: ls -la Frontend/
-
-    - name: 📂 Check Frontend/WebClient folder content
-      run: ls -la Frontend/WebClient/
-
-    - name: 📂 Check Frontend/WebClient/dist folder content
-      run: ls -la Frontend/WebClient/dist/
-      
-    - name: 🔍 Check uploaded frontend files
-      uses: appleboy/ssh-action@v0.1.0 # Đảm bảo dùng phiên bản mới
-      with:
-        host: ${{ secrets.EC2_IP }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          echo "Listing content of /home/***/webclient:"
-          ls -la /home/***/webclient/
-          echo "Listing content of /home/***/webclient/dist:"
-          ls -la /home/***/webclient/dist/
 
     # ---------- UPLOAD BACKEND ----------
     - name: 🚀 Upload Backend to EC2
