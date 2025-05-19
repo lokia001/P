@@ -103,7 +103,7 @@ jobs:
 
     # ---------- UPLOAD BACKEND ----------
     - name: 🚀 Upload Backend to EC2
-      uses: appleboy/ssh-action@v0.1.0
+      uses: appleboy/scp-action@v0.1.4
       with:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
