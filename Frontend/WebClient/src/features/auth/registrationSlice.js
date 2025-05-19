@@ -1,14 +1,14 @@
 // ----- PHẦN 1: REDUX SLICE CHO ĐĂNG KÝ (Ví dụ: đặt trong features/auth/registrationSlice.js) -----
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../../services/api'; // Giả sử đây là instance Axios đã cấu hình của bạn
-
+import API_BASE_URL from "../../services/api";
 // --- Thunk Action để gọi API đăng ký ---
 export const registerUser = createAsyncThunk(
     'registration/registerUser', // Tên action type
     async (userData, { rejectWithValue }) => {
         // userData sẽ là object: { username, email, password, confirmPassword, fullName, phoneNumber }
         try {
-            const response = await api.post('http://localhost:5035/api/auth/register', userData);
+            const response = await api.post('http://localhost/api/auth/register', userData);
             // Giả sử API trả về dữ liệu người dùng hoặc thông báo thành công
             return response.data;
         } catch (error) {
