@@ -36,6 +36,7 @@ import SystemDashboard from '../pages/SystemDashboard';
 import AlertManagementPage from '../pages/AlertManagementPage';
 import SystemLogs from '../pages/SystemLogs';
 import SupportTicketsPage from '../pages/SupportTicketsPage';
+import ResetPasswordForm from '../components/Auth/ResetPasswordForm';
 
 const AppRouter = () => {
     return (
@@ -70,6 +71,8 @@ const AppRouter = () => {
                     <Route path="/SettingsPage" element={<SettingsPage />} />
                     <Route path="/ReportPage" element={<ReportPage />} />
                     <Route path="/UserReportsPage" element={<UserReportsPage />} />
+                    <Route path="/forget-password" element={<UserReportsPage />} />
+
                     {/* ///////// */}
                     <Route path="/SystemUserManagementPage" element={<SystemUserManagementPage />} />
                     <Route path="/SystemDashboard" element={<SystemDashboard />} />
@@ -87,7 +90,7 @@ const AppRouter = () => {
                     <Route path="/login" element={<UserLogin />} />
                     <Route path="/user/register" element={<RegistrationForm />} />
                     <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-
+                    <Route path="/reset-password" element={<ResetPasswordForm />} />
 
                     {/* <Route path="login" index element={<LoginPage />} /> */}
                 </Route>

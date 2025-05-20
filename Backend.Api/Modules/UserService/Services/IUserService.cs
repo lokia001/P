@@ -1,9 +1,12 @@
+using Backend.Api.Modules.AuthService.Entities;
 using Backend.Api.Modules.UserService.Entities;
 using Backend.Api.Modules.UserService.Models;
 namespace Backend.Api.Modules.UserService.Services;
 
 public interface IUserService
 {
+    Task CreatePasswordResetTokenAsync(User user, string token, DateTime expiresAt);
+
     Task<User?> AuthenticateAsync(string username, string password);  // Thêm method này
     Task<IEnumerable<User?>> GetAllUsersAsync();
     Task<User?> GetUserByIdAsync(Guid userId);
@@ -13,6 +16,10 @@ public interface IUserService
     Task<bool> IsUsernameTakenAsync(string username);
     Task<bool> IsEmailTakenAsync(string email);
     Task<User?> RegisterUserAsync(User userToRegister); // Nhận User đã có PasswordHash
+
+    Task<PasswordResetToken?> GetActivePasswordResetTokenByTokenValueAsync(string tokenValue);
+    Task<bool> UpdateUserPasswordAsync(Guid userId, string newPasswordHash);
+    Task MarkPasswordResetTokenAsUsedAsync(string tokenValue, Guid userId); // Thêm userId để tăng cường kiểm tra
     // old methods
     // Task<User?> AuthenticateAsync(string email, string password);  // Thêm method này
 

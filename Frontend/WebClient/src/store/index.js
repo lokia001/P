@@ -17,6 +17,7 @@ import bookSpaceReducer from '../features/bookSpace/bookSpaceSlice.js';
 import manageSpacesReducer from "../features/manageSpace/manageSpaceSlice.js";
 import amenityReducer from "../features/amenities/amenitySlice.js";
 import registrationReducer from '../features/auth/registrationSlice';
+import forgotPasswordReducer from '../features/auth/forgotPasswordSlice';
 
 const persistConfig = {
     key: 'root',
@@ -27,6 +28,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
     auth: authReducer,
     registration: registrationReducer,
+    forgotPassword: forgotPasswordReducer,
     bookSpace: bookSpaceReducer,
     ownerSpaces: manageSpacesReducer, // Đảm bảo thêm reducer này vào đây với một key
     amenities: amenityReducer, // Add amenityReducer

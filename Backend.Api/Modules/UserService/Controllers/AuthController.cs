@@ -15,7 +15,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Backend.Api.Modules.AuthService.Services; // Cho IRefreshTokenService
 using Microsoft.Extensions.Configuration;
-using Backend.Api.Modules.UserService.Models; // Cho IConfiguration
+using Backend.Api.Modules.UserService.Models;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
+using Backend.Api.Services.Shared; // Cho IConfiguration
 
 namespace Backend.Api.Modules.AuthService.Controllers
 {
@@ -23,6 +27,7 @@ namespace Backend.Api.Modules.AuthService.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
+        private readonly IEmailService _emailService;
         private readonly IUserService _userService;
         private readonly JwtService _jwtService;
         private readonly IMapper _mapper;
@@ -35,6 +40,7 @@ namespace Backend.Api.Modules.AuthService.Controllers
             JwtService jwtService,
             IMapper mapper,
             IRefreshTokenService refreshTokenService,
+             IEmailService emailService,             // Inject IEmailService
             IConfiguration configuration,
             ILogger<AuthController> logger)
         {
@@ -42,9 +48,189 @@ namespace Backend.Api.Modules.AuthService.Controllers
             _jwtService = jwtService;
             _mapper = mapper;
             _refreshTokenService = refreshTokenService;
-            _configuration = configuration;
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _logger = logger;
         }
+
+        // POST /api/auth/forgot-password
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto forgotPasswordDto)
+
+        {
+            // Kiểm tra forgotPasswordDto null ngay từ đầu (mặc dù [ApiController] thường xử lý)
+            if (forgotPasswordDto == null)
+            {
+                _logger.LogWarning("ForgotPassword request received with null body.");
+                return BadRequest(new { error = "Request body cannot be empty." });
+            }
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("ForgotPassword request with invalid model state for email: {Email}", forgotPasswordDto.Email);
+                return BadRequest(ModelState);
+            }
+
+            _logger.LogInformation("Forgot password request received for email: {Email}", forgotPasswordDto.Email);
+
+            User? user = null; // Khai báo user ở đây để có thể dùng trong catch
+            var genericSuccessMessage = "If an account with this email address exists, instructions to reset your password have been sent.";
+
+            try
+            {
+                user = await _userService.GetUserByEmailAsync(forgotPasswordDto.Email);
+
+                if (user == null)
+                {
+                    _logger.LogInformation("Password reset requested for non-existent email: {Email}. Returning generic success message.", forgotPasswordDto.Email);
+                    return Ok(new { message = genericSuccessMessage });
+                }
+
+                // Đảm bảo user.Email không null (dù GetUserByEmailAsync nên đảm bảo điều này)
+                if (string.IsNullOrEmpty(user.Email))
+                {
+                    _logger.LogError("User object found for email {RequestedEmail} but user.Email property is null or empty. UserID: {UserId}", forgotPasswordDto.Email, user.Id);
+                    return Ok(new { message = genericSuccessMessage + " (Internal data inconsistency. Please contact support.)" });
+                }
+
+
+                _logger.LogInformation("User found for password reset: {UserId}, Email: {UserEmail}", user.Id, user.Email);
+
+                var resetTokenValue = GenerateSecureRandomString(64);
+                // IConfiguration được inject, nên _configuration không nên null nếu DI đúng.
+                var tokenExpiresInMinutes = _configuration.GetValue<int>("Auth:PasswordResetTokenExpiresInMinutes", 30);
+                var expiresAt = DateTime.UtcNow.AddMinutes(tokenExpiresInMinutes);
+
+                await _userService.CreatePasswordResetTokenAsync(user, resetTokenValue, expiresAt);
+                _logger.LogInformation("Password reset token created for user {UserId}", user.Id);
+
+                var frontendBaseUrl = _configuration["Auth:FrontendPasswordResetBaseUrl"];
+                _logger.LogInformation("FrontendPasswordResetBaseUrl from config: '{FrontendBaseUrl}'", frontendBaseUrl);
+
+                if (string.IsNullOrEmpty(frontendBaseUrl))
+                {
+                    _logger.LogError("CRITICAL: FrontendPasswordResetBaseUrl is not configured. Password reset email link will be incorrect.");
+                    return Ok(new { message = genericSuccessMessage + " (Admin: Please configure FrontendPasswordResetBaseUrl)" });
+                }
+
+                var urlSafeToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(resetTokenValue));
+                // Sử dụng user.Email đã được kiểm tra không null
+                var resetLink = $"{frontendBaseUrl}?token={urlSafeToken}&email={Uri.EscapeDataString(user.Email)}";
+                _logger.LogInformation("Generated reset link: {ResetLink}", resetLink);
+
+                _logger.LogInformation("Attempting to send password reset email to {UserEmail} for user {UserId}...", user.Email, user.Id);
+
+                // Sử dụng fallback cho recipientName nếu FullName và Username đều null
+                string recipientNameForEmail = user.FullName ?? user.Username ?? "Valued User";
+                await _emailService.SendPasswordResetEmailAsync(user.Email, recipientNameForEmail, resetLink);
+
+                _logger.LogInformation("Password reset email (attempted to be) sent to {Email} for user {UserId}", user.Email, user.Id);
+                return Ok(new { message = "Password reset instructions have been sent to your email address." });
+            }
+            catch (Exception ex)
+            {
+                // Sử dụng email từ request ban đầu hoặc từ user object nếu đã lấy được
+                string emailForLogging = user?.Email ?? forgotPasswordDto.Email ?? "unknown_email_due_to_error_in_catch";
+                _logger.LogError(ex, "Error occurred during forgot password process for email {Email} (User ID if found: {UserId}).", emailForLogging, user?.Id);
+                return Ok(new { message = genericSuccessMessage + " (An internal error occurred. Please try again later.)" });
+            }
+        }
+
+
+        // POST /api/auth/reset-password
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto resetPasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // 1. Decode token từ URL-safe Base64 (nếu bạn đã encode nó khi gửi email)
+            string? decodedTokenValue;
+            try
+            {
+                // Giả sử token gửi từ client là urlSafeToken đã được encode
+                byte[] decodedBytes = WebEncoders.Base64UrlDecode(resetPasswordDto.Token);
+                decodedTokenValue = Encoding.UTF8.GetString(decodedBytes);
+            }
+            catch (FormatException)
+            {
+                _logger.LogWarning("Invalid Base64Url format for password reset token: {Token}", resetPasswordDto.Token);
+                return BadRequest(new { error = "invalid_token", message = "The password reset link is invalid or has been tampered with." });
+            }
+
+            if (string.IsNullOrEmpty(decodedTokenValue))
+            {
+                return BadRequest(new { error = "invalid_token", message = "Password reset token is missing or invalid." });
+            }
+
+
+            // 2. Truy vấn database để tìm mã đặt lại mật khẩu và kiểm tra tính hợp lệ
+            var passwordResetToken = await _userService.GetActivePasswordResetTokenByTokenValueAsync(decodedTokenValue);
+
+            if (passwordResetToken == null)
+            {
+                _logger.LogWarning("Password reset attempt with invalid or expired token: {DecodedToken}", decodedTokenValue);
+                return BadRequest(new { error = "invalid_token", message = "Password reset token is invalid or has expired." });
+            }
+
+            // 3. (Quan trọng) Kiểm tra xem token có khớp với email được cung cấp không
+            // User object đã được nạp cùng với passwordResetToken nhờ Include(prt => prt.User)
+            if (passwordResetToken.User == null ||
+                !string.Equals(passwordResetToken.User.Email, resetPasswordDto.Email, StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogWarning("Password reset token {DecodedToken} does not match the provided email {Email}.", decodedTokenValue, resetPasswordDto.Email);
+                // Đây có thể là dấu hiệu của việc cố gắng lạm dụng token, hoặc người dùng nhầm lẫn.
+                // Vẫn trả về lỗi token không hợp lệ chung chung.
+                return BadRequest(new { error = "invalid_token", message = "Password reset token is invalid or does not match the provided email." });
+            }
+
+            // Token hợp lệ, tiến hành đặt lại mật khẩu
+            try
+            {
+                // 4. Băm mật khẩu mới
+                var newPasswordHash = BCrypt.Net.BCrypt.HashPassword(resetPasswordDto.NewPassword);
+
+                // 5. Cập nhật mật khẩu cho người dùng
+                var updateSuccess = await _userService.UpdateUserPasswordAsync(passwordResetToken.UserId, newPasswordHash);
+
+                if (!updateSuccess)
+                {
+                    // Trường hợp này hiếm khi xảy ra nếu token hợp lệ và user tồn tại
+                    _logger.LogError("Failed to update password for user {UserId} after validating reset token.", passwordResetToken.UserId);
+                    return StatusCode(500, new { error = "server_error", message = "An unexpected error occurred while resetting your password. Please try again." });
+                }
+
+                // 6. Vô hiệu hóa mã đặt lại mật khẩu đã sử dụng
+                await _userService.MarkPasswordResetTokenAsUsedAsync(decodedTokenValue, passwordResetToken.UserId);
+
+                _logger.LogInformation("Password successfully reset for user {UserId} using token {DecodedToken}", passwordResetToken.UserId, decodedTokenValue);
+                return Ok(new { message = "Your password has been reset successfully. You can now log in with your new password." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred during password reset process for user {UserId} with token {DecodedToken}", passwordResetToken.UserId, decodedTokenValue);
+                return StatusCode(500, new { error = "server_error", message = "An unexpected error occurred. Please try again." });
+            }
+        }
+
+
+        private string GenerateSecureRandomString(int length)
+        {
+            // Tạo một chuỗi base64 ngẫu nhiên, an toàn cho URL
+            var randomNumber = new byte[length * 3 / 4 + (length % 4 == 0 ? 0 : 1)]; // Tính toán kích thước byte cần thiết cho độ dài base64 mong muốn
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                // Chuyển thành Base64 và loại bỏ các ký tự không an toàn cho URL
+                return Convert.ToBase64String(randomNumber)
+                              .TrimEnd('=') // Bỏ các ký tự padding '='
+                              .Replace('+', '-') // Thay '+' bằng '-'
+                              .Replace('/', '_'); // Thay '/' bằng '_'
+            }
+        }
+
 
         // 1. Endpoint Đăng nhập (/api/auth/login - POST) - CẬP NHẬT
         [HttpPost("login")]

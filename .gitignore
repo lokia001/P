@@ -32,6 +32,7 @@
 /Backend.Api/.env.production.local
 /Backend.Api/Properties/launchSettings.json
 /Backend.Api/artifacts
+/Backend.Api/.env
 
 # General OS and IDE related
 .DS_Store

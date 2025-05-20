@@ -25,9 +25,16 @@ using Microsoft.OpenApi.Models;
 using Backend.Api.Modules.ServiceService.Services;
 using Backend.Api.Services;
 using Backend.Api.Modules.AuthService.Services;
+using Backend.Api.Services.Shared;
+using DotNetEnv;
 
+#if DEBUG
+Env.Load(); // Tải file .env ở thư mục gốc của project
+// Hoặc Env.Load(Path.Combine(Directory.GetCurrentDirectory(), ".env")); nếu cần đường dẫn cụ thể
+#endif
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -96,6 +103,10 @@ builder.Services.AddSwaggerGen(options => // Tham số options là SwaggerGenOpt
     // options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
+// Configuration
+var configuration = builder.Configuration;
+Console.WriteLine($"Running in: {configuration}");
+
 // Add HttpClientFactory
 builder.Services.AddHttpClient(); //Thêm cái này
 builder.Services.AddHttpClient<IIBBService, IBBService>();
@@ -109,13 +120,14 @@ builder.Services.AddCors(options =>
                           .AllowCredentials());
 });
 
-builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
-    );
+// builder.Services.AddSingleton<IWebHostEnvironment>(builder.Environment);
 
-// Configuration
-var configuration = builder.Configuration;
+
+// builder.Services.AddDbContext<AppDbContext>(options =>
+//     options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
+//     );
+
+
 
 // Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -127,9 +139,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+            ValidIssuer = configuration["Jwt:Issuer"],
+            ValidAudience = configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
         };
     }
     );
@@ -148,6 +160,7 @@ builder.Services.AddScoped<IAmenityService, AmenityService>();
 builder.Services.AddScoped<IServiceEntityService, ServiceEntityService>();
 builder.Services.AddScoped<ISpaceAmenityManagementService, SpaceAmenityManagementService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+builder.Services.AddScoped<IEmailService, EmailService>(); // Hoặc AddTransient
 // Add modules:
 builder.Services.AddUserServiceModule(configuration);
 builder.Services.AddSpaceServiceModule(configuration);
@@ -158,6 +171,15 @@ builder.Services.AddCommunityServiceModule(configuration);
 builder.Services.AddPostServiceModule(configuration);
 builder.Services.AddCommentServiceModule(configuration);
 builder.Services.AddReactionServiceModule(configuration);
+
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+Console.WriteLine($"====> Connection String: {connectionString}");
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite(connectionString)
+    );
+
 var app = builder.Build();
 
 if (app.Environment.IsProduction())
@@ -214,7 +236,7 @@ if (app.Environment.IsDevelopment())
         var logger = services.GetRequiredService<ILogger<Program>>();
         var env = services.GetRequiredService<IWebHostEnvironment>();
         // Automatic Migration
-        app.SeedDatabase(env);
+        // app.SeedDatabase(env);
     }
 }
 

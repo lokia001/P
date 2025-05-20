@@ -37,7 +37,7 @@ namespace Backend.Api.Data
         public DbSet<Amenity> Amenities { get; set; } = default!;
         public DbSet<SpaceAmenity> SpaceAmenities { get; set; } = default!;
 
-
+        public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         // public DbSet<Payment> Payments { get; set; } = default!;
         // public DbSet<Review> Reviews { get; set; } = default!;
         public DbSet<User> Users { get; set; } = default!;

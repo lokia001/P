@@ -6,6 +6,7 @@ using System;
 using BCrypt.Net; // Thêm using cho BCrypt
 using Backend.Api.Data;
 using Backend.Api.Modules.UserService.Models;
+using Backend.Api.Modules.AuthService.Entities;
 
 namespace Backend.Api.Modules.UserService.Services;
 
@@ -342,12 +343,120 @@ public class UserService : IUserService
     {
         try
         {
-            return await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return await _dbContext.Users.
+            FirstOrDefaultAsync(u => u.Email == email);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error getting user with email {email}");
             return null; // Or throw the exception if you want the controller to handle it
+        }
+    }
+
+    public async Task CreatePasswordResetTokenAsync(User user, string tokenValue, DateTime expiresAt)
+    {
+        if (user == null) throw new ArgumentNullException(nameof(user));
+        if (string.IsNullOrWhiteSpace(tokenValue)) throw new ArgumentNullException(nameof(tokenValue));
+
+        var utcNow = DateTime.UtcNow; // Lấy thời gian hiện tại một lần để nhất quán
+
+        // (Tùy chọn) Vô hiệu hóa các token reset cũ của user này trước khi tạo token mới
+        // =======================================================================
+        // FIX: SỬA LẠI TRUY VẤN LINQ ĐỂ DÙNG CÁC THUỘC TÍNH ĐƯỢC MAP
+        // =======================================================================
+        var existingTokens = await _dbContext.PasswordResetTokens
+                                        .Where(prt => prt.UserId == user.Id &&
+                                                      prt.UsedAt == null &&      // Kiểm tra UsedAt
+                                                      prt.ExpiresAt >= utcNow)   // Kiểm tra ExpiresAt
+                                        .ToListAsync();
+        // =======================================================================
+        if (existingTokens.Any())
+        {
+            _logger.LogInformation("Found {Count} active password reset token(s) for User {UserId}. Marking them as expired/used.", existingTokens.Count, user.Id);
+            foreach (var oldToken in existingTokens)
+            {
+                // oldToken.RevokedAt = utcNow; // Nếu bạn có trường RevokedAt và muốn dùng nó
+                oldToken.UsedAt = utcNow; // Đánh dấu là đã sử dụng (hoặc đơn giản là set ExpiresAt về quá khứ)
+                oldToken.ExpiresAt = utcNow.AddMinutes(-1); // Đảm bảo nó không còn active
+            }
+            _dbContext.PasswordResetTokens.UpdateRange(existingTokens);
+            // Không cần SaveChangesAsync ở đây, sẽ lưu cùng với token mới
+        }
+
+
+        var passwordResetToken = new PasswordResetToken
+        {
+            UserId = user.Id,
+            Token = tokenValue,
+            ExpiresAt = expiresAt,
+            CreatedAt = utcNow // Sử dụng utcNow đã lấy
+        };
+
+        await _dbContext.PasswordResetTokens.AddAsync(passwordResetToken);
+        await _dbContext.SaveChangesAsync(); // Lưu tất cả thay đổi (cả token cũ và token mới)
+        _logger.LogInformation("Created new password reset token for User {UserId}", user.Id);
+    }
+
+
+    // TRIỂN KHAI CÁC PHƯƠNG THỨC MỚI CHO RESET PASSWORD
+
+    public async Task<PasswordResetToken?> GetActivePasswordResetTokenByTokenValueAsync(string tokenValue)
+    {
+        if (string.IsNullOrWhiteSpace(tokenValue)) return null;
+
+        var utcNow = DateTime.UtcNow;
+        return await _dbContext.PasswordResetTokens
+                            .Include(prt => prt.User) // Nạp thông tin User liên quan
+                            .FirstOrDefaultAsync(prt => prt.Token == tokenValue &&
+                                                        prt.UsedAt == null &&
+                                                        prt.ExpiresAt >= utcNow);
+    }
+
+    public async Task<bool> UpdateUserPasswordAsync(Guid userId, string newPasswordHash)
+    {
+        var user = await _dbContext.Users.FindAsync(userId);
+        if (user == null)
+        {
+            _logger.LogWarning("UpdateUserPassword failed: User with ID {UserId} not found.", userId);
+            return false;
+        }
+
+        user.PasswordHash = newPasswordHash;
+        user.UpdatedAt = DateTime.UtcNow;
+        // (Tùy chọn) Bạn có thể muốn thêm logic để buộc người dùng logout khỏi các phiên khác ở đây
+        // hoặc tăng một giá trị "security stamp" nếu bạn dùng ASP.NET Core Identity.
+
+        _dbContext.Users.Update(user);
+        try
+        {
+            await _dbContext.SaveChangesAsync();
+            _logger.LogInformation("Password updated successfully for user {UserId}.", userId);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating password for user {UserId}.", userId);
+            return false;
+        }
+    }
+
+    public async Task MarkPasswordResetTokenAsUsedAsync(string tokenValue, Guid userIdOfTokenUser)
+    {
+        // Tìm token không chỉ bằng giá trị mà còn bằng UserId để tăng cường bảo mật,
+        // đảm bảo không vô tình đánh dấu token của user khác nếu có trùng lặp token (rất hiếm)
+        var passwordResetToken = await _dbContext.PasswordResetTokens
+                                        .FirstOrDefaultAsync(prt => prt.Token == tokenValue && prt.UserId == userIdOfTokenUser && prt.UsedAt == null);
+
+        if (passwordResetToken != null)
+        {
+            passwordResetToken.UsedAt = DateTime.UtcNow;
+            _dbContext.PasswordResetTokens.Update(passwordResetToken);
+            await _dbContext.SaveChangesAsync();
+            _logger.LogInformation("Password reset token {TokenValue} for user {UserId} marked as used.", tokenValue, userIdOfTokenUser);
+        }
+        else
+        {
+            _logger.LogWarning("Attempted to mark non-existent or already used password reset token {TokenValue} for user {UserId} as used.", tokenValue, userIdOfTokenUser);
         }
     }
 
@@ -360,6 +469,7 @@ public class UserService : IUserService
         return await _dbContext.OwnerProfiles
             .FirstOrDefaultAsync(op => op.UserId == userId);
     }
+
 
     public async Task<OwnerProfile?> CreateOwnerProfileAsync(OwnerProfile ownerProfile)
     {
