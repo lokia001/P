@@ -22,7 +22,7 @@ namespace Backend.Api.Services.Shared
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
             // Lấy mật khẩu từ biến môi trường
-            _smtpPassword = _configuration["SMTP_PASSWORD_HAHUU3675"];
+            _smtpPassword = _configuration["SmtpSettings:Password"]; // << SỬA Ở ĐÂY
             // _smtpPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD_HAHUU3675");
             if (string.IsNullOrEmpty(_smtpPassword))
             {
