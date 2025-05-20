@@ -245,8 +245,9 @@ if (app.Environment.IsDevelopment())
     }
 }
 
+// https
+// app.UseHttpsRedirection();
 
-app.UseHttpsRedirection();
 // ✅ Đặt ngay sau HTTPS và trước Auth
 app.UseCors("_myAllowSpecificOrigins");
 app.UseAuthentication();
