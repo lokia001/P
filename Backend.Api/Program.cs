@@ -142,6 +142,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = configuration["Jwt:Issuer"],
             ValidAudience = configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+            ,
+            NameClaimType = ClaimTypes.NameIdentifier,
+
+            // Đảm bảo RoleClaimType trỏ đến claim chứa thông tin vai trò
+            RoleClaimType = ClaimTypes.Role
         };
     }
     );

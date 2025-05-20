@@ -248,6 +248,7 @@ namespace Backend.Api.Modules.AuthService.Controllers
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, authenticatedUser.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, authenticatedUser.Id.ToString()), // Thêm cả cái này để đảm bảo
                 new Claim(JwtRegisteredClaimNames.Email, authenticatedUser.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // JTI cho Access Token
                 new Claim("Username", authenticatedUser.Username),
@@ -357,39 +358,90 @@ namespace Backend.Api.Modules.AuthService.Controllers
         // 3. Endpoint Đăng xuất (/api/auth/logout - POST) - CẬP NHẬT
         [HttpPost("logout")]
         [Authorize] // Yêu cầu xác thực để biết user nào đang logout
-        public async Task<IActionResult> Logout([FromBody] RevokeTokenRequestDto? request) // Nhận refresh token để thu hồi
+        public async Task<IActionResult> Logout([FromBody] RevokeTokenRequestDto? request)
         {
-            // Cách 1: Client gửi refresh token để thu hồi (khuyến nghị)
+            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+            var userIdStringFromAccessToken = User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                               ?? User.FindFirstValue(ClaimTypes.NameIdentifier); ; // Lấy UserID từ Access Token
+
+            // =======================================================================
+            // DEBUG: Log tất cả claims từ Access Token nhận được
+            // =======================================================================
+            _logger.LogInformation("--- Claims in Access Token for Logout Request ---");
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                foreach (var claim in User.Claims)
+                {
+                    _logger.LogInformation("Claim Type: {ClaimType}, Claim Value: {ClaimValue}", claim.Type, claim.Value);
+                }
+            }
+            else
+            {
+                _logger.LogWarning("User.Identity is not authenticated or null in Logout action, despite [Authorize].");
+            }
+            _logger.LogInformation("--- End of Claims ---");
+            // =======================================================================
+
+
             if (request == null || string.IsNullOrEmpty(request.Token))
             {
-                // Nếu client không gửi refresh token, chúng ta không thể thu hồi nó một cách cụ thể.
-                // Chúng ta vẫn có thể ghi log logout dựa trên access token.
-                var userIdFromAccessToken = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-                _logger.LogInformation("User {UserId} (from Access Token) initiated logout without providing a refresh token to revoke.", userIdFromAccessToken ?? "Unknown");
-                return Ok(new { message = "Logout signal received. Client should clear tokens. No specific refresh token revoked." });
+                _logger.LogInformation("User {UserId} (from Access Token) initiated logout without providing a refresh token to revoke.", userIdStringFromAccessToken ?? "Unknown");
+                // Nếu không có refresh token để thu hồi, chỉ cần xác nhận logout thành công ở client
+                // Không cần làm gì thêm ở backend nếu không có cơ chế blacklist JTI của access token
+                return Ok(new { message = "Logout signal received. Client should clear tokens." });
             }
 
+            // Lấy Refresh Token từ DB
             var refreshTokenToRevoke = await _refreshTokenService.GetByTokenAsync(request.Token);
-            var ipAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 
-            if (refreshTokenToRevoke != null && refreshTokenToRevoke.IsActive)
+            if (refreshTokenToRevoke == null)
             {
-                // Kiểm tra xem refresh token có thuộc về user đang đăng nhập không (nếu cần bảo mật thêm)
-                var userIdFromClaim = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-                if (userIdFromClaim != null && refreshTokenToRevoke.UserId.ToString() == userIdFromClaim)
-                {
-                    await _refreshTokenService.RevokeRefreshTokenAsync(refreshTokenToRevoke.Token, ipAddress, "User logged out");
-                    _logger.LogInformation("User {UserId} logged out and refresh token {Token} revoked.", refreshTokenToRevoke.UserId, refreshTokenToRevoke.Token);
-                    return Ok(new { message = "Logout successful and refresh token revoked." });
-                }
-                else
-                {
-                    _logger.LogWarning("User {UserIdClaim} attempted to revoke refresh token {Token} not belonging to them or token already inactive.", userIdFromClaim, request.Token);
-                    return BadRequest(new { error = "Invalid refresh token or permission denied." });
-                }
+                _logger.LogWarning("Logout attempt: Refresh token value '{RefreshTokenValue}' not found in database. IP: {IPAddress}", request.Token, ipAddress);
+                // Trả về lỗi cụ thể hơn nếu muốn, nhưng 400 với thông báo chung cũng được để tránh dò quét
+                return BadRequest(new { error = "invalid_refresh_token", message = "The provided refresh token is invalid or does not exist." });
             }
-            _logger.LogWarning("Attempted to logout with invalid or already inactive refresh token: {Token}", request.Token);
-            return Ok(new { message = "Logout processed. If token was valid, it has been revoked." }); // Trả về OK để client vẫn xóa token
+
+            if (!refreshTokenToRevoke.IsActive) // Kiểm tra IsActive (bao gồm RevokedAt và ExpiresAt)
+            {
+                _logger.LogWarning("Logout attempt: Refresh token '{RefreshTokenValue}' (User: {TokenOwnerId}) is already inactive (revoked or expired). IP: {IPAddress}", request.Token, refreshTokenToRevoke.UserId, ipAddress);
+                // Ngay cả khi token đã inactive, vẫn nên trả về Ok để client hoàn tất việc xóa token của họ.
+                // Việc cố gắng logout với token đã inactive không phải là một lỗi nghiêm trọng từ phía client.
+                return Ok(new { message = "Logout processed. Refresh token was already inactive. Client should clear tokens." });
+            }
+
+            // Tại thời điểm này, refreshTokenToRevoke tồn tại và IsActive = true.
+            // Bây giờ kiểm tra quyền sở hữu.
+
+            if (string.IsNullOrEmpty(userIdStringFromAccessToken))
+            {
+                // Lỗi này chỉ ra vấn đề với Access Token hoặc cách claim được tạo/đọc
+                _logger.LogError("Logout critical: Cannot determine user from Access Token (sub claim is missing or empty) for revoking refresh token {RefreshTokenValue}. IP: {IPAddress}", request.Token, ipAddress);
+                // Đây là một tình huống lỗi, có thể trả về 500 hoặc 400 tùy theo mức độ bạn muốn xử lý.
+                // 400 vì client gửi access token không hợp lệ.
+                return BadRequest(new { error = "invalid_access_token", message = "Unable to identify user from the current session." });
+            }
+
+            if (!Guid.TryParse(userIdStringFromAccessToken, out Guid userIdFromAccessTokenGuid))
+            {
+                _logger.LogError("Logout critical: Could not parse UserID from Access Token's 'sub' claim: {UserIdClaimValue} for revoking refresh token {RefreshTokenValue}. IP: {IPAddress}", userIdStringFromAccessToken, request.Token, ipAddress);
+                return BadRequest(new { error = "invalid_access_token_format", message = "User identifier in session is malformed." });
+            }
+
+            // Kiểm tra xem refresh token có thuộc về user đang thực hiện logout không
+            if (refreshTokenToRevoke.UserId == userIdFromAccessTokenGuid)
+            {
+                await _refreshTokenService.RevokeRefreshTokenAsync(refreshTokenToRevoke.Token, ipAddress, "User logged out");
+                _logger.LogInformation("User {UserId} logged out. Refresh token {RefreshTokenValue} revoked. IP: {IPAddress}", userIdFromAccessTokenGuid, request.Token, ipAddress);
+                return Ok(new { message = "Logout successful and refresh token revoked." });
+            }
+            else
+            {
+                // User từ Access Token không khớp với User của Refresh Token
+                _logger.LogWarning("Logout permission denied: User {UserIdFromToken} (from Access Token) attempted to revoke refresh token {RefreshTokenValue} belonging to a different user {TokenOwnerUserId}. IP: {IPAddress}",
+                                   userIdFromAccessTokenGuid, request.Token, refreshTokenToRevoke.UserId, ipAddress);
+                // Đây chính là trường hợp trả về lỗi "Invalid refresh token or permission denied."
+                return BadRequest(new { error = "invalid_refresh_token_or_permission_denied", message = "Invalid refresh token or permission denied." });
+            }
         }
 
 
