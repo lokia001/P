@@ -7,7 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
- 
+
     steps:
     - name: ✅ Checkout code
       uses: actions/checkout@v3
@@ -56,9 +56,9 @@ jobs:
         script: |
           sudo rm -rf /home/${{ secrets.EC2_USER }}/app/backend/*
           sudo mkdir -p /home/${{ secrets.EC2_USER }}/app/backend
-          sudo chown -R ${{ secrets.EC2_USER }}:${{ secrets.EC2_USER }} /home/${{ secrets.EC2_USER }}/app/backend  
+          sudo chown -R ${{ secrets.EC2_USER }}:${{ secrets.EC2_USER }} /home/${{ secrets.EC2_USER }}/app/backend
 
-   # ---------- UPLOAD FRONTEND ----------
+    # ---------- UPLOAD FRONTEND ----------
     - name: 📤 Upload Frontend to EC2 (~/webclient)
       uses: appleboy/scp-action@v0.1.4
       with:
@@ -66,9 +66,9 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         source: "./Frontend/WebClient/dist"
-        target: "/home/***/webclient/"
+        target: "/home/${{ secrets.EC2_USER }}/webclient/" # Đã sửa đường dẫn target
         debug: true
-        
+
     - name: 🚚 Move Frontend to Nginx folder
       uses: appleboy/ssh-action@v0.1.10
       with:
@@ -77,22 +77,10 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           sudo rm -rf /var/www/html/*
-          sudo mv /home/***/webclient/Frontend/WebClient/dist/* /var/www/html/ # Thay đổi đường dẫn mv
+          sudo mv /home/${{ secrets.EC2_USER }}/webclient/Frontend/WebClient/dist/* /var/www/html/ # Đã sửa đường dẫn mv
           sudo chown -R www-data:www-data /var/www/html
           sudo chmod -R 755 /var/www/html
-      
-    # - name: 🚚 Move Frontend to Nginx folder
-    #   uses: appleboy/ssh-action@v0.1.10
-    #   with:
-    #     host: ${{ secrets.EC2_IP }}
-    #     username: ${{ secrets.EC2_USER }}
-    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
-    #     script: |
-    #       sudo rm -rf /var/www/html/*
-    #       sudo mv /home/***/webclient/* /var/www/html/
-    #       sudo chown -R www-data:www-data /var/www/html
-    #       sudo chmod -R 755 /var/www/html
-    
+
 
     # ---------- UPLOAD BACKEND ----------
     - name: 🚀 Upload Backend to EC2
@@ -106,13 +94,23 @@ jobs:
         overwrite: true
 
     # ---------- SSH & RESTART ----------
-    - name: 🔄 Restart Services on EC2
+    - name: ⚙️ Configure Backend Environment and Restart
       uses: appleboy/ssh-action@v0.1.10
       with:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          echo "Setting environment variables for backend..."
+          export ASPNETCORE_ENVIRONMENT=Production
+          export ConnectionStrings__DefaultConnection="${{ secrets.PROD_DB_CONNECTION_STRING }}"
+          export Jwt__Key="${{ secrets.PROD_JWT_KEY }}"
+          export ImgBB__ApiKey="${{ secrets.PROD_IMGBB_APIKEY }}"
+          export SmtpSettings__Password="${{ secrets.PROD_SMTP_PASSWORD }}"
+
+          echo "Environment variables set:"
+          printenv | grep -E "ASPNETCORE_ENVIRONMENT|ConnectionStrings__DefaultConnection|Jwt__Key|ImgBB__ApiKey|SmtpSettings__Password"
+
           echo "Restarting backend service..."
           sudo systemctl daemon-reload
           sudo systemctl restart my-backend.service
