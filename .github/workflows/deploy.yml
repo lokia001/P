@@ -93,29 +93,39 @@ jobs:
         target: /home/${{ secrets.EC2_USER }}/app/backend/
         overwrite: true
 
-    # ---------- SSH & RESTART ----------
-    - name: ⚙️ Configure Backend Environment and Restart
+# ---------- SSH & RESTART ----------
+    - name: ⚙️ Configure Backend Environment and Restart Service
       uses: appleboy/ssh-action@v0.1.10
       with:
         host: ${{ secrets.EC2_IP }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          echo "Setting environment variables for backend..."
-          export ASPNETCORE_ENVIRONMENT=Production
-          export ConnectionStrings__DefaultConnection="${{ secrets.PROD_DB_CONNECTION_STRING }}"
-          export Jwt__Key="${{ secrets.PROD_JWT_KEY }}"
-          export ImgBB__ApiKey="${{ secrets.PROD_IMGBB_APIKEY }}"
-          export SmtpSettings__Password="${{ secrets.PROD_SMTP_PASSWORD }}"
+          echo "Updating systemd service environment variables for backend..."
 
-          echo "Environment variables set:"
-          printenv | grep -E "ASPNETCORE_ENVIRONMENT|ConnectionStrings__DefaultConnection|Jwt__Key|ImgBB__ApiKey|SmtpSettings__Password"
+          # Định nghĩa tên service và đường dẫn đến thư mục drop-in
+          SERVICE_NAME="my-backend.service" # << ĐẢM BẢO TÊN NÀY CHÍNH XÁC VỚI SERVICE CỦA BẠN
+          OVERRIDE_DIR="/etc/systemd/system/${SERVICE_NAME}.d"
+          OVERRIDE_FILE="$OVERRIDE_DIR/99-app-secrets.conf" # Tên file drop-in, số 99 đảm bảo nó được load cuối cùng
 
-          echo "Restarting backend service..."
+          # Tạo thư mục drop-in nếu chưa tồn tại
+          sudo mkdir -p $OVERRIDE_DIR
+
+          # Tạo hoặc ghi đè file drop-in với các biến môi trường mới
+          # Sử dụng tee để ghi nội dung và đảm bảo quyền sudo
+          echo "[Service]" | sudo tee $OVERRIDE_FILE > /dev/null
+          echo "Environment=\"ASPNETCORE_ENVIRONMENT=Production\"" | sudo tee -a $OVERRIDE_FILE > /dev/null
+          echo "Environment=\"ConnectionStrings__DefaultConnection=${{ secrets.PROD_DB_CONNECTION_STRING }}\"" | sudo tee -a $OVERRIDE_FILE > /dev/null
+          echo "Environment=\"Jwt__Key=${{ secrets.PROD_JWT_KEY }}\"" | sudo tee -a $OVERRIDE_FILE > /dev/null
+          echo "Environment=\"ImgBB__ApiKey=${{ secrets.PROD_IMGBB_APIKEY }}\"" | sudo tee -a $OVERRIDE_FILE > /dev/null
+          echo "Environment=\"SmtpSettings__Password=${{ secrets.PROD_SMTP_PASSWORD }}\"" | sudo tee -a $OVERRIDE_FILE > /dev/null
+
+          echo "Reloading systemd daemon and restarting service..."
           sudo systemctl daemon-reload
-          sudo systemctl restart my-backend.service
+          sudo systemctl restart ${SERVICE_NAME}
 
           echo "Restarting Nginx..."
           sudo systemctl reload nginx
 
           echo "✅ Deployment done!"
+          echo "Để xác minh biến môi trường, SSH vào server và chạy: sudo systemctl show ${SERVICE_NAME} --property=Environment"
