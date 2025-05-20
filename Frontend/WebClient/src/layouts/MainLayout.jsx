@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from '../components/Layout/Navbar';
 import Footer from '../components/Footer/Footer';
+import "./MainLayout.css";
 
 function MainLayout() {
     return (
-        <div>
+        <div className="site-wrapper" >
             <Navbar />
-            <div className="content">
+            <div className="content"  >
                 <Outlet />
             </div>
             <Footer />

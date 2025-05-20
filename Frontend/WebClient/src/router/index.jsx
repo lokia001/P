@@ -43,12 +43,17 @@ const AppRouter = () => {
         <Router>
             <Routes>
                 <Route path="/" element={<MainLayout />}> {/* MainLayout là layout */}
+                    {/* home */}
                     <Route index element={<HomePage />} /> {/* TestComponent sẽ render vào Outlet của MainLayout khi path là "/" */}
                     {/* Các routes con khác của MainLayout */}
                     <Route path="book-space" element={<BookSpace />} />
-                    <Route path="about-us" element={<AboutUs />} />
                     <Route path="/community" element={<Community />} />
                     <Route path="/community/create" element={<CreateGroupPage />} />
+
+
+                    {/* guest */}
+                    <Route path="about-us" element={<AboutUs />} />
+
 
                     {/* ---mangage space*/}
                     <Route path="manage-space" element={<SpaceList />} />
@@ -58,6 +63,8 @@ const AppRouter = () => {
                     <Route path="/space/edit/:id" element={<EditSpacePage />} />
                     <Route path="/amenity/new" element={<AmenityForm />} /> {/* Thêm Route này */}
                     <Route path="amenities" element={<AmenityList />} />
+
+
                     {/* new manage space--------- */}
                     <Route path="/spaceManagement" element={<SpaceManagementPage />} />
                     <Route path="/OwnerDashboard" element={<OwnerDashboard />} />
@@ -73,7 +80,7 @@ const AppRouter = () => {
                     <Route path="/UserReportsPage" element={<UserReportsPage />} />
                     <Route path="/forget-password" element={<UserReportsPage />} />
 
-                    {/* ///////// */}
+                    {/* admin*/}
                     <Route path="/SystemUserManagementPage" element={<SystemUserManagementPage />} />
                     <Route path="/SystemDashboard" element={<SystemDashboard />} />
                     <Route path="/AlertManagementPage" element={<AlertManagementPage />} />
@@ -81,12 +88,14 @@ const AppRouter = () => {
                     <Route path="/SupportTicketsPage" element={<SupportTicketsPage />} />
 
 
-
+                    {/* error */}
                     <Route path="*" element={<NotFoundPage />} />
                 </Route>
 
                 <Route path="/" element={<AuthLayout />}>
+                    {/* admin register old */}
                     <Route path="/register" element={<AdminRegistration />} />
+
                     <Route path="/login" element={<UserLogin />} />
                     <Route path="/user/register" element={<RegistrationForm />} />
                     <Route path="/forgot-password" element={<ForgotPasswordForm />} />

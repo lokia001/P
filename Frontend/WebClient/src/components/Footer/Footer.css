@@ -5,6 +5,11 @@
     color: #333;
     /* Màu chữ tối */
     font-size: 0.9em;
+    /* Các style của footer của bạn */
+    flex-shrink: 0;
+    /* Đảm bảo footer không bị co lại khi không gian hẹp */
+    /* background-color: #f0f2f5; ví dụ */
+    /* padding: 20px 0; ví dụ */
 }
 
 .footer-container {

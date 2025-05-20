@@ -1,140 +1,722 @@
+/* --- General Navbar Styles --- */
 .navbar {
-    display: flex;
-    /* Sử dụng flexbox cho navbar */
-    justify-content: space-between;
-    /* Dàn đều các phần tử bên trong */
-    align-items: center;
-    /* Căn chỉnh các phần tử theo chiều dọc ở giữa */
-    padding: 1rem 2rem;
-    /* Khoảng cách trên dưới và hai bên (có thể điều chỉnh) */
-}
-
-.navbar-brand {
-    font-size: 1.5rem;
-}
-
-.navbar-collapse {
-    flex-grow: 1;
-    /* Cho phép phần collapse mở rộng */
-}
-
-.navbar-nav {
-    display: flex;
-    /* Sử dụng flexbox cho ul */
-    flex-direction: row;
-    /* Các item nằm ngang */
-    justify-content: flex-start;
-    /* Bắt đầu từ bên trái */
-    margin-left: auto;
-    /* Đẩy các item navigation sang phải */
-}
-
-.navbar-nav .nav-item {
-    margin-left: 1rem;
-}
-
-.navbar-nav .nav-link {
-    font-size: 1rem;
-}
-
-.dropdown {
-    margin-left: 1rem;
-    /* Khoảng cách giữa item cuối cùng và dropdown */
-}
-
-.dropdown-menu {
-    min-width: 4rem;
-}
-
-/* Điều chỉnh cho màn hình nhỏ hơn */
-@media (max-width: 991.98px) {
-    .navbar-collapse {
-        flex-grow: 0;
-        /* Ngăn phần collapse mở rộng quá mức */
-    }
-
-    .navbar-nav {
-        margin-left: 0;
-        flex-direction: column;
-        /* Các item dọc khi thu gọn */
-        align-items: flex-start;
-        /* Căn trái khi dọc */
-    }
-
-    .navbar-nav .nav-item {
-        margin-left: 0;
-        margin-bottom: 0.5rem;
-        /* Khoảng cách giữa các item dọc */
-    }
-
-    .dropdown {
-        margin-left: 0;
-        margin-top: 0.5rem;
-        /* Khoảng cách cho dropdown khi dọc */
-    }
-}
-
-.language-dropdown-menu {
-    width: auto;
-    /* Hoặc một giá trị cụ thể như 80px */
-    min-width: fit-content;
-    /* Nội dung vừa đủ */
-}
-
-.dropdown {
-    position: relative;
-    /* Cần thiết để định vị dropdown-menu */
-}
-
-.dropdown-menu {
-    position: absolute;
-    top: 100%;
-    /* Hiển thị ngay dưới nút */
+    position: fixed;
+    top: 0;
     left: 0;
+    width: 100%;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #E0E0E0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    height: 64px;
+    /* Desktop height */
+    padding: 0 24px;
+    /* Desktop padding */
     z-index: 1000;
-    /* Đảm bảo nó ở trên các phần tử khác */
-    display: none;
-    /* Ẩn mặc định */
-    float: left;
-    min-width: 10rem;
-    /* Độ rộng tối thiểu */
-    padding: 0.5rem 0;
-    margin: 0.125rem 0 0;
-    font-size: 1rem;
-    color: #212529;
-    text-align: left;
-    list-style: none;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
 }
 
-.dropdown-menu.show {
-    display: block;
-    /* Hiển thị khi có class .show (thường do JS thêm) */
+.navbarInner {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.dropdown-item {
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    /* Prevent logo from shrinking */
+}
+
+.logo img {
+    height: 40px;
+    margin-right: 8px;
+    object-fit: contain;
+}
+
+.logo span {
+    /* white-space: nowrap; */
+    /* If site name is long */
+}
+
+
+/* --- Desktop Navigation & Search (Middle Section) --- */
+.navMiddleDesktop {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 16px;
+    /* Space around middle content */
+    min-width: 0;
+    /* Allow shrinking */
+}
+
+.searchBarContainer {
+    /* Full search bar for desktop */
+    display: flex;
+    align-items: center;
+    background-color: #f5f5f5;
+    border-radius: 20px;
+    padding: 4px;
+    max-width: 500px;
+    width: 100%;
+    border: 1px solid #ddd;
+}
+
+.scopeSwitcherWrapper {
+    position: relative;
+}
+
+.scopeSwitcherButton {
+    background-color: #e9ecef;
+    border: none;
+    padding: 6px 12px;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.scopeSwitcherButton:hover {
+    background-color: #dcdcdc;
+}
+
+.scopeDropdown {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1010;
+    padding: 5px 0;
+    min-width: 120px;
+}
+
+.scopeDropdown button {
     display: block;
     width: 100%;
-    padding: 0.25rem 1.5rem;
-    clear: both;
-    font-weight: 400;
-    color: #212529;
-    text-align: inherit;
-    white-space: nowrap;
-    background-color: transparent;
-    border: 0;
+    padding: 8px 12px;
+    text-align: left;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.9rem;
 }
 
-.dropdown-item:hover,
-.dropdown-item:focus {
-    color: #1e2125;
+.scopeDropdown button:hover {
+    background-color: #f0f0f0;
+}
+
+.scopeArrow {
+    width: 12px;
+    height: 12px;
+}
+
+.searchInput {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    outline: none;
+    color: #333;
+    min-width: 100px;
+    /* Prevent excessive shrinking */
+}
+
+.searchSubmitButton {
+    background: none;
+    border: none;
+    padding: 6px 10px;
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+    cursor: pointer;
+    color: #555;
+    display: flex;
+}
+
+.searchSubmitButton:hover {
+    color: #007bff;
+}
+
+
+.navLinksContainerDesktop {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.navLink {
+    text-decoration: none;
+    color: #555;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.navLink:hover,
+.navLink.active {
+    color: #007bff;
+    background-color: #f0f0f0;
+}
+
+.navLink.active {
+    font-weight: bold;
+}
+
+
+/* --- Right Aligned Items --- */
+.navRight {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* Reduced gap for mobile friendliness before hiding items */
+}
+
+.iconButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    position: relative;
+    font-size: 1.3rem;
+    /* Default icon size */
+}
+
+.iconButton:hover {
+    background-color: #f0f0f0;
+}
+
+.languageSwitcher {
+    position: relative;
+}
+
+.languageSwitcher .iconButton {
+    font-size: 0.9rem;
+    padding: 6px 10px;
+    border-radius: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
+.languageSwitcher .iconButton:hover {
     background-color: #e9ecef;
+}
+
+.dropdownMenu {
+    /* General dropdown styling, can be reused */
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background-color: white;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1010;
+    overflow: hidden;
+    padding: 8px 0;
+}
+
+.dropdownItem {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    text-align: left;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #333;
     text-decoration: none;
 }
 
-img {
-    width: 100px;
+.dropdownItem:hover {
+    background-color: #f5f5f5;
+    color: #007bff;
+}
+
+.notificationIconWrapper {
+    position: relative;
+}
+
+.notificationButton {}
+
+/* Specific styles if needed */
+.notificationBadge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 8px;
+    height: 8px;
+    background-color: red;
+    border-radius: 50%;
+    border: 1px solid white;
+}
+
+.userAccountMenu {
+    position: relative;
+}
+
+.avatarButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #ddd;
+}
+
+.authButtonsDesktop {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navButton {
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+}
+
+.loginButton {
+    background-color: transparent;
+    color: #007bff;
+    border: 1px solid #007bff;
+}
+
+.loginButton:hover {
+    background-color: #f0f8ff;
+}
+
+.signupButton {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+}
+
+.signupButton:hover {
+    background-color: #0056b3;
+}
+
+/* --- Mobile Specific Elements (Triggers on top bar) --- */
+.mobileSearchTrigger,
+.hamburgerButton {
+    display: none;
+    /* Hidden on desktop, shown via media query */
+}
+
+.hideOnMobile {
+    /* Utility class to hide elements on mobile */
+}
+
+/* --- Mobile Search Overlay --- */
+.mobileSearchOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.98);
+    /* Slightly transparent white */
+    z-index: 1060;
+    /* Above sidebar and its overlay */
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.mobileSearchOverlayHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.mobileSearchOverlayTitle {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.closeButtonOverlay {
+    /* For search overlay close */
+    font-size: 1.5rem;
+    color: #555;
+}
+
+.mobileSearchOverlayContent {
+    flex-grow: 1;
+}
+
+.searchBarContainerOverlay {
+    /* Search bar specifically for overlay */
+    display: flex;
+    flex-direction: column;
+    /* Stack scope switcher and input on mobile */
+    gap: 12px;
+    width: 100%;
+}
+
+.searchBarContainerOverlay .scopeSwitcherWrapper {
+    width: 100%;
+}
+
+.searchBarContainerOverlay .scopeSwitcherButton {
+    width: 100%;
+    justify-content: space-between;
+    /* Make scope dropdown button full width */
+    padding: 10px 12px;
+    border-radius: 8px;
+    /* More standard radius */
+    background-color: #f0f0f0;
+}
+
+.searchBarContainerOverlay .scopeDropdown {
+    /* Ensure dropdown is positioned well */
+    width: 100%;
+    /* Full width dropdown */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.searchBarContainerOverlay .searchInput {
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.searchSubmitButtonOverlay {
+    /* Button at the bottom or integrated */
+    padding: 12px;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 16px;
+}
+
+.searchSubmitButtonOverlay:hover {
+    background-color: #0056b3;
+}
+
+
+/* --- Mobile Off-canvas Menu (Sidebar) --- */
+.mobileMenu {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    /* Start off-screen */
+    width: 80%;
+    max-width: 320px;
+    /* Max width for larger "mobile" screens */
+    height: 100vh;
+    background-color: #FFFFFF;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    transition: left 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.mobileMenu.open {
+    left: 0;
+    /* Slide in */
+}
+
+.mobileMenuHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    /* Adjusted padding for 56px height */
+    border-bottom: 1px solid #E0E0E0;
+    height: 56px;
+    /* Match navbar height */
+    box-sizing: border-box;
+}
+
+.mobileMenuHeader .logo img {
+    height: 30px;
+}
+
+.mobileMenuHeader .logo span {
+    font-size: 1.1rem;
+}
+
+.closeButtonSidebar {
+    font-size: 1.5rem;
+    color: #555;
+}
+
+.mobileMenuContent {
+    padding: 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobileAuthButtonsSidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.loginButtonSidebar,
+.signupButtonSidebar {
+    width: 100%;
+    text-align: center;
+}
+
+.loginButtonSidebar {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.loginButtonSidebar:hover {
+    background-color: #0056b3;
+}
+
+.signupButtonSidebar {
+    background-color: #6c757d;
+    color: white;
+    border-color: #6c757d;
+}
+
+/* Example secondary */
+.signupButtonSidebar:hover {
+    background-color: #5a6268;
+}
+
+
+.mobileAccountSection {
+    margin-bottom: 16px;
+}
+
+.mobileUserInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.mobileUserInfo .avatar {
+    width: 32px;
+    height: 32px;
+}
+
+.mobileDropdownItem {
+    /* Used by renderAccountDropdownItems */
+    display: block;
+    padding: 10px 0;
+    text-decoration: none;
+    color: #333;
+    font-size: 0.95rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.mobileDropdownItem:last-child {
+    border-bottom: none;
+}
+
+.mobileDropdownItem.logoutButton {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.mobileDropdownItem.logoutButton:hover {
+    background-color: #f8d7da;
+}
+
+
+.mobileMenuDivider {
+    border: 0;
+    height: 1px;
+    background-color: #e0e0e0;
+    margin: 16px 0;
+}
+
+.mobileNavLinksContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.mobileNavLink {
+    display: flex;
+    /* For icon alignment */
+    align-items: center;
+    padding: 12px 0;
+    /* Full width clickable area */
+    text-decoration: none;
+    color: #333;
+    font-size: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.mobileNavLink:last-child {
+    border-bottom: none;
+}
+
+.mobileNavLink.active {
+    color: #007bff;
+    font-weight: bold;
+}
+
+.mobileNavLink .navLinkIcon {
+    margin-right: 12px;
+    width: 18px;
+    height: 18px;
+    color: #555;
+}
+
+.mobileNavLink.active .navLinkIcon {
+    color: #007bff;
+}
+
+.languageSwitcherMobile {
+    margin-top: auto;
+    /* Push to bottom if content is short */
+    padding-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.languageLabelMobile {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.langButtonMobile {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 16px;
+    background-color: #f8f8f8;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.langButtonMobile.activeLang {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+
+/* Sidebar Overlay (when mobile menu is open) */
+.sidebarOverlayActive {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    /* Below sidebar, above content */
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+
+/* --- Responsive Breakpoints --- */
+@media (max-width: 991.98px) {
+
+    /* Larger tablets and below */
+    .navMiddleDesktop,
+    .navLinksContainerDesktop {
+        /* Hide desktop specific link containers */
+        display: none;
+    }
+
+    .hideOnMobile {
+        display: none !important;
+    }
+
+    /* Hide desktop avatar menu, login/signup buttons */
+
+    .mobileSearchTrigger,
+    .hamburgerButton {
+        display: flex;
+        /* Show mobile specific icons */
+    }
+
+    .navRight {
+        gap: 4px;
+    }
+
+    /* Reduce gap for more icons on mobile */
+}
+
+@media (max-width: 767.98px) {
+
+    /* True Mobile */
+    .navbar {
+        height: 56px;
+        padding: 0 12px;
+        /* Reduced padding for mobile */
+    }
+
+    .logo img {
+        height: 30px;
+        margin-right: 6px;
+    }
+
+    .logo span {
+        font-size: 1.1rem;
+    }
+
+    /* Slightly smaller logo text */
+
+    /* Ensure right icons are spaced okay */
+    .navRight .iconButton {
+        padding: 6px;
+        font-size: 1.2rem;
+    }
 }

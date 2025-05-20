@@ -7,5 +7,6 @@
     "profile": "Profile",
     "login": "Login",
     "logout": "Logout",
-    "welcome": "Welcome to the homepage!"
+    "welcome": "Welcome to the homepage!",
+    "site_name": "WorkZen"
 }

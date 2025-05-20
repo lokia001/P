@@ -1,0 +1,232 @@
+/* 1. Cấu trúc trang */
+.notFoundContainer {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f9fafb;
+    /* Tương đương bg-gray-50 */
+    padding: 1rem;
+    /* Tương đương p-4 */
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.contentWrapper {
+    max-width: 36rem;
+    /* Tương đương max-w-lg */
+    width: 100%;
+}
+
+/* 2. Hình ảnh minh họa */
+.illustration {
+    width: 100%;
+    max-width: 24rem;
+    /* Tương đương max-w-sm */
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2rem;
+    /* Tương đương mb-8 */
+    /* Hiệu ứng animate-bounce-subtle */
+    animation: bounce-subtle 1.8s infinite;
+}
+
+.illustrationPlaceholder {
+    width: 100%;
+    max-width: 24rem;
+    /* Tương đương max-w-sm */
+    height: 16rem;
+    /* ~ h-64 */
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2rem;
+    /* Tương đương mb-8 */
+    background-color: #e5e7eb;
+    /* Tương đương bg-gray-200 */
+    border-radius: 0.5rem;
+    /* Tương đương rounded-lg */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    /* Tương đương text-gray-500 */
+}
+
+@keyframes bounce-subtle {
+
+    0%,
+    100% {
+        transform: translateY(-6%);
+        animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+
+    50% {
+        transform: translateY(0);
+        animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+}
+
+/* 3. Tiêu đề lỗi */
+.errorCode {
+    font-size: 3.75rem;
+    /* Tương đương text-6xl */
+    line-height: 1;
+    font-weight: 800;
+    /* Tương đương font-extrabold */
+    color: #1f2937;
+    /* Tương đương text-gray-800 */
+    margin-bottom: 1rem;
+    /* Tương đương mb-4 */
+}
+
+.errorTitle {
+    font-size: 1.875rem;
+    /* Tương đương text-3xl */
+    line-height: 2.25rem;
+    font-weight: 700;
+    /* Tương đương font-bold */
+    color: #374151;
+    /* Tương đương text-gray-700 */
+    margin-bottom: 1.5rem;
+    /* Tương đương mb-6 */
+}
+
+/* 4. Thông điệp giải thích */
+.errorMessage {
+    color: #4b5563;
+    /* Tương đương text-gray-600 */
+    font-size: 1.125rem;
+    /* Tương đương text-lg */
+    line-height: 1.625;
+    /* Tương đương leading-relaxed */
+    max-width: 65ch;
+    /* Tương đương max-w-prose */
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 2rem;
+    /* Tương đương mb-8 */
+}
+
+/* 5. Các tùy chọn điều hướng (Buttons) */
+.actionsContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Căn giữa các nút khi xếp dọc */
+    gap: 1rem;
+    /* Tương đương gap-4 */
+    margin-bottom: 2rem;
+    /* Tương đương mb-8 */
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    /* Tương đương font-semibold */
+    padding: 0.75rem 1.5rem;
+    /* Tương đương py-3 px-6 */
+    border-radius: 0.5rem;
+    /* Tương đương rounded-lg */
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    /* Tương đương shadow-md */
+    width: 100%;
+    /* Chiếm full width trên mobile */
+    box-sizing: border-box;
+}
+
+.actionButton:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    /* Tương đương shadow-lg */
+    transform: scale(1.05);
+}
+
+.icon {
+    width: 1.25rem;
+    /* Tương đương h-5 w-5 */
+    height: 1.25rem;
+    margin-right: 0.5rem;
+    /* Tương đương mr-2 */
+}
+
+/* Nút 1 (Chính) */
+.buttonPrimary {
+    background-color: #2563eb;
+    /* Tương đương bg-blue-600 */
+    color: white;
+    border: 1px solid #2563eb;
+}
+
+.buttonPrimary:hover {
+    background-color: #1d4ed8;
+    /* Tương đương hover:bg-blue-700 */
+    border-color: #1d4ed8;
+}
+
+/* Nút 2 (Phụ) */
+.buttonSecondary {
+    background-color: #e5e7eb;
+    /* Tương đương bg-gray-200 */
+    color: #1f2937;
+    /* Tương đương text-gray-800 */
+    border: 1px solid #e5e7eb;
+}
+
+.buttonSecondary:hover {
+    background-color: #d1d5db;
+    /* Tương đương hover:bg-gray-300 */
+    border-color: #d1d5db;
+}
+
+/* Nút 3 (Phụ) */
+.buttonOutline {
+    background-color: transparent;
+    border: 2px solid #9ca3af;
+    /* Tương đương border-gray-400 */
+    color: #374151;
+    /* Tương đương text-gray-700 */
+}
+
+.buttonOutline:hover {
+    background-color: #f3f4f6;
+    /* Tương đương hover:bg-gray-100 */
+    border-color: #6b7280;
+    /* Tương đương hover:border-gray-500 */
+}
+
+/* Responsive cho các nút (tương đương sm:flex-row, sm:w-auto) */
+@media (min-width: 640px) {
+
+    /* breakpoint sm của Tailwind */
+    .actionsContainer {
+        flex-direction: row;
+        justify-content: center;
+        /* Căn giữa các nút khi xếp ngang */
+    }
+
+    .actionButton {
+        width: auto;
+        /* Trở về width tự động trên màn hình lớn hơn */
+    }
+}
+
+.contactNote {
+    font-size: 0.875rem;
+    /* Tương đương text-sm */
+    color: #6b7280;
+    /* Tương đương text-gray-500 */
+}
+
+.contactLink {
+    color: #2563eb;
+    /* Tương đương text-blue-600 */
+    text-decoration: none;
+}
+
+.contactLink:hover {
+    text-decoration: underline;
+}
