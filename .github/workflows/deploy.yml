@@ -35,6 +35,29 @@ jobs:
       run: dotnet publish -c Release -o publish
       working-directory: Backend.Api
 
+
+ # ----------- PREPARE SERVER (Optional, if needed for first time or permissions) -----------
+    - name: 📦 Prepare Database Directory on EC2
+      uses: appleboy/ssh-action@v0.1.10
+      with:
+        host: ${{ secrets.EC2_IP }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          DB_DIR="/var/app_data/my_backend_db" # << THAY ĐỔI NẾU CẦN
+          APP_USER="${{ secrets.EC2_USER }}" # Hoặc user cụ thể chạy service backend nếu khác
+                                            # Ví dụ: nếu service chạy với user 'mybackenduser'
+                                            # APP_USER="mybackenduser"
+
+          echo "Ensuring database directory $DB_DIR exists..."
+          sudo mkdir -p $DB_DIR
+          echo "Setting ownership of $DB_DIR to $APP_USER..."
+          sudo chown -R $APP_USER:$APP_USER $DB_DIR # Đảm bảo user chạy app có quyền
+          sudo chmod -R 700 $DB_DIR # Quyền chỉ cho user sở hữu (an toàn hơn)
+                                    # Hoặc 755 nếu group cũng cần đọc/execute
+          echo "Database directory prepared."
+
+
     # ----------- CLEAN REMOTE FOLDERS -----------
     - name: 🧹 Clean remote frontend folder
       uses: appleboy/ssh-action@v0.1.10
@@ -115,6 +138,7 @@ jobs:
           # Sử dụng tee để ghi nội dung và đảm bảo quyền sudo
           echo "[Service]" | sudo tee $OVERRIDE_FILE > /dev/null
           echo "Environment=\"ASPNETCORE_ENVIRONMENT=Production\"" | sudo tee -a $OVERRIDE_FILE > /dev/null
+          
           echo "Environment=\"ConnectionStrings__DefaultConnection=${{ secrets.PROD_DB_CONNECTION_STRING }}\"" | sudo tee -a $OVERRIDE_FILE > /dev/null
           echo "Environment=\"Jwt__Key=${{ secrets.PROD_JWT_KEY }}\"" | sudo tee -a $OVERRIDE_FILE > /dev/null
           echo "Environment=\"ImgBB__ApiKey=${{ secrets.PROD_IMGBB_APIKEY }}\"" | sudo tee -a $OVERRIDE_FILE > /dev/null
