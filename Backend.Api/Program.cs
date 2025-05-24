@@ -166,6 +166,7 @@ builder.Services.AddScoped<IServiceEntityService, ServiceEntityService>();
 builder.Services.AddScoped<ISpaceAmenityManagementService, SpaceAmenityManagementService>();
 builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IEmailService, EmailService>(); // Hoặc AddTransient
+builder.Services.AddScoped<IServiceSpaceManagementService, ServiceSpaceManagementService>();
 // Add modules:
 builder.Services.AddUserServiceModule(configuration);
 builder.Services.AddSpaceServiceModule(configuration);

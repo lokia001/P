@@ -96,16 +96,66 @@ namespace Backend.Api.Modules.AuthService.Services
 
         public async Task RemoveOldRefreshTokensAsync(Guid userId)
         {
-            // Xóa các refresh token đã hết hạn hoặc đã bị thu hồi của user
+            var utcNow = DateTime.UtcNow; // Lấy thời gian hiện tại một lần
+            var oldTokenRemovalDays = _configuration.GetValue<int>("Jwt:OldRefreshTokenRemovalDays", 30);
+            var removalCutoffDate = utcNow.AddDays(-oldTokenRemovalDays);
+
+            // =======================================================================
+            // FIX: SỬA LẠI TRUY VẤN LINQ ĐỂ DÙNG CÁC THUỘC TÍNH ĐƯỢC MAP
+            // Điều kiện để token được coi là "old" và cần xóa:
+            // 1. Nó đã bị thu hồi (RevokedAt != null)
+            // HOẶC 2. Nó đã hết hạn (ExpiresAt < utcNow)
+            // HOẶC 3. Nó đã quá cũ theo định nghĩa (ExpiresAt < removalCutoffDate) - điều kiện này bao hàm cả token đã hết hạn.
+            // Chúng ta muốn xóa các token không còn active (đã thu hồi HOẶC đã hết hạn)
+            // HOẶC những token (kể cả còn active) nhưng đã quá "tuổi" (ExpiresAt rất xa trong quá khứ).
+            // Điều kiện `!rt.IsActive` tương đương với `(rt.RevokedAt != null || rt.ExpiresAt < utcNow)`
+            // =======================================================================
             var oldTokens = await _dbContext.RefreshTokens
-                .Where(rt => rt.UserId == userId && (!rt.IsActive || rt.ExpiresAt < DateTime.UtcNow.AddDays(-_configuration.GetValue<int>("Jwt:OldRefreshTokenRemovalDays", 30)))) // Ví dụ: xóa token cũ hơn 30 ngày
+                .Where(rt => rt.UserId == userId &&
+                             (
+                                 (rt.RevokedAt != null || rt.ExpiresAt < utcNow) // Token không còn active
+                                 || // HOẶC
+                                 rt.ExpiresAt < removalCutoffDate // Token quá cũ (ngay cả nếu nó chưa bị revoke và ExpiresAt > utcNow nhưng vẫn < removalCutoffDate)
+                                                                  // Điều kiện này thực ra đã bao gồm rt.ExpiresAt < utcNow
+                                                                  // Nên có thể đơn giản hóa thành:
+                                                                  // (rt.RevokedAt != null || rt.ExpiresAt < removalCutoffDate)
+                             )
+                )
                 .ToListAsync();
 
-            if (oldTokens.Any())
+            // Đơn giản hóa điều kiện hơn nữa:
+            // Chúng ta muốn xóa token nếu:
+            // - Nó đã bị thu hồi (RevokedAt có giá trị)
+            // - HOẶC nó đã hết hạn theo nghĩa thông thường (ExpiresAt < utcNow)
+            // - HOẶC nó được tạo ra quá lâu rồi (ngay cả khi ExpiresAt của nó được đặt rất xa trong tương lai,
+            //   nhưng nếu nó không được dùng và CreatedAt < removalCutoffDate thì cũng có thể xóa).
+            //   Tuy nhiên, logic hiện tại của bạn dựa trên ExpiresAt để xác định "cũ".
+
+            // Giữ logic gần với ý định ban đầu của bạn: Xóa token không active HOẶC token có ExpiresAt quá cũ.
+            // Token không active: RevokedAt != null HOẶC ExpiresAt < utcNow
+            // Token có ExpiresAt quá cũ: ExpiresAt < removalCutoffDate
+            // Kết hợp lại: (RevokedAt != null || ExpiresAt < utcNow) || ExpiresAt < removalCutoffDate
+            // Vì removalCutoffDate < utcNow, nên ExpiresAt < removalCutoffDate cũng có nghĩa là ExpiresAt < utcNow.
+            // Vậy điều kiện có thể là: RevokedAt != null || ExpiresAt < removalCutoffDate
+
+            // SỬA LẠI TRUY VẤN CHO CHÍNH XÁC:
+            var tokensToRemove = await _dbContext.RefreshTokens
+                .Where(rt => rt.UserId == userId &&
+                             (rt.RevokedAt != null || rt.ExpiresAt < removalCutoffDate)
+                )
+                .ToListAsync();
+            // =======================================================================
+
+
+            if (tokensToRemove.Any()) // Sử dụng biến mới tokensToRemove
             {
-                _dbContext.RefreshTokens.RemoveRange(oldTokens);
+                _dbContext.RefreshTokens.RemoveRange(tokensToRemove);
                 await _dbContext.SaveChangesAsync();
-                _logger.LogInformation("Removed {Count} old refresh tokens for User {UserId}", oldTokens.Count, userId);
+                _logger.LogInformation("Removed {Count} old/inactive refresh tokens for User {UserId}", tokensToRemove.Count, userId);
+            }
+            else
+            {
+                _logger.LogInformation("No old/inactive refresh tokens found to remove for User {UserId}", userId);
             }
         }
 

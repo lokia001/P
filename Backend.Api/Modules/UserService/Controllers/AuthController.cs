@@ -239,10 +239,12 @@ namespace Backend.Api.Modules.AuthService.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             User? authenticatedUser = await _userService.AuthenticateAsync(loginRequest.Username, loginRequest.Password);
+
             if (authenticatedUser == null)
             {
                 return Unauthorized(new { error = "Invalid credentials" });
             }
+
 
             // Tạo claims cho Access Token
             var claims = new List<Claim>
@@ -254,12 +256,25 @@ namespace Backend.Api.Modules.AuthService.Controllers
                 new Claim("Username", authenticatedUser.Username),
                 new Claim("FullName", authenticatedUser.FullName ?? string.Empty),
                 new Claim("UserRole", authenticatedUser.Role.ToString()),
-                new Claim(ClaimTypes.Role, authenticatedUser.Role.ToString())
+                new Claim(ClaimTypes.Role, authenticatedUser.Role.ToString()),
+
             };
             // ... (thêm các claims khác như PhoneNumber, AvatarUrl, OwnerProfileId nếu có) ...
             if (!string.IsNullOrEmpty(authenticatedUser.PhoneNumber)) claims.Add(new Claim(ClaimTypes.MobilePhone, authenticatedUser.PhoneNumber));
             if (!string.IsNullOrEmpty(authenticatedUser.AvatarUrl)) claims.Add(new Claim("AvatarUrl", authenticatedUser.AvatarUrl));
-            if (authenticatedUser.Role == Role.Owner && authenticatedUser.OwnerProfile != null) claims.Add(new Claim("OwnerProfileId", authenticatedUser.OwnerProfile.UserId.ToString()));
+
+            // Thêm OwnerProfileId claim nếu là Owner và OwnerProfile tồn tại
+            if (authenticatedUser.Role == Role.Owner)
+            {
+                // NẾU UserId cũng chính là định danh cho OwnerProfile
+                claims.Add(new Claim("OwnerProfileId", authenticatedUser.Id.ToString())); // Sử dụng UserId của User
+                _logger.LogInformation("Added OwnerProfileId (same as UserId) {OwnerProfileId} to claims for User {UserId}", authenticatedUser.Id, authenticatedUser.Id);
+
+                // Trong trường hợp này, bạn không cần phải query hay kiểm tra authenticatedUser.OwnerProfile riêng biệt
+                // chỉ cần đảm bảo user đó là Owner.
+                // Tuy nhiên, bạn vẫn nên có một cơ chế để đảm bảo rằng các thông tin mở rộng của Owner (nếu có)
+                // được lưu trữ và liên kết đúng với UserId này.
+            }
 
 
             var accessToken = _jwtService.GenerateAccessToken(claims);
@@ -328,6 +343,18 @@ namespace Backend.Api.Modules.AuthService.Controllers
             if (!string.IsNullOrEmpty(user.PhoneNumber)) newClaims.Add(new Claim(ClaimTypes.MobilePhone, user.PhoneNumber));
             if (!string.IsNullOrEmpty(user.AvatarUrl)) newClaims.Add(new Claim("AvatarUrl", user.AvatarUrl));
             if (user.Role == Role.Owner && user.OwnerProfile != null) newClaims.Add(new Claim("OwnerProfileId", user.OwnerProfile.UserId.ToString()));
+
+            // Thêm OwnerProfileId claim nếu là Owner và OwnerProfile tồn tại
+            if (user.Role == Role.Owner)
+            {
+                // NẾU UserId cũng chính là định danh cho OwnerProfile
+                newClaims.Add(new Claim("OwnerProfileId", user.Id.ToString())); // Sử dụng UserId của User
+
+                // Trong trường hợp này, bạn không cần phải query hay kiểm tra authenticatedUser.OwnerProfile riêng biệt
+                // chỉ cần đảm bảo user đó là Owner.
+                // Tuy nhiên, bạn vẫn nên có một cơ chế để đảm bảo rằng các thông tin mở rộng của Owner (nếu có)
+                // được lưu trữ và liên kết đúng với UserId này.
+            }
 
 
             var newAccessToken = _jwtService.GenerateAccessToken(newClaims);

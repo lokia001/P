@@ -1,6 +1,5 @@
 /* --- General Navbar Styles --- */
 .navbar {
-    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -150,7 +149,7 @@
 }
 
 .searchSubmitButton:hover {
-    color: #007bff;
+    /* color: #007bff; */
 }
 
 
@@ -172,7 +171,7 @@
 
 .navLink:hover,
 .navLink.active {
-    color: #007bff;
+    /* color: #007bff; */
     background-color: #f0f0f0;
 }
 
@@ -312,8 +311,8 @@
 
 .loginButton {
     background-color: transparent;
-    color: #007bff;
-    border: 1px solid #007bff;
+    /* color: #007bff; */
+    /* border: 1px solid #007bff; */
 }
 
 .loginButton:hover {
@@ -321,8 +320,8 @@
 }
 
 .signupButton {
-    background-color: #007bff;
-    color: white;
+    /* background-color: #007bff; */
+    /* color: white; */
     border: 1px solid #007bff;
 }
 
@@ -428,7 +427,7 @@
     /* Button at the bottom or integrated */
     padding: 12px;
     font-size: 1rem;
-    background-color: #007bff;
+    /* background-color: #007bff; */
     color: white;
     border: none;
     border-radius: 8px;
@@ -512,9 +511,9 @@
 }
 
 .loginButtonSidebar {
-    background-color: #007bff;
+    /* background-color: #007bff; */
     color: white;
-    border-color: #007bff;
+    /* border-color: #007bff; */
 }
 
 .loginButtonSidebar:hover {
@@ -605,7 +604,7 @@
 }
 
 .mobileNavLink.active {
-    color: #007bff;
+    /* color: #007bff; */
     font-weight: bold;
 }
 
@@ -617,7 +616,7 @@
 }
 
 .mobileNavLink.active .navLinkIcon {
-    color: #007bff;
+    /* color: #007bff; */
 }
 
 .languageSwitcherMobile {
@@ -644,9 +643,9 @@
 }
 
 .langButtonMobile.activeLang {
-    background-color: #007bff;
+    /* background-color: #007bff; */
     color: white;
-    border-color: #007bff;
+    /* border-color: #007bff; */
 }
 
 

@@ -39,11 +39,11 @@ namespace Backend.Api.Data.Configurations
                             .OnDelete(DeleteBehavior.Restrict);
 
                      // Many-to-One relationship to User (Last Editor) - Optional
-                     builder.HasOne(s => s.LastEditedByUser)
-                            .WithMany(u => u.LastEditedSpaces)
-                            .HasForeignKey(s => s.LastEditedByUserId)
-                            .IsRequired(false)
-                            .OnDelete(DeleteBehavior.Restrict);
+                     // builder.HasOne(s => s.LastEditedByUser)
+                     //        .WithMany(u => u.LastEditedSpaces)
+                     //        .HasForeignKey(s => s.LastEditedByUserId)
+                     //        .IsRequired(false)
+                     //        .OnDelete(DeleteBehavior.Restrict);
 
                      // Many-to-One relationship to OwnerProfile
                      builder.HasOne(s => s.OwnerProfile)

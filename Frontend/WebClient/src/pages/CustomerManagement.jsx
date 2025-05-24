@@ -1,103 +1,123 @@
 import React, { useState, useMemo } from 'react';
-import './CustomerManagement.css'; // Giữ lại file CSS cho các tùy chỉnh khác nếu có
-// Giả sử bạn sẽ dùng Bootstrap Icons, bạn có thể import chúng như sau:
+import './CustomerManagement.css'; // Keep CSS for other customizations if any
+import { Modal, Button, ListGroup, Badge, Row, Col, Image } from 'react-bootstrap';
+// Assuming you'll use Bootstrap Icons, you can import them like this:
 // import 'bootstrap-icons/font/bootstrap-icons.css';
 
-// Dữ liệu mẫu
+// Updated Mock Customer Data (to align with BookingManagementPage's English data)
 const mockCustomersData = [
     {
-        id: 'KH001',
-        name: 'Nguyễn Văn A',
-        email: 'nguyenvana@example.com',
+        id: 'CUST001', // Changed ID format for clarity
+        name: 'Anthony Nguyen', // Matches booking BK001
+        email: 'anthony.nguyen@example.com',
         phone: '0901234567',
-        bookings: 12,
-        lastBookingDate: '2024-07-15',
-        totalSpending: 5500000,
-        customerType: 'Cá nhân',
-        frequentSpace: 'Phòng họp nhỏ',
+        bookings: 3, // Example
+        lastBookingDate: '2024-03-15', // Matches BK001 startTime
+        totalSpending: 1250000, // Example
+        customerType: 'Individual',
+        frequentSpace: 'Alpha Meeting Room', // Matches BK001 spaceName
     },
     {
-        id: 'KH002',
-        name: 'Trần Thị B',
-        email: 'tranthib@example.com',
+        id: 'CUST002',
+        name: 'Bella Tran', // Matches booking BK002
+        email: 'bella.tran@example.com',
         phone: '0912345678',
-        bookings: 5,
-        lastBookingDate: '2024-06-20',
-        totalSpending: 2300000,
-        customerType: 'Doanh nghiệp',
-        frequentSpace: 'Chỗ ngồi cố định',
-    },
-    {
-        id: 'KH003',
-        name: 'Lê Văn C',
-        email: 'levanc@example.com',
-        phone: '0987654321',
-        bookings: 8,
-        lastBookingDate: '2024-07-01',
-        totalSpending: 3100000,
-        customerType: 'Cá nhân',
-        frequentSpace: 'Phòng họp lớn',
-    },
-    {
-        id: 'KH004',
-        name: 'Phạm Thị D',
-        email: 'phamthid@example.com',
-        phone: '0978123456',
         bookings: 2,
-        lastBookingDate: '2024-05-10',
-        totalSpending: 900000,
-        customerType: 'Cá nhân',
-        frequentSpace: 'Chỗ ngồi linh hoạt',
-    },
-    {
-        id: 'KH005',
-        name: 'Công ty TNHH XYZ',
-        email: 'contact@xyz.com',
-        phone: '02834567890',
-        bookings: 25, // Khách hàng này đạt ngưỡng visualization
-        lastBookingDate: '2024-07-18',
-        totalSpending: 15000000,
-        customerType: 'Doanh nghiệp',
-        frequentSpace: 'Văn phòng riêng',
-    },
-    {
-        id: 'KH006',
-        name: 'Hoàng Văn E',
-        email: 'hoangvane@example.com',
-        phone: '0933112233',
-        bookings: 1,
-        lastBookingDate: '2024-03-01',
+        lastBookingDate: '2024-03-16', // Matches BK002 startTime
         totalSpending: 450000,
-        customerType: 'Cá nhân',
-        frequentSpace: 'Chỗ ngồi linh hoạt',
+        customerType: 'Individual',
+        frequentSpace: 'Creative Corner Desk B01',
     },
     {
-        id: 'KH007',
-        name: 'Đặng Thị F',
-        email: 'dangthif@example.com',
-        phone: '0944556677',
-        bookings: 18,
-        lastBookingDate: '2024-07-10',
-        totalSpending: 2800000,
-        customerType: 'Cá nhân',
-        frequentSpace: 'Phòng họp nhỏ',
+        id: 'CUST003',
+        name: 'Chris Le', // Matches booking BK003
+        email: 'chris.le@example.com',
+        phone: '0987654321',
+        bookings: 5,
+        lastBookingDate: '2024-03-17',
+        totalSpending: 980000,
+        customerType: 'Individual',
+        frequentSpace: 'Gamma Private Office',
     },
+    {
+        id: 'CUST004',
+        name: 'Diana Pham', // Matches booking BK004
+        email: 'diana.pham@example.com',
+        phone: '0900000001',
+        bookings: 1,
+        lastBookingDate: '2024-03-18', // Matches BK004 startTime (though it was cancelled)
+        totalSpending: 700000, // Example, could be 0 if cancellation means no charge
+        customerType: 'Individual',
+        frequentSpace: 'Beta Quiet Room',
+    },
+    {
+        id: 'CUST005',
+        name: 'XYZ Corp', // A corporate client
+        email: 'contact@xyzcorp.com',
+        phone: '02834567890',
+        bookings: 15, // Example
+        lastBookingDate: '2024-07-18', // A more recent booking
+        totalSpending: 25000000,
+        customerType: 'Corporate',
+        frequentSpace: 'Gamma Private Office',
+    },
+    {
+        id: 'CUST006',
+        name: 'Ethan Hoang', // Matches booking BK005
+        email: 'ethan.hoang@example.com',
+        phone: '0900000002',
+        bookings: 4,
+        lastBookingDate: '2024-03-19',
+        totalSpending: 1200000,
+        customerType: 'Individual',
+        frequentSpace: 'Window Desk C01',
+    },
+    {
+        id: 'CUST007',
+        name: 'Fiona Vu', // Matches booking BK006
+        email: 'fiona.vu@example.com',
+        phone: '0900000003',
+        bookings: 6,
+        lastBookingDate: '2024-03-20',
+        totalSpending: 1800000,
+        customerType: 'Individual',
+        frequentSpace: 'Kappa Small Meeting',
+    },
+    {
+        id: 'CUST008',
+        name: 'George Dang', // Matches booking BK007
+        email: 'george.dang@example.com',
+        phone: '0900000004',
+        bookings: 2,
+        lastBookingDate: '2024-03-21',
+        totalSpending: 420000,
+        customerType: 'Individual',
+        frequentSpace: 'Theta Streaming Pod',
+    }
 ];
 
 const ITEMS_PER_PAGE = 5;
-const MAX_BOOKINGS_FOR_VISUALIZATION = 25; // Ngưỡng cho trực quan hóa số lần đặt
+const MAX_BOOKINGS_FOR_VISUALIZATION = 20; // Adjusted for new booking counts
 
 function CustomerManagement() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterDateFrom, setFilterDateFrom] = useState('');
     const [filterDateTo, setFilterDateTo] = useState('');
-    const [filterBookings, setFilterBookings] = useState(''); // Giá trị sẽ là số lần đặt tối thiểu
+    const [filterBookings, setFilterBookings] = useState('');
     const [filterCustomerType, setFilterCustomerType] = useState('');
     const [filterFrequentSpace, setFilterFrequentSpace] = useState('');
 
     const [customers, setCustomers] = useState(mockCustomersData);
     const [currentPage, setCurrentPage] = useState(1);
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'ascending' });
+
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [selectedCustomerDetail, setSelectedCustomerDetail] = useState(null);
+
+    // Memoized unique values for select filters
+    const customerTypes = useMemo(() => [...new Set(mockCustomersData.map(c => c.customerType))].sort(), []);
+    const frequentSpaces = useMemo(() => [...new Set(mockCustomersData.map(c => c.frequentSpace))].filter(Boolean).sort(), []);
+
 
     const filteredCustomers = useMemo(() => {
         let result = [...customers];
@@ -114,8 +134,12 @@ function CustomerManagement() {
             result = result.filter(customer => new Date(customer.lastBookingDate) >= new Date(filterDateFrom));
         }
         if (filterDateTo) {
-            result = result.filter(customer => new Date(customer.lastBookingDate) <= new Date(filterDateTo));
+            // Adjust to include the whole end day
+            const toDateEnd = new Date(filterDateTo);
+            toDateEnd.setHours(23, 59, 59, 999);
+            result = result.filter(customer => new Date(customer.lastBookingDate) <= toDateEnd);
         }
+
 
         if (filterBookings) {
             const minBookings = parseInt(filterBookings, 10);
@@ -137,12 +161,15 @@ function CustomerManagement() {
                 let valA = a[sortConfig.key];
                 let valB = b[sortConfig.key];
 
-                // Xử lý cho trường hợp số
                 if (typeof valA === 'number' && typeof valB === 'number') {
-                    // Sắp xếp số
-                } else { // Mặc định sắp xếp chuỗi
-                    valA = String(valA).toLowerCase();
-                    valB = String(valB).toLowerCase();
+                    // Numeric sort
+                } else if (sortConfig.key === 'lastBookingDate') {
+                    valA = new Date(valA).getTime();
+                    valB = new Date(valB).getTime();
+                }
+                else { // Default to string sort
+                    valA = String(valA ?? '').toLowerCase(); // Handle null/undefined
+                    valB = String(valB ?? '').toLowerCase(); // Handle null/undefined
                 }
 
                 if (valA < valB) {
@@ -170,74 +197,98 @@ function CustomerManagement() {
             direction = 'descending';
         }
         setSortConfig({ key, direction });
-        setCurrentPage(1); // Reset về trang đầu khi sắp xếp
+        setCurrentPage(1);
     };
 
     const getSortIndicator = (key) => {
         if (sortConfig.key === key) {
             return sortConfig.direction === 'ascending' ? '▲' : '▼';
         }
-        return ''; // Hoặc '↕' nếu muốn
+        return '';
     };
 
     const handleQuickDateFilter = (period) => {
         const today = new Date();
-        let fromDate = '';
-        let toDate = today.toISOString().split('T')[0];
+        let fromDateObj = new Date();
+        let toDateObj = new Date();
 
         switch (period) {
             case 'thisWeek':
-                const firstDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1)));
-                fromDate = firstDayOfWeek.toISOString().split('T')[0];
+                const firstDay = today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1); // Adjust for Sunday as first day
+                fromDateObj.setDate(firstDay);
+                // toDateObj already set to today
                 break;
             case 'thisMonth':
-                fromDate = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+                fromDateObj = new Date(today.getFullYear(), today.getMonth(), 1);
+                // toDateObj already set to today
                 break;
             case 'thisYear':
-                fromDate = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
+                fromDateObj = new Date(today.getFullYear(), 0, 1);
+                // toDateObj already set to today
                 break;
             default:
-                fromDate = '';
-                toDate = '';
+                setFilterDateFrom('');
+                setFilterDateTo('');
+                setCurrentPage(1);
+                return;
         }
-        setFilterDateFrom(fromDate);
-        setFilterDateTo(toDate);
+        setFilterDateFrom(fromDateObj.toISOString().split('T')[0]);
+        setFilterDateTo(toDateObj.toISOString().split('T')[0]);
         setCurrentPage(1);
     };
+
 
     const getBookingProgress = (bookings) => {
         const percentage = Math.min((bookings / MAX_BOOKINGS_FOR_VISUALIZATION) * 100, 100);
         return percentage;
     };
 
+    const formatDate = (dateString) => {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'short', day: 'numeric'
+        });
+    };
+
+    // HANDLERS CHO MODAL
+    const handleShowCustomerDetail = (customer) => {
+        setSelectedCustomerDetail(customer);
+        setShowDetailModal(true);
+    };
+
+    const handleCloseCustomerDetail = () => {
+        setShowDetailModal(false);
+        setSelectedCustomerDetail(null);
+    };
+
     return (
         <div className="container-fluid customer-management-page py-3">
-            <h2 className="my-4 page-title">Quản Lý Khách Hàng / Customer Management</h2>
+            <h2 className="my-4 page-title">Customer Management</h2>
 
             <div className="card shadow-sm mb-4 filter-card">
                 <div className="card-body">
                     <div className="row g-3 align-items-end">
                         <div className="col-md-4 col-lg-3">
-                            <label htmlFor="searchTerm" className="form-label">Tìm kiếm từ khóa:</label>
+                            <label htmlFor="searchTerm" className="form-label">Search:</label>
                             <input
                                 type="text"
                                 className="form-control form-control-sm"
                                 id="searchTerm"
-                                placeholder="Tên, email, SĐT..."
+                                placeholder="Name, email, phone..."
                                 value={searchTerm}
                                 onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                             />
                         </div>
 
                         <div className="col-md-4 col-lg-3">
-                            <label className="form-label">Lần đặt gần nhất:</label>
+                            <label className="form-label">Last Booking Date:</label>
                             <div className="input-group input-group-sm">
                                 <input
                                     type="date"
                                     className="form-control"
                                     value={filterDateFrom}
                                     onChange={(e) => { setFilterDateFrom(e.target.value); setCurrentPage(1); }}
-                                    title="Từ ngày"
+                                    title="From Date"
                                 />
                                 <span className="input-group-text">-</span>
                                 <input
@@ -245,26 +296,25 @@ function CustomerManagement() {
                                     className="form-control"
                                     value={filterDateTo}
                                     onChange={(e) => { setFilterDateTo(e.target.value); setCurrentPage(1); }}
-                                    title="Đến ngày"
+                                    title="To Date"
                                 />
                             </div>
                             <div className="mt-1 quick-filters">
-                                <button className="btn btn-xs btn-outline-secondary me-1" onClick={() => handleQuickDateFilter('thisWeek')}>Tuần này</button>
-                                <button className="btn btn-xs btn-outline-secondary me-1" onClick={() => handleQuickDateFilter('thisMonth')}>Tháng này</button>
-                                <button className="btn btn-xs btn-outline-secondary" onClick={() => handleQuickDateFilter('thisYear')}>Năm nay</button>
+                                <button className="btn btn-xs btn-outline-secondary me-1" onClick={() => handleQuickDateFilter('thisWeek')}>This Week</button>
+                                <button className="btn btn-xs btn-outline-secondary me-1" onClick={() => handleQuickDateFilter('thisMonth')}>This Month</button>
+                                <button className="btn btn-xs btn-outline-secondary" onClick={() => handleQuickDateFilter('thisYear')}>This Year</button>
                             </div>
                         </div>
 
                         <div className="col-md-4 col-lg-2">
-                            {/* Cải tiến 1: Nhãn bộ lọc số lần đặt */}
-                            <label htmlFor="filterBookings" className="form-label">Số lần đặt tối thiểu:</label>
+                            <label htmlFor="filterBookings" className="form-label">Min. Bookings:</label>
                             <select
                                 id="filterBookings"
                                 className="form-select form-select-sm"
                                 value={filterBookings}
                                 onChange={(e) => { setFilterBookings(e.target.value); setCurrentPage(1); }}
                             >
-                                <option value="">Tất cả</option>
+                                <option value="">All</option>
                                 <option value="1">1+</option>
                                 <option value="5">5+</option>
                                 <option value="10">10+</option>
@@ -273,33 +323,32 @@ function CustomerManagement() {
                         </div>
 
                         <div className="col-md-4 col-lg-2">
-                            <label htmlFor="filterCustomerType" className="form-label">Loại khách hàng:</label>
+                            <label htmlFor="filterCustomerType" className="form-label">Customer Type:</label>
                             <select
                                 id="filterCustomerType"
                                 className="form-select form-select-sm"
                                 value={filterCustomerType}
                                 onChange={(e) => { setFilterCustomerType(e.target.value); setCurrentPage(1); }}
                             >
-                                <option value="">Tất cả</option>
-                                <option value="Cá nhân">Cá nhân</option>
-                                <option value="Doanh nghiệp">Doanh nghiệp</option>
+                                <option value="">All</option>
+                                {customerTypes.map(type => (
+                                    <option key={type} value={type}>{type}</option>
+                                ))}
                             </select>
                         </div>
 
                         <div className="col-md-4 col-lg-2">
-                            <label htmlFor="filterFrequentSpace" className="form-label">Không gian thường dùng:</label>
+                            <label htmlFor="filterFrequentSpace" className="form-label">Frequent Space:</label>
                             <select
                                 id="filterFrequentSpace"
                                 className="form-select form-select-sm"
                                 value={filterFrequentSpace}
                                 onChange={(e) => { setFilterFrequentSpace(e.target.value); setCurrentPage(1); }}
                             >
-                                <option value="">Tất cả</option>
-                                <option value="Phòng họp nhỏ">Phòng họp nhỏ</option>
-                                <option value="Phòng họp lớn">Phòng họp lớn</option>
-                                <option value="Chỗ ngồi cố định">Chỗ ngồi cố định</option>
-                                <option value="Chỗ ngồi linh hoạt">Chỗ ngồi linh hoạt</option>
-                                <option value="Văn phòng riêng">Văn phòng riêng</option>
+                                <option value="">All</option>
+                                {frequentSpaces.map(space => (
+                                    <option key={space} value={space}>{space}</option>
+                                ))}
                             </select>
                         </div>
                     </div>
@@ -307,11 +356,11 @@ function CustomerManagement() {
                         <div className="col text-end">
                             <button
                                 className="btn btn-sm btn-success"
-                                onClick={() => alert('Mở form thêm khách hàng mới!')}
-                                title="Thêm khách hàng mới vào hệ thống"
+                                onClick={() => alert('Open new customer form!')}
+                                title="Add a new customer to the system"
                             >
-                                {/* <i className="bi bi-plus-circle me-1"></i>  */}
-                                Thêm Khách Hàng
+                                {/* <i className="bi bi-plus-circle me-1"></i> */}
+                                Add Customer
                             </button>
                         </div>
                     </div>
@@ -320,11 +369,10 @@ function CustomerManagement() {
 
             <div className="card shadow-sm customer-list-card">
                 <div className="card-header bg-light">
-                    <h5 className="mb-0">Danh Sách Khách Hàng</h5>
+                    <h5 className="mb-0">Customer List</h5>
                 </div>
-                <div className="card-body p-0"> {/* p-0 để table chiếm toàn bộ card-body */}
+                <div className="card-body p-0">
                     <div className="table-responsive">
-                        {/* Cải tiến 3: Thêm phản hồi hover (table-hover của Bootstrap) */}
                         <table className="table table-hover table-striped align-middle mb-0">
                             <thead className="table-light">
                                 <tr>
@@ -332,22 +380,22 @@ function CustomerManagement() {
                                         ID {getSortIndicator('id')}
                                     </th>
                                     <th onClick={() => handleSort('name')} className="sortable text-nowrap">
-                                        Tên Khách Hàng {getSortIndicator('name')}
+                                        Customer Name {getSortIndicator('name')}
                                     </th>
                                     <th onClick={() => handleSort('email')} className="sortable text-nowrap">
                                         Email {getSortIndicator('email')}
                                     </th>
-                                    <th className="text-nowrap">Số Điện Thoại</th>
+                                    <th className="text-nowrap">Phone Number</th>
                                     <th onClick={() => handleSort('bookings')} className="sortable text-center text-nowrap">
-                                        Số Lần Đặt {getSortIndicator('bookings')}
+                                        Bookings {getSortIndicator('bookings')}
                                     </th>
                                     <th onClick={() => handleSort('lastBookingDate')} className="sortable text-nowrap">
-                                        Lần Đặt Gần Nhất {getSortIndicator('lastBookingDate')}
+                                        Last Booking {getSortIndicator('lastBookingDate')}
                                     </th>
                                     <th onClick={() => handleSort('totalSpending')} className="sortable text-end text-nowrap">
-                                        Tổng Chi Tiêu (VNĐ) {getSortIndicator('totalSpending')}
+                                        Total Spent (VND) {getSortIndicator('totalSpending')}
                                     </th>
-                                    <th className="text-center text-nowrap">Hành Động</th>
+                                    <th className="text-center text-nowrap">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -356,22 +404,22 @@ function CustomerManagement() {
                                         <tr key={customer.id} className="customer-row">
                                             <td>{customer.id}</td>
                                             <td>
-                                                <a href="#" onClick={(e) => { e.preventDefault(); alert(`Xem chi tiết KH: ${customer.name}`) }} title={`Xem chi tiết ${customer.name}`}>
+                                                {/* Có thể làm tên click để mở modal cũng được, hoặc chỉ giữ nút View */}
+                                                <a href="#" onClick={(e) => { e.preventDefault(); handleShowCustomerDetail(customer); }} title={`View details for ${customer.name}`}>
                                                     {customer.name}
                                                 </a>
                                             </td>
                                             <td>{customer.email}</td>
                                             <td>{customer.phone}</td>
-                                            {/* Cải tiến 2: Trực quan hóa cột "Số Lần Đặt" */}
                                             <td className="text-center">
                                                 <div>{customer.bookings}</div>
                                                 <div
                                                     className="progress"
                                                     style={{ height: '6px', marginTop: '4px', backgroundColor: '#e9ecef' }}
-                                                    title={`${customer.bookings} lần đặt`}
+                                                    title={`${customer.bookings} bookings`}
                                                 >
                                                     <div
-                                                        className="progress-bar bg-primary" // Sử dụng màu chủ đạo
+                                                        className="progress-bar bg-primary"
                                                         role="progressbar"
                                                         style={{ width: `${getBookingProgress(customer.bookings)}%` }}
                                                         aria-valuenow={customer.bookings}
@@ -380,38 +428,36 @@ function CustomerManagement() {
                                                     ></div>
                                                 </div>
                                             </td>
-                                            <td>{new Date(customer.lastBookingDate).toLocaleDateString('vi-VN')}</td>
-                                            <td className="text-end">{customer.totalSpending?.toLocaleString('vi-VN')}</td>
+                                            <td>{formatDate(customer.lastBookingDate)}</td>
+                                            <td className="text-end">{customer.totalSpending?.toLocaleString('en-US')}</td>
                                             <td className="text-center action-buttons">
-                                                {/* Cải tiến 4: Nhất quán hóa kiểu nút (sử dụng btn-sm và các màu outline cơ bản của Bootstrap) */}
                                                 <button
                                                     className="btn btn-sm btn-outline-primary me-1 mb-1"
-                                                    title="Xem chi tiết thông tin khách hàng"
-                                                    onClick={() => alert(`Xem chi tiết KH: ${customer.name}`)}
+                                                    title="View customer details"
+                                                    onClick={() => handleShowCustomerDetail(customer)} // << KÍCH HOẠT MODAL
                                                 >
-                                                    {/* <i className="bi bi-eye-fill"></i>  */}
-                                                    Xem
+                                                    View
                                                 </button>
                                                 <button
                                                     className="btn btn-sm btn-outline-secondary me-1 mb-1"
-                                                    title="Sửa thông tin khách hàng"
-                                                    onClick={() => alert(`Sửa thông tin KH: ${customer.name}`)}
+                                                    title="Edit customer information"
+                                                    onClick={() => alert(`Edit info for: ${customer.name}`)}
                                                 >
                                                     {/* <i className="bi bi-pencil-fill"></i> */}
-                                                    Sửa
+                                                    Edit
                                                 </button>
                                                 <button
                                                     className="btn btn-sm btn-outline-info me-1 mb-1"
-                                                    title="Gửi tin nhắn cho khách hàng"
-                                                    onClick={() => alert(`Gửi tin nhắn cho KH: ${customer.name}`)}
+                                                    title="Send message to customer"
+                                                    onClick={() => alert(`Send message to: ${customer.name}`)}
                                                 >
                                                     {/* <i className="bi bi-chat-dots-fill"></i> */}
-                                                    Nhắn
+                                                    Message
                                                 </button>
                                                 <button
                                                     className="btn btn-sm btn-outline-success mb-1"
-                                                    title="Thêm ghi chú cho khách hàng"
-                                                    onClick={() => alert(`Thêm ghi chú cho KH: ${customer.name}`)}
+                                                    title="Add note for customer"
+                                                    onClick={() => alert(`Add note for: ${customer.name}`)}
                                                 >
                                                     {/* <i className="bi bi-journal-plus"></i> */}
                                                     Note
@@ -421,7 +467,7 @@ function CustomerManagement() {
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="8" className="text-center p-4">Không tìm thấy khách hàng nào phù hợp.</td>
+                                        <td colSpan="8" className="text-center p-4">No matching customers found.</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -433,7 +479,7 @@ function CustomerManagement() {
                         <nav aria-label="Page navigation">
                             <ul className="pagination justify-content-center mb-0">
                                 <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                                    <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>Trước</button>
+                                    <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>Previous</button>
                                 </li>
                                 {[...Array(totalPages).keys()].map(page => (
                                     <li key={page + 1} className={`page-item ${currentPage === page + 1 ? 'active' : ''}`}>
@@ -441,13 +487,87 @@ function CustomerManagement() {
                                     </li>
                                 ))}
                                 <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                                    <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>Sau</button>
+                                    <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
                                 </li>
                             </ul>
                         </nav>
                     </div>
                 )}
             </div>
+
+
+            {/* CUSTOMER DETAIL MODAL */}
+            {selectedCustomerDetail && (
+                <Modal show={showDetailModal} onHide={handleCloseCustomerDetail} size="lg" centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>
+                            {/* <i className="bi bi-person-lines-fill me-2"></i>  */}
+                            Customer Details: {selectedCustomerDetail.name} ({selectedCustomerDetail.id})
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Row>
+                            <Col md={4} className="text-center mb-3 mb-md-0">
+                                {/* Giả sử có avatarUrl hoặc dùng placeholder */}
+                                <Image
+                                    src={selectedCustomerDetail.avatarUrl || `https://i.pravatar.cc/150?u=${selectedCustomerDetail.id}`}
+                                    roundedCircle
+                                    fluid
+                                    style={{ width: '120px', height: '120px', objectFit: 'cover', border: '3px solid #dee2e6' }}
+                                    alt={selectedCustomerDetail.name}
+                                />
+                                <h5 className="mt-3">{selectedCustomerDetail.name}</h5>
+                                <Badge bg={selectedCustomerDetail.customerType === 'Corporate' ? 'info' : 'secondary'}>
+                                    {selectedCustomerDetail.customerType}
+                                </Badge>
+                            </Col>
+                            <Col md={8}>
+                                <ListGroup variant="flush">
+                                    <ListGroup.Item>
+                                        <strong>Email:</strong> {selectedCustomerDetail.email || 'N/A'}
+                                    </ListGroup.Item>
+                                    <ListGroup.Item>
+                                        <strong>Phone:</strong> {selectedCustomerDetail.phone || 'N/A'}
+                                    </ListGroup.Item>
+                                    <ListGroup.Item>
+                                        <strong>Total Bookings:</strong> {selectedCustomerDetail.bookings}
+                                        <div className="progress mt-1" style={{ height: '8px' }}>
+                                            <div
+                                                className="progress-bar bg-success"
+                                                role="progressbar"
+                                                style={{ width: `${getBookingProgress(selectedCustomerDetail.bookings)}%` }}
+                                                aria-valuenow={selectedCustomerDetail.bookings}
+                                                aria-valuemin="0"
+                                                aria-valuemax={MAX_BOOKINGS_FOR_VISUALIZATION}
+                                            ></div>
+                                        </div>
+                                    </ListGroup.Item>
+                                    <ListGroup.Item>
+                                        <strong>Last Booking:</strong> {formatDate(selectedCustomerDetail.lastBookingDate)}
+                                    </ListGroup.Item>
+                                    <ListGroup.Item>
+                                        <strong>Total Spending:</strong> {selectedCustomerDetail.totalSpending?.toLocaleString('en-US')} VND
+                                    </ListGroup.Item>
+                                    <ListGroup.Item>
+                                        <strong>Frequent Space:</strong> {selectedCustomerDetail.frequentSpace || 'N/A'}
+                                    </ListGroup.Item>
+                                    {/* Thêm các thông tin chi tiết khác nếu có */}
+                                </ListGroup>
+                            </Col>
+                        </Row>
+                        {/* Có thể thêm tab để xem lịch sử đặt chỗ của khách hàng này */}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="outline-secondary" onClick={() => alert(`Edit customer: ${selectedCustomerDetail.name}`)}>
+                            {/* <i className="bi bi-pencil-square me-1"></i>  */}
+                            Edit Customer
+                        </Button>
+                        <Button variant="secondary" onClick={handleCloseCustomerDetail}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            )}
         </div>
     );
 }

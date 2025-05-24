@@ -3,6 +3,7 @@ import axios from 'axios';
 import store from '../store';
 // const API_BASE_URL = 'http://localhost:5035/api'; // Thay bằng URL backend thực tế của bạn
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // Thay bằng URL backend thực tế của bạn
+import { logout, refreshTokenSuccess, loginSuccess } from '../store/reducers/authSlice';
 
 const api = axios.create({
     baseURL: API_BASE_URL,
@@ -111,7 +112,7 @@ api.interceptors.response.use(
                 // và response là { accessToken: "...", accessTokenExpiresAt: "..." }
                 // (Có thể có refreshToken mới nếu backend xoay vòng)
                 const refreshResponse = await api.post(`/auth/refresh-token`, {
-                    refreshToken: currentRefreshToken // Gửi đúng key "refreshToken"
+                    RefreshToken: currentRefreshToken // Gửi đúng key "refreshToken"
                 });
 
                 if (refreshResponse.data && refreshResponse.data.accessToken) {
@@ -119,7 +120,11 @@ api.interceptors.response.use(
                     // Nếu backend trả về refreshToken mới (trong trường hợp xoay vòng refresh token),
                     // thì cũng cần lấy nó từ refreshResponse.data.refreshToken
                     const { accessToken, accessTokenExpiresAt, refreshToken: newRefreshTokenIfAny } = refreshResponse.data;
-                    console.log("Refresh token thành công. AccessToken mới:", accessToken);
+                    console.log("REFRESH SUCCESS - Old Refresh Token used:", currentRefreshToken);
+                    console.log("REFRESH SUCCESS - New Access Token:", accessToken);
+                    console.log("REFRESH SUCCESS - New Refresh Token (if any):", newRefreshTokenIfAny); // QUAN TRỌNG
+
+
 
                     store.dispatch(refreshTokenSuccess({
                         accessToken,
@@ -159,39 +164,39 @@ api.interceptors.response.use(
 ////////////////////////////////////////////////
 
 // Hàm để lấy token từ localStorage (hoặc nơi bạn lưu trữ token)
-const getToken = () => {
-    try {
-        const persistedState = localStorage.getItem('persist:root');
-        if (persistedState) {
-            const rootState = JSON.parse(persistedState);
-            if (rootState.auth) {
-                const authState = JSON.parse(rootState.auth); // Parse lần 2
-                return authState.token;
-            }
-        }
-    } catch (error) {
-        console.error("Lỗi khi lấy token từ Local Storage:", error);
-    }
-    return null;
-};
+// const getToken = () => {
+//     try {
+//         const persistedState = localStorage.getItem('persist:root');
+//         if (persistedState) {
+//             const rootState = JSON.parse(persistedState);
+//             if (rootState.auth) {
+//                 const authState = JSON.parse(rootState.auth); // Parse lần 2
+//                 return authState.token;
+//             }
+//         }
+//     } catch (error) {
+//         console.error("Lỗi khi lấy token từ Local Storage:", error);
+//     }
+//     return null;
+// };
 
 
 // Thêm interceptor để thêm token vào header trước mỗi request
-api.interceptors.request.use(
-    (config) => {
-        const token = getToken();
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        else {
-            delete config.headers.Authorization;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+// api.interceptors.request.use(
+//     (config) => {
+//         const token = getToken();
+//         if (token) {
+//             config.headers.Authorization = `Bearer ${token}`;
+//         }
+//         else {
+//             delete config.headers.Authorization;
+//         }
+//         return config;
+//     },
+//     (error) => {
+//         return Promise.reject(error);
+//     }
+// );
 
 export const getSpaces = async (params = {}) => {
     try {
@@ -228,25 +233,16 @@ export const getOwnerSpaces = async () => {
     }
 };
 
-export const createAmenity = async (amenity) => {
-    try {
-        const response = await api.post('/Amenity', amenity);
-        console.log("<== amenity res: ", response);
-        return response.data;
-    } catch (error) {
-        console.error("Lỗi khi tạo tien ich:", error);
-        throw error;
-    }
-};
-export const createSpace = async (space) => {
-    try {
-        const response = await api.post('/Spaces', space);
-        return response.data;
-    } catch (error) {
-        console.error("Lỗi khi tạo không gian:", error);
-        throw error;
-    }
-};
+
+// export const createSpace = async (space) => {
+//     try {
+//         const response = await api.post('/Spaces', space);
+//         return response.data;
+//     } catch (error) {
+//         console.error("Lỗi khi tạo không gian:", error);
+//         throw error;
+//     }
+// };
 
 export const updateSpace = async (spaceId, space) => {
     try {
@@ -268,20 +264,221 @@ export const deleteSpace = async (spaceId) => {
     }
 };
 
+// Các API calls khác cho các endpoints khác (ví dụ: users, bookings, v.v.)
+// export const getUsers = async () => { ... };
+// export const createBooking = async (bookingData) => { ... };
 
-export const getAmenities = async () => {
+/**
+ * Lấy danh sách tất cả tiện nghi.
+ * GET /api/amenities
+ * @returns {Promise<Array<Object>>} Danh sách tiện nghi
+ */
+export const getAllAmenities = async () => {
     try {
-        const response = await api.get('/Amenity'); // Gọi endpoint /Amenity
-        console.log("=> Check getAmenities, resopnse.data:", response.data);
+        const response = await api.get('/amenities'); // Sửa endpoint
+        console.log("=> getAllAmenities response.data:", response.data);
         return response.data;
     } catch (error) {
-        console.error("Error fetching amenities:", error);
+        console.error("Lỗi khi lấy danh sách tiện nghi:", error.response ? error.response.data : error.message);
         throw error;
     }
 };
 
-// Các API calls khác cho các endpoints khác (ví dụ: users, bookings, v.v.)
-// export const getUsers = async () => { ... };
-// export const createBooking = async (bookingData) => { ... };
+/**
+ * Lấy thông tin chi tiết một tiện nghi bằng ID.
+ * GET /api/amenities/{id}
+ * @param {string} amenityId ID của tiện nghi
+ * @returns {Promise<Object>} Thông tin chi tiết tiện nghi
+ */
+export const getAmenityById = async (amenityId) => {
+    try {
+        const response = await api.get(`/amenities/${amenityId}`);
+        console.log(`=> getAmenityById(${amenityId}) response.data:`, response.data);
+        return response.data;
+    } catch (error) {
+        console.error(`Lỗi khi lấy tiện nghi ID ${amenityId}:`, error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
+/**
+ * Tạo một tiện nghi mới.
+ * POST /api/amenities
+ * @param {Object} amenityData Dữ liệu tiện nghi (ví dụ: { name: "string", description: "string" })
+ * @returns {Promise<Object>} Tiện nghi vừa được tạo
+ */
+export const createNewAmenity = async (amenityData) => { // Đổi tên hàm để tránh trùng với hàm cũ (nếu vẫn muốn giữ)
+    try {
+        // amenityData nên có dạng { name: "...", description: "..." }
+        const response = await api.post('/amenities', amenityData); // Sửa endpoint
+        console.log("=> createNewAmenity response.data:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi tạo tiện nghi mới:", error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+// Nếu bạn muốn ghi đè hàm createAmenity cũ, bạn có thể đặt tên giống:
+// export const createAmenity = async (amenityData) => { ... }
+
+/**
+ * Cập nhật thông tin một tiện nghi.
+ * PUT /api/amenities/{id}
+ * @param {string} amenityId ID của tiện nghi cần cập nhật
+ * @param {Object} amenityData Dữ liệu cập nhật (ví dụ: { name: "string", description: "string" })
+ * @returns {Promise<Object>} Tiện nghi sau khi cập nhật
+ */
+export const updateAmenity = async (amenityId, amenityData) => {
+    try {
+        // amenityData nên có dạng { name: "...", description: "..." }
+        const response = await api.put(`/amenities/${amenityId}`, amenityData);
+        console.log(`=> updateAmenity(${amenityId}) response.data:`, response.data);
+        return response.data;
+    } catch (error) {
+        console.error(`Lỗi khi cập nhật tiện nghi ID ${amenityId}:`, error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
+/**
+ * Xóa một tiện nghi.
+ * DELETE /api/amenities/{id}
+ * @param {string} amenityId ID của tiện nghi cần xóa
+ * @returns {Promise<void>}
+ */
+export const deleteAmenity = async (amenityId) => {
+    try {
+        await api.delete(`/amenities/${amenityId}`);
+        console.log(`=> deleteAmenity(${amenityId}): Xóa thành công`);
+        // Không có response body cho DELETE thành công theo mô tả
+    } catch (error) {
+        console.error(`Lỗi khi xóa tiện nghi ID ${amenityId}:`, error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
+// Hàm getAmenities cũ của bạn trỏ đến /Amenity, tôi đã tạo getAllAmenities mới trỏ đến /amenities
+// Nếu bạn muốn thay thế hoàn toàn, hãy đổi tên getAllAmenities thành getAmenities
+// và xóa hàm createAmenity cũ nếu createNewAmenity thay thế nó.
+// Giữ lại hàm getAmenities cũ nếu nó vẫn được sử dụng ở đâu đó với endpoint /Amenity
+export const getAmenities = async () => { // Hàm cũ của bạn
+    try {
+        const response = await api.get('/Amenity'); // Endpoint cũ
+        console.log("=> Check getAmenities (OLD, /Amenity), resopnse.data:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching amenities (OLD, /Amenity):", error);
+        throw error;
+    }
+};
+export const createAmenity = async (amenity) => { // Hàm cũ của bạn
+    try {
+        const response = await api.post('/Amenity', amenity); // Endpoint cũ
+        console.log("<== amenity res (OLD, /Amenity): ", response);
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi tạo tien ich (OLD, /Amenity):", error);
+        throw error;
+    }
+};
+
+
+/**
+ * Tạo một dịch vụ mới.
+ * POST /api/services
+ * @param {Object} serviceData Dữ liệu dịch vụ (ví dụ: { name, description, basePrice, unit, isAvailableAdHoc, isPricedPerBooking })
+ * @returns {Promise<Object>} Dịch vụ vừa được tạo
+ */
+export const createNewService = async (serviceData) => {
+    try {
+        const response = await api.post('/services', serviceData);
+        console.log("=> createNewService response.data:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi tạo dịch vụ mới:", error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
+/**
+ * Lấy danh sách tất cả dịch vụ.
+ * GET /api/services
+ * @returns {Promise<Array<Object>>} Danh sách dịch vụ
+ */
+export const getAllServices = async () => {
+    try {
+        const response = await api.get('/services');
+        console.log("=> getAllServices response.data:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi lấy danh sách dịch vụ:", error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
+/**
+ * Lấy thông tin chi tiết một dịch vụ bằng ID.
+ * GET /api/services/{id}
+ * @param {string} serviceId ID của dịch vụ
+ * @returns {Promise<Object>} Thông tin chi tiết dịch vụ
+ */
+export const getServiceById = async (serviceId) => {
+    try {
+        const response = await api.get(`/services/${serviceId}`);
+        console.log(`=> getServiceById(${serviceId}) response.data:`, response.data);
+        return response.data;
+    } catch (error) {
+        console.error(`Lỗi khi lấy dịch vụ ID ${serviceId}:`, error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
+/**
+ * Cập nhật thông tin một dịch vụ.
+ * PUT /api/services/{id}
+ * @param {string} serviceId ID của dịch vụ cần cập nhật
+ * @param {Object} serviceData Dữ liệu cập nhật (ví dụ: { name, description, basePrice, unit, isAvailableAdHoc, isPricedPerBooking })
+ * @returns {Promise<Object>} Dịch vụ sau khi cập nhật
+ */
+export const updateService = async (serviceId, serviceData) => {
+    try {
+        const response = await api.put(`/services/${serviceId}`, serviceData);
+        console.log(`=> updateService(${serviceId}) response.data:`, response.data);
+        return response.data;
+    } catch (error) {
+        console.error(`Lỗi khi cập nhật dịch vụ ID ${serviceId}:`, error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
+/**
+ * Xóa một dịch vụ.
+ * DELETE /api/services/{id}
+ * @param {string} serviceId ID của dịch vụ cần xóa
+ * @returns {Promise<void>}
+ */
+export const deleteService = async (serviceId) => {
+    try {
+        await api.delete(`/services/${serviceId}`);
+        console.log(`=> deleteService(${serviceId}): Xóa thành công`);
+        // API không trả về body cho DELETE thành công
+    } catch (error) {
+        console.error(`Lỗi khi xóa dịch vụ ID ${serviceId}:`, error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+
+// THÊM HÀM NÀY
+
+export const createSpace = async (spaceData) => {
+    try {
+        const response = await api.post('/spaces/with-details', spaceData);
+        console.log("=> space response.data:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi tạo dịch vụ mới:", error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
 
 export default api;

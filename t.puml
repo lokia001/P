@@ -1,0 +1,210 @@
+@startuml
+skinparam ClassAttributeIconStyle stereotype
+hide empty members
+
+title Class Diagram (Mô hình Miền) cho Website Đặt Không Gian
+
+' --- Enumerations ---
+enum Role {
+User,Owner, Admin, Moderator, SysAdmin 
+}
+enum Gender {
+Male, Female, Other, Unknown
+}
+enum SpaceType {
+Individual, Group, MeetingRoom, EntireOffice
+}
+
+enum SpaceStatus {
+Available, Booked, Maintenance }
+enum BookingStatus {
+Pending, Confirmed, CheckedIn, Completed, Overdue, NoShow, Cancelled, Abandoned }
+enum ReviewStatus {
+Pending, Published, Hidden }
+enum PriceUnit { 
+PerHour, PerItem, PerPerson, Fixed, PerBooking }
+
+
+' --- Entities ---
+class User {
+    + Id : Guid
+    + FullName : string
+    + Email : string
+    + Username : string
+    + Role : Role
+    + Gender : Gender
+}
+
+class OwnerProfile {
+    + UserId : Guid <<PK, FK>>
+    + CompanyName : string
+    + ContactInfo : string
+    + BusinessLicenseNumber : string
+    + IsVerified : bool
+}
+
+class Space {
+    + Id : Guid
+    + Name : string
+    + Address : string
+    + Latitude : decimal
+    + Longitude : decimal
+    + Type : SpaceType
+    + Status : SpaceStatus
+    + Capacity : int
+    + BasePrice : decimal
+    + HourlyPrice : decimal?
+    + DailyPrice : decimal?
+}
+
+class Booking {
+    + Id : Guid
+    + UserId : Guid <<FK>>
+    + SpaceId : Guid <<FK>>
+    + StartDateTime : DateTime
+    + EndDateTime : DateTime
+    + ActualCheckIn : DateTime?
+    + ActualCheckOut : DateTime?
+    + BookingCode : string
+    + NumPeople : int
+    + BookingStatus : BookingStatus
+}
+
+class Community {
+    + Id : Guid
+    + Name : string
+    + Slug : string
+    + Description : string
+    + IsPrivate : bool
+    + IsArchived : bool
+    + CreatedByUserId : Guid <<FK>>
+}
+
+class CommunityMember {
+    + CommunityId : Guid <<PK, FK>>
+    + UserId : Guid <<PK, FK>>
+    ' Thêm các thuộc tính khác của thành viên nếu có
+}
+
+class Post {
+    + Id : Guid
+    + CommunityId : Guid <<FK>>
+    + AuthorId : Guid <<FK>>
+    + Title : string
+    + Content : string
+}
+
+class Comment {
+    + Id : Guid
+    + PostId : Guid <<FK>>
+    + UserId : Guid <<FK>>
+    + ParentCommentId : Guid? <<FK>>
+    + Content : string
+    + Upvotes : int
+    + Downvotes : int
+    + IsEdited : bool
+}
+
+class Review {
+    + Id : Guid
+    + BookingId : Guid <<FK>>
+    + UserId : Guid <<FK>>
+    + Rating : int
+    + Comment : string
+    + Status : ReviewStatus
+    + ModeratedByUserId : Guid? <<FK>>
+}
+
+class Service {
+    + Id : Guid
+    + Name : string
+    + Description : string
+    + BasePrice : decimal
+    + Unit : PriceUnit
+    + IsAvailableAdHoc : bool
+    + IsPricedPerBooking : bool
+}
+
+class Amenity {
+    + Id : Guid
+    + Name : string
+    + Description : string
+}
+
+class SpaceAmenity {
+    + SpaceAmenityId : Guid <<PK>> ' Hoặc có thể dùng PK kép (SpaceId, AmenityId)
+    + SpaceId : Guid <<FK>>
+    + AmenityId : Guid <<FK>>
+}
+
+class SpaceImage {
+    + Id : Guid
+    + SpaceId : Guid <<FK>>
+    + ImageUrl : string
+    + DisplayOrder : int
+}
+
+' --- Relationships ---
+
+' User và OwnerProfile (1-0/1)
+User "1" -- "0..1" OwnerProfile : có một >
+
+' User và Space (CreatedBy)
+User "1" -- "0..*" Space : tạo >
+
+' OwnerProfile và Space (Ownership)
+OwnerProfile "1" -- "0..*" Space : sở hữu >
+
+' User và Booking
+User "1" -- "0..*" Booking : tạo đặt chỗ >
+
+' Space và Booking
+Space "1" -- "0..*" Booking : bao gồm trong đặt chỗ >
+
+' User và Community (CreatedBy) - Creator of Community
+User "1" -- "0..*" Community : tạo >
+
+' Community và Post
+Community "1" -- "0..*" Post : chứa >
+
+' User và Post (Author of Post)
+User "1" -- "0..*" Post : là tác giả >
+
+' Mối quan hệ N-N giữa User và Community thông qua CommunityMember (Association Class)
+User "1" -- "0..*" CommunityMember : tham gia >
+Community "1" -- "0..*" CommunityMember : có thành viên >
+
+' Post và Comment
+Post "1" -- "0..*" Comment : có bình luận >
+
+' User và Comment (Author of Comment)
+User "1" -- "0..*" Comment : bình luận >
+
+' Comment tự tham chiếu (Replies)
+Comment "0..1" -- "0..*" Comment : phản hồi cho >
+
+' Booking và Review
+Booking "1" -- "0..*" Review : có đánh giá >
+
+' User và Review (Reviewer)
+User "1" -- "0..*" Review : đánh giá >
+
+' User và Review (Moderator) - Optional
+User "0..1" -- "0..*" Review : kiểm duyệt >
+
+' Space và SpaceImage
+Space "1" -- "0..*" SpaceImage : có hình ảnh >
+
+' Space và Amenity thông qua SpaceAmenity (N-N Association)
+Space "1" -- "0..*" SpaceAmenity
+Amenity "1" -- "0..*" SpaceAmenity
+/'SpaceAmenity "Many-to-Many" Space : có tiện ích >'/
+/'SpaceAmenity "Many-to-Many" Amenity : thuộc về >'/
+
+' Mối quan hệ giữa Service và Space (Nếu cần: N-N thông qua ServiceSpace)
+' Service "1" -- "0..*" ServiceSpace
+' Space "1" -- "0..*" ServiceSpace
+' ServiceSpace "Many-to-Many" Service : cung cấp trong >
+' ServiceSpace "Many-to-Many" Space : có dịch vụ >
+
+@enduml

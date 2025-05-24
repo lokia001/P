@@ -170,6 +170,7 @@ function Navbar() {
             linksConfig = [
                 { path: '/', label: 'home', iconKey: 'home' },
                 { path: '/explore-spaces', label: 'explore_spaces', iconKey: 'explore_spaces' },
+                { path: '/Community', label: 'community', iconKey: 'contact_us' },
                 { path: '/contact-us', label: 'contact_us', iconKey: 'contact_us' },
             ];
         } else if (isRegularUser) {
@@ -180,14 +181,16 @@ function Navbar() {
             ];
         } else if (isOwner) {
             linksConfig = [
-                { path: '/SpaceManagement', label: 'manage_spaces', iconKey: 'manage_spaces' },
+                { path: '/space-management', label: 'manage_spaces', iconKey: 'manage_spaces' },
                 { path: '/BookingManagement', label: 'manage_bookings', iconKey: 'manage_bookings' },
-                { path: '/ReportPage', label: 'reports', iconKey: 'reports' },
+                { path: '/customer-management', label: 'manage_customers', iconKey: 'manage_bookings' },
+                // { path: '/ReportPage', label: 'reports', iconKey: 'reports' },
+                { path: '/facilities-services-management', label: 'amenities' },
             ];
         } else if (isAdmin) {
             linksConfig = [
-                { path: '/dashboard', label: 'system_overview', iconKey: 'system_overview' },
-                { path: '/manage-users', label: 'user_management', iconKey: 'user_management' },
+                { path: '/system-dashboard', label: 'system_overview', iconKey: 'system_overview' },
+                { path: '/system-user-management', label: 'user_management', iconKey: 'user_management' },
                 { path: '/manage-all-spaces', label: 'space_management_admin', iconKey: 'space_management_admin' },
                 { path: '/system-settings', label: 'settings', iconKey: 'settings' },
             ];

@@ -1,5 +1,7 @@
 
 // src/store/index.js
+
+
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import {
     persistStore,
@@ -24,6 +26,8 @@ const persistConfig = {
     storage,
     whitelist: ['auth'], // chỉ persist slice auth
 };
+// Import API slice mới
+import { adminUserApi } from './api/adminUserApi'; // Đảm bảo đường dẫn đúng
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -32,6 +36,10 @@ const rootReducer = combineReducers({
     bookSpace: bookSpaceReducer,
     ownerSpaces: manageSpacesReducer, // Đảm bảo thêm reducer này vào đây với một key
     amenities: amenityReducer, // Add amenityReducer
+    // Thêm reducer của API slice
+    [adminUserApi.reducerPath]: adminUserApi.reducer,
+
+
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -43,8 +51,11 @@ export const store = configureStore({
             serializableCheck: {
                 ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
             },
-        }),
+        }).concat(adminUserApi.middleware)
+
+
 });
+
 
 export const persistor = persistStore(store);
 export default store;

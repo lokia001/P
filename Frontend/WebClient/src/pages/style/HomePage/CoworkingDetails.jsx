@@ -9,14 +9,14 @@ const detailsData = [
         linkHref: '#',
     },
     {
-        title: 'Benefits of Coworking Spaces',
+        title: 'Benefits of Coworking',
         content: 'Recent surveys and research suggests people are more productive and creative when working from a coworking space. With reduced distractions, a collective mindset, and potential cross-cross-pollination of contributing to a collaborative work space, workers can typically work faster and not only finish more work in a coworking environment than other working arrangements.\n\nSmaller businesses and independent professionals find coworking provides affordable office space with important work necessities like high-speed internet, printers, and meeting rooms, resulting in lower startup costs.',
         linkText: 'MORE COWORKING ADVANTAGES',
         linkHref: '#',
     },
     {
-        title: 'Why Coworker?',
-        content: 'Coworker is a website where you can search, find, and reserve shared workspace, including coworking desks, private offices, meeting rooms,and virtual offices near you. Coworking spaces list their workspace on Coworker and outline what features and amenities their space can offer. Professionals and companies can then compare all the available coworking spaces to find one that has the services and amenities that fit their requirements.\n\nOnce you\'ve found the coworking space that is best for you, you can inquire about booking a schedule a tour, and reserve your space.',
+        title: 'Why WorkZen?',
+        content: 'WorkZen is a website where you can search, find, and reserve shared workspace, including coworking desks, private offices, meeting rooms,and virtual offices near you. Coworking spaces list their workspace on WorkZen and outline what features and amenities their space can offer. Professionals and companies can then compare all the available coworking spaces to find one that has the services and amenities that fit their requirements.\n\nOnce you\'ve found the coworking space that is best for you, you can inquire about booking a schedule a tour, and reserve your space.',
         linkText: '',
         linkHref: '',
     },

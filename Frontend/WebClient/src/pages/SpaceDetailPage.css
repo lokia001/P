@@ -1,0 +1,321 @@
+/* src/pages/SpaceDetailPage.css */
+.space-detail-page-wrapper {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.space-detail-page-customer .top-navigation-bar {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.space-detail-page-customer .back-link {
+    font-size: 0.9rem;
+}
+
+.space-detail-page-customer .breadcrumb .breadcrumb-item a {
+    text-decoration: none;
+    color: var(--bs-link-color);
+}
+
+.space-detail-page-customer .breadcrumb .breadcrumb-item.active {
+    color: #6c757d;
+}
+
+.space-detail-page-customer .main-space-header-section .space-main-title {
+    color: #2c3e50;
+}
+
+/* Image Gallery */
+.space-detail-page-customer .gallery-main-image {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border: 1px solid #dee2e6;
+}
+
+.space-detail-page-customer .thumbnail-grid-col .gallery-thumbnail {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.space-detail-page-customer .thumbnail-grid-col .gallery-thumbnail:hover {
+    transform: scale(1.05);
+}
+
+.space-detail-page-customer .thumbnail-grid-col .gallery-thumbnail.active {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.5);
+}
+
+/* Action Panel / Sidebar */
+.space-detail-page-customer .action-panel-card {
+    border: 1px solid #e0e0e0;
+}
+
+@media (min-width: 992px) {
+
+    /* lg breakpoint */
+    .space-detail-page-customer .sticky-lg-top {
+        position: -webkit-sticky;
+        /* For Safari */
+        position: sticky;
+        top: 80px;
+        /* Điều chỉnh dựa trên chiều cao sticky-nav + khoảng cách mong muốn */
+        z-index: 1019;
+        /* Thấp hơn sticky-section-nav */
+    }
+}
+
+.space-detail-page-customer .action-panel-card .pricing-summary h4 {
+    color: var(--bs-success);
+    font-weight: 700;
+}
+
+.space-detail-page-customer .action-panel-card .book-now-btn {
+    background-color: var(--bs-primary);
+    /* Hoặc màu cam như trước */
+    border-color: var(--bs-primary);
+}
+
+
+/* Sticky Section Navigation */
+.sticky-section-nav {
+    top: 0;
+    /* Dính sát top khi cuộn */
+    z-index: 1020;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    /* Nền mờ */
+    backdrop-filter: blur(5px);
+    border-bottom: 1px solid #dee2e6;
+}
+
+.sticky-section-nav .nav-link {
+    font-weight: 500;
+    color: #495057;
+    padding: 0.6rem 1rem;
+    /* Giảm padding một chút */
+    border-bottom: 3px solid transparent;
+    transition: color 0.2s ease, border-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.sticky-section-nav .nav-link:hover,
+.sticky-section-nav .nav-link.active {
+    /* Giả sử bạn sẽ thêm class 'active' khi cuộn đến section */
+    color: var(--bs-primary);
+    border-bottom-color: var(--bs-primary);
+}
+
+/* Cho phép cuộn ngang trên mobile nếu nav quá dài */
+.sticky-section-nav .nav {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.sticky-section-nav .nav::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Opera */
+}
+
+
+/* Main Content Sections */
+.space-detail-page-customer .space-section {
+    padding-top: 70px;
+    /* Khoảng cách để không bị che bởi sticky nav (điều chỉnh nếu cần) */
+    /* margin-top: -60px; */
+    /* Bù lại padding-top để scrollIntoView chính xác (điều chỉnh nếu cần) */
+}
+
+.space-detail-page-customer .space-section .card-body {
+    /* Styles chung cho card-body của các section nếu cần */
+}
+
+.space-detail-page-customer .section-title {
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
+}
+
+.space-detail-page-customer .section-title svg {
+    font-size: 1.2em;
+    /* Kích thước icon trong tiêu đề section */
+}
+
+
+/* Amenities Tab */
+.space-detail-page-customer .amenities-grid .amenity-item {
+    font-size: 0.95rem;
+    /* background-color: #f8f9fa; */
+    /* Bỏ nếu muốn nền trắng của card */
+}
+
+.space-detail-page-customer .amenities-grid .amenity-icon svg {
+    /* color: var(--bs-primary); */
+    /* Màu icon đã được set trong JSX */
+}
+
+/* Pricing Tab */
+.space-detail-page-customer .pricing-option-card {
+    border: 1px solid #e0e0e0;
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    /* For popular badge */
+    display: flex;
+    /* Đảm bảo card là flex container */
+    flex-direction: column;
+    /* Sắp xếp nội dung card theo chiều dọc */
+    height: 100%;
+    /* Quan trọng: làm cho các card trong cùng Row có chiều cao bằng nhau */
+}
+
+.space-detail-page-customer .pricing-option-card:hover {
+    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.1);
+    border-color: var(--bs-primary);
+}
+
+.space-detail-page-customer .pricing-option-card.popular {
+    border-color: var(--bs-warning);
+    box-shadow: 0 0 0 0.2rem rgba(var(--bs-warning-rgb), 0.25);
+}
+
+.space-detail-page-customer .popular-badge {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    background-color: var(--bs-warning);
+    color: #212529;
+    padding: 0.25em 0.6em;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 0.25rem;
+    transform: rotate(5deg);
+    z-index: 1;
+    /* Đảm bảo badge nổi lên trên */
+}
+
+.space-detail-page-customer .pricing-option-card .card-body {
+    display: flex;
+    /* Làm cho card-body là flex container */
+    flex-direction: column;
+    /* Sắp xếp các phần tử con theo chiều dọc */
+    flex-grow: 1;
+    /* Cho phép card-body co giãn để lấp đầy card */
+    text-align: center;
+    /* Giữ lại text-align center cho nội dung */
+}
+
+.space-detail-page-customer .pricing-option-card .pricing-icon {
+    font-size: 2.5em;
+    /* Tăng kích thước icon một chút */
+    color: var(--bs-primary);
+    margin-bottom: 0.75rem;
+    /* Thêm khoảng cách dưới icon */
+}
+
+.space-detail-page-customer .pricing-option-card .card-subtitle {
+    /* Tên plan */
+    font-weight: 500;
+}
+
+.space-detail-page-customer .pricing-option-card .price-value {
+    color: var(--bs-primary);
+    font-weight: 700;
+    /* Làm đậm giá */
+}
+
+.space-detail-page-customer .pricing-option-card .price-unit {
+    font-size: 0.85rem;
+}
+
+.space-detail-page-customer .pricing-option-card .list-group {
+    margin-top: auto;
+    /* Đẩy danh sách features xuống dưới cùng của card-body */
+    text-align: left;
+    /* Căn trái cho danh sách features */
+}
+
+.space-detail-page-customer .pricing-option-card .list-group-item {
+    padding-top: 0.4rem;
+    /* Điều chỉnh padding */
+    padding-bottom: 0.4rem;
+    font-size: 0.85rem;
+    /* Kích thước chữ nhỏ hơn cho features */
+    background-color: transparent;
+    /* Nền trong suốt cho list item */
+}
+
+.space-detail-page-customer .pricing-option-card .list-group-item svg {
+    font-size: 0.9em;
+    /* Kích thước icon check nhỏ hơn */
+}
+
+.space-detail-page-customer .pricing-option-card {
+    /* ... (như cũ) ... */
+}
+
+.space-detail-page-customer .popular-badge {
+    /* ... (như cũ) ... */
+}
+
+
+/* Map Tab */
+.space-detail-page-customer .interactive-map-container img {
+    border: 1px solid #dee2e6;
+}
+
+.space-detail-page-customer .overview-text-block {
+    line-height: 1.7;
+    color: #495057;
+}
+
+/* Reviews Tab */
+.space-detail-page-customer .review-summary-col .display-2 {
+    line-height: 1;
+}
+
+.space-detail-page-customer .review-item-card {
+    border: 1px solid #e9ecef;
+}
+
+.space-detail-page-customer .review-user-name {
+    font-weight: 500;
+}
+
+.space-detail-page-customer .review-date {
+    font-size: 0.8rem;
+}
+
+.space-detail-page-customer .review-stars svg {
+    font-size: 0.9rem;
+}
+
+.space-detail-page-customer .review-text {
+    font-size: 0.9rem;
+    color: #343a40;
+    line-height: 1.6;
+}
+
+/* src/pages/SpaceDetailPage.css */
+/* ... (các style đã có) ... */
+
+.space-detail-page-customer .interactive-map-container .location-static-map {
+    border: 1px solid #dee2e6;
+    width: 100%;
+    /* Đảm bảo ảnh map chiếm đủ chiều rộng */
+    height: auto;
+    /* Giữ tỷ lệ khung hình */
+    max-height: 400px;
+    /* Giới hạn chiều cao tối đa của ảnh map */
+    object-fit: cover;
+    /* Có thể làm ảnh bị crop nếu tỷ lệ không khớp size yêu cầu */
+}

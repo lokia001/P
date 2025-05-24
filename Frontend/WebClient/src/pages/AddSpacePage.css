@@ -1,0 +1,38 @@
+/* Optional: Styles for AddSpacePage */
+.add-space-page .section-title {
+    border-bottom: 2px solid #0d6efd;
+    /* Primary color */
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem !important;
+    font-size: 1.25rem;
+    color: #343a40;
+}
+
+.add-space-page .card-header {
+    font-size: 1.4rem;
+}
+
+.add-space-page .form-label {
+    font-weight: 500;
+}
+
+/* In your AddSpacePage.css or a global CSS file */
+.amenities-checkbox-group,
+.services-checkbox-group {
+    max-height: 200px;
+    /* Or any height you prefer */
+    overflow-y: auto;
+    background-color: #fdfdff;
+    /* Slightly off-white background */
+}
+
+.amenities-checkbox-group .form-check,
+.services-checkbox-group .form-check {
+    margin-bottom: 0.5rem;
+    /* Spacing between checkboxes */
+}
+
+.amenities-checkbox-group .form-check-label,
+.services-checkbox-group .form-check-label {
+    font-size: 0.9rem;
+}

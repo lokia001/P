@@ -34,18 +34,18 @@ function HeroSection() {
                 <div className={styles.heroStats}>
                     <div className={styles.statItem}>
                         <span className={styles.statNumber}>172</span>
-                        <span className={styles.statLabel}>Countries</span>
+                        <span className={styles.statLabel}> Companies</span>
                     </div>
                     <div className={styles.statItem}>
-                        <span className={styles.statNumber}>25,000+</span>
-                        <span className={styles.statLabel}>Coworking Spaces</span>
+                        <span className={styles.statNumber}>1000+</span>
+                        <span className={styles.statLabel}> Coworking Spaces</span>
                     </div>
                     <div className={styles.statItem}>
-                        <span className={styles.statNumber}>1.5 Million</span>
-                        <span className={styles.statLabel}>Users</span>
+                        <span className={styles.statNumber}>1 Million</span>
+                        <span className={styles.statLabel}> Users</span>
                     </div>
                 </div>
-                <p className={styles.heroSubtitle}>The World's Largest Coworking Space Marketplace | Search & Get Quotes Today</p>
+                <p className={styles.heroSubtitle}> Top rated space exploration</p>
             </div>
         </section>
     );

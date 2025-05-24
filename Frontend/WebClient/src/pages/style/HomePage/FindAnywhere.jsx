@@ -1,4 +1,5 @@
 import styles from './FindAnywhere.module.css';
+import map from "../../../assets/ban-do-so.jpg";
 
 function FindAnywhere() {
     return (
@@ -6,7 +7,7 @@ function FindAnywhere() {
             <h2>Find Flexible Office Space Anywhere</h2>
             <p>The world's largest network of coworking spaces</p>
             <div className={styles.worldMap}>
-                <img src="/path/to/worldmap.png" alt="World Map" />
+                <img src={map} alt="World Map" />
             </div>
         </section>
     );

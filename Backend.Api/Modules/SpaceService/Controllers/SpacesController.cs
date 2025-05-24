@@ -75,6 +75,9 @@ namespace Backend.Api.Controllers // Hoặc Backend.Api.Modules.SpaceService.Con
                 // 3. Tạo Space
                 // Giả sử ISpaceService có phương thức CreateSpaceAsync nhận một DTO tương tự các trường cơ bản
                 // Hoặc bạn map CreateSpaceWithDetailsRequestDto sang Space entity rồi truyền vào
+
+                // _logger.LogInformation("Attempting to create space. UserId from token: {UserId}, OwnerProfileId from token/DB: {OwnerProfileId}", userId, ownerProfileId);
+
                 var spaceEntityToCreate = _mapper.Map<Space>(request); // AutoMapper đã được cấu hình để bỏ qua collections
                 spaceEntityToCreate.CreatedByUserId = userId;
                 spaceEntityToCreate.OwnerProfileId = ownerProfileId;

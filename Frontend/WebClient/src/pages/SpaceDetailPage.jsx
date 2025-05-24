@@ -1,523 +1,443 @@
-import React, { useState, useMemo } from 'react';
-// QUAN TRỌNG: Đảm bảo dòng import này đầy đủ các component bạn dùng
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
-    Container,
-    Row,
-    Col,
-    Button,
-    ButtonGroup,
-    Table,
-    Card,
-    Form,
-    InputGroup,
-    Pagination,
-    Badge,
-    OverlayTrigger,
-    Tooltip
-} from 'react-bootstrap'; // <--- KIỂM TRA KỸ DÒNG NÀY
+    Container, Row, Col, Card, Image, Button, Navbar,
+    Spinner, Alert, Breadcrumb, Tabs, Tab, ProgressBar, Form, ListGroup, Nav
+} from 'react-bootstrap';
 import {
-    FaThList, FaThLarge, FaPlus, FaSearch, FaEdit, FaEye, FaTools, FaToggleOn, FaToggleOff,
-    FaRegCheckCircle, FaRegClock, FaExclamationTriangle, FaBan, FaCalendarAlt
-    , FaUserFriends // Icon cho sức chứa
-    , FaFilter
-    ,
+    FaArrowLeft, FaMapMarkerAlt, FaWifi, FaPrint, FaCoffee, FaSnowflake, FaSun, FaCouch, FaUtensils, FaKey, FaUserTie,
+    FaStar, FaRegStar, FaStarHalfAlt, FaEdit, FaDollarSign, FaUsers, FaRegCalendarCheck, FaQuoteLeft, FaCheckCircle,
+    FaInfoCircle, FaListUl, FaMoneyBillWave, FaComments, FaStreetView,
 } from 'react-icons/fa';
-// import './SpaceManagementPage.css'; // File CSS cục bộ cho trang này
+import { BsChatSquareQuoteFill, BsGraphUp, BsPeopleFill, BsShieldCheck } from 'react-icons/bs';
 
-// Dữ liệu mẫu (giữ nguyên như trước)
-const mockSpaces = [
-    { id: 'S001', name: 'Phòng Họp Alpha', type: 'Phòng họp', capacity: 10, priceHour: 50000, status: 'available', amenities: ['Máy chiếu', 'Bảng trắng'], floor: 1, position: { x: 1, y: 1 } },
-    { id: 'S002', name: 'Bàn làm việc B01', type: 'Bàn đơn', capacity: 1, priceHour: 15000, status: 'booked', amenities: ['Ổ cắm', 'Wifi'], floor: 1, position: { x: 2, y: 1 } },
-    { id: 'S003', name: 'Văn phòng riêng Gamma', type: 'Văn phòng riêng', capacity: 4, priceHour: 80000, status: 'maintenance', amenities: ['Máy lạnh', 'Bàn ghế'], floor: 1, position: { x: 1, y: 2 } },
-    { id: 'S004', name: 'Khu vực sự kiện Delta', type: 'Khu vực chung', capacity: 50, priceHour: 200000, status: 'available', amenities: ['Âm thanh', 'Sân khấu nhỏ'], floor: 2, position: { x: 1, y: 1 } },
-    { id: 'S005', name: 'Phòng Họp Beta', type: 'Phòng họp', capacity: 6, priceHour: 40000, status: 'inactive', amenities: ['Máy chiếu'], floor: 2, position: { x: 2, y: 1 } },
-    { id: 'S006', name: 'Bàn làm việc B02', type: 'Bàn đơn', capacity: 1, priceHour: 15000, status: 'available', amenities: ['Ổ cắm', 'Wifi'], floor: 1, position: { x: 3, y: 1 } },
-    { id: 'S007', name: 'Phòng Họp Zeta', type: 'Phòng họp', capacity: 12, priceHour: 60000, status: 'booked', amenities: ['Máy chiếu', 'Bảng trắng', 'Video Call'], floor: 2, position: { x: 1, y: 2 } },
-    { id: 'S008', name: 'Văn phòng riêng Epsilon', type: 'Văn phòng riêng', capacity: 2, priceHour: 65000, status: 'available', amenities: ['Máy lạnh', 'Bàn ghế công thái học'], floor: 1, position: { x: 2, y: 2 } },
-    { id: 'S009', name: 'Bàn làm việc C01 (Cửa sổ)', type: 'Bàn đơn', capacity: 1, priceHour: 20000, status: 'maintenance', amenities: ['Ổ cắm', 'Wifi', 'View đẹp'], floor: 2, position: { x: 3, y: 2 } },
-    { id: 'S010', name: 'Phòng stream Theta', type: 'Phòng chuyên dụng', capacity: 1, priceHour: 70000, status: 'available', amenities: ['PC cấu hình cao', 'Green screen', 'Mic'], floor: 1, position: { x: 3, y: 2 } },
-    { id: 'S011', name: 'Phòng stream Theta', type: 'Phòng chuyên dụng', capacity: 1, priceHour: 70000, status: 'available', amenities: ['PC cấu hình cao', 'Green screen', 'Mic'], floor: 1, position: { x: 3, y: 2 } },
-    { id: 'S010', name: 'Phòng stream Theta', type: 'Phòng chuyên dụng', capacity: 1, priceHour: 70000, status: 'available', amenities: ['PC cấu hình cao', 'Green screen', 'Mic'], floor: 1, position: { x: 3, y: 2 } },
-    { id: 'S010', name: 'Phòng stream Theta', type: 'Phòng chuyên dụng', capacity: 1, priceHour: 70000, status: 'available', amenities: ['PC cấu hình cao', 'Green screen', 'Mic'], floor: 1, position: { x: 3, y: 2 } },
-    { id: 'S010', name: 'Phòng stream Theta', type: 'Phòng chuyên dụng', capacity: 1, priceHour: 70000, status: 'available', amenities: ['PC cấu hình cao', 'Green screen', 'Mic'], floor: 1, position: { x: 3, y: 2 } },
-    { id: 'S010', name: 'Phòng stream Theta', type: 'Phòng chuyên dụng', capacity: 1, priceHour: 70000, status: 'available', amenities: ['PC cấu hình cao', 'Green screen', 'Mic'], floor: 1, position: { x: 3, y: 2 } },
-    { id: 'S010', name: 'Phòng stream Theta', type: 'Phòng chuyên dụng', capacity: 1, priceHour: 70000, status: 'available', amenities: ['PC cấu hình cao', 'Green screen', 'Mic'], floor: 1, position: { x: 3, y: 2 } },
+import { getMockSpaceDetailsById } from '../services/mockApi'; // Đảm bảo mockApi.js có dữ liệu images
+import './SpaceDetailPage.css';
 
-];
+// THAY THẾ BẰNG API KEY CỦA BẠN (TỐT NHẤT LÀ QUA BIẾN MÔI TRƯỜNG)
+// LƯU Ý: API KEY BẠN CUNG CẤP SẼ ĐƯỢC SỬ DỤNG Ở ĐÂY. HÃY BẢO VỆ NÓ!
+const GOOGLE_MAPS_API_KEY = "abc";
 
-const ITEMS_PER_PAGE = 5;
+// Helper Components
+const TopBar = ({ locationHierarchy = [], name }) => {
+    const navigate = useNavigate();
+    return (
+        <Row className="top-navigation-bar align-items-center py-2 mb-3">
+            <Col xs="auto">
+                <Button variant="link" onClick={() => navigate(-1)} className="back-link p-0 text-decoration-none text-muted">
+                    <FaArrowLeft className="me-2" /> Back to Search
+                </Button>
+            </Col>
+            <Col className="text-end">
+                <Breadcrumb listProps={{ className: "mb-0 justify-content-end small" }}>
+                    {locationHierarchy.map((item, index) => (
+                        <Breadcrumb.Item key={index} linkAs={Link} linkProps={{ to: `/spaces?location=${encodeURIComponent(item)}` }}>
+                            {item}
+                        </Breadcrumb.Item>
+                    ))}
+                    <Breadcrumb.Item active>{name}</Breadcrumb.Item>
+                </Breadcrumb>
+            </Col>
+        </Row>
+    );
+};
 
-const SpaceDetailPage = () => {
-    alert("SpaceManagementPage IS BEING CALLED - TOP OF FUNCTION");
-    const [spaces, setSpaces] = useState(mockSpaces);
-    const [viewMode, setViewMode] = useState('list');
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterStatus, setFilterStatus] = useState('');
-    const [filterType, setFilterType] = useState('');
-    const [currentPage, setCurrentPage] = useState(1);
-    // START: THÊM STATE CHO BỘ LỌC SỨC CHỨA
-    const [filterCapacity, setFilterCapacity] = useState(''); // Lưu trữ giá trị nhập vào
-    // END: THÊM STATE CHO BỘ LỌC SỨC CHỨA
+const MainSpaceHeader = ({ name }) => (
+    <Row className="main-space-header-section mb-4">
+        <Col><h1 className="space-main-title display-5 fw-bold">{name}</h1></Col>
+    </Row>
+);
 
-    // START: THÊM STATE CHO BỘ LỌC NÂNG CAO (GIÁ)
-    const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-    const [filterPriceMin, setFilterPriceMin] = useState('');
-    const [filterPriceMax, setFilterPriceMax] = useState('');
-    // END: THÊM STATE CHO BỘ LỌC NÂNG CAO (GIÁ)
+// SỬA LẠI IMAGE GALLERY
+const ImageGallery = ({ images = [], currentMainImage, onThumbnailClick }) => {
+    if (!images || images.length === 0) {
+        // Hiển thị ảnh placeholder nếu không có ảnh nào
+        return (
+            <Row className="image-gallery-section g-2 mb-4">
+                <Col xs={12} className="large-image-col">
+                    <Image src="https://via.placeholder.com/800x500/e0e0e0/6c757d?text=No+Image+Available" alt="No image available" fluid rounded className="gallery-main-image shadow-sm" />
+                </Col>
+            </Row>
+        );
+    }
 
-    // // START: TÍNH TOÁN DỮ LIỆU THỐNG KÊ
-    // const stats = useMemo(() => {
-    //     const total = mockSpaces.length; // Sử dụng mockSpaces gốc để có tổng số không thay đổi bởi filter
-    //     const available = mockSpaces.filter(s => s.status === 'available').length;
-    //     const booked = mockSpaces.filter(s => s.status === 'booked').length;
-    //     const maintenance = mockSpaces.filter(s => s.status === 'maintenance').length;
-    //     const inactive = mockSpaces.filter(s => s.status === 'inactive').length;
-    //     return { total, available, booked, maintenance, inactive };
-    // }, [mockSpaces]); // Phụ thuộc vào mockSpaces nếu nó có thể thay đổi từ bên ngoài
-    // // END: TÍNH TOÁN DỮ LIỆU THỐNG KÊ
-
-    // START: CẬP NHẬT getStatusBadge ĐỂ THÊM ICON
-    const getStatusBadge = (status, showIcon = true) => {
-        let icon = null;
-        let text = '';
-        let variant = 'light';
-        let textColor = 'dark';
-
-        switch (status) {
-            case 'available':
-                icon = showIcon ? <FaRegCheckCircle className="me-1" /> : null;
-                text = 'Còn trống';
-                variant = 'success';
-                textColor = 'white'; // Đổi màu chữ cho dễ đọc trên nền đậm
-                break;
-            case 'booked':
-                icon = showIcon ? <FaRegClock className="me-1" /> : null;
-                text = 'Đã đặt';
-                variant = 'warning';
-                textColor = 'dark';
-                break;
-            case 'maintenance':
-                icon = showIcon ? <FaExclamationTriangle className="me-1" /> : null;
-                text = 'Bảo trì';
-                variant = 'danger';
-                textColor = 'white';
-                break;
-            case 'inactive':
-                icon = showIcon ? <FaBan className="me-1" /> : null;
-                text = 'Không hoạt động';
-                variant = 'secondary';
-                textColor = 'white';
-                break;
-            default:
-                text = status;
-                break;
-        }
-        // return <Badge bg={variant} text={textColor}>{icon}{text}</Badge>; // Cũ
-        // Để Badge có màu chữ tùy chỉnh, Bootstrap 5.1+ hỗ trợ textColor trực tiếp
-        // Nếu dùng Bootstrap cũ hơn, có thể cần class CSS tùy chỉnh cho màu chữ
-        return <Badge bg={variant} className={textColor === 'white' ? 'text-white' : 'text-dark'}>{icon}{text}</Badge>;
-    };
-    // END: CẬP NHẬT getStatusBadge ĐỂ THÊM ICON
-
-    // START: THÊM HÀM CHO NÚT XEM LỊCH (YÊU CẦU 7 - CHUẨN BỊ)
-    const handleViewCalendar = (spaceId, spaceName) => {
-        console.log(`View calendar for space ${spaceName} (ID: ${spaceId})`);
-        // Logic mở modal lịch hoặc chuyển trang sẽ ở đây
-    };
-    // END: THÊM HÀM CHO NÚT XEM LỊCH
-
-    // const spaceTypes = useMemo(() => [...new Set(mockSpaces.map(s => s.type))], []);
-
-    // const filteredSpaces = useMemo(() => {
-    //     return spaces
-    //         .filter(space =>
-    //             space.name.toLowerCase().includes(searchTerm.toLowerCase())
-    //         )
-    //         .filter(space =>
-    //             filterStatus ? space.status === filterStatus : true
-    //         )
-    //         .filter(space =>
-    //             filterType ? space.type === filterType : true
-    //         )
-    //         // START: THÊM LOGIC LỌC THEO SỨC CHỨA
-    //         .filter(space =>
-    //             filterCapacity ? space.capacity >= parseInt(filterCapacity, 10) : true
-    //         )
-
-    //         // END: THÊM LOGIC LỌC THEO SỨC CHỨA
-    //         // START: THÊM LOGIC LỌC THEO KHOẢNG GIÁ
-    //         .filter(space =>
-    //             filterPriceMin ? space.priceHour >= parseFloat(filterPriceMin) : true
-    //         )
-    //         .filter(space =>
-    //             filterPriceMax ? space.priceHour <= parseFloat(filterPriceMax) : true
-    //         );
-    //     // END: THÊM LOGIC LỌC THEO KHOẢNG GIÁ
-
-    // }, [spaces, searchTerm, filterStatus, filterType, filterCapacity, filterPriceMin, filterPriceMax]);
-
-    // const paginatedSpaces = useMemo(() => {
-    //     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    //     return filteredSpaces.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-    // }, [filteredSpaces, currentPage]);
-
-    // const totalPages = Math.ceil(filteredSpaces.length / ITEMS_PER_PAGE);
-
-    // const handlePageChange = (pageNumber) => {
-    //     setCurrentPage(pageNumber);
-    // };
-
-
-    // Hàm renderTooltip (đảm bảo nó vẫn tồn tại và phù hợp)
-    // const renderTooltip = (props, space) => (
-    //     <Tooltip id={`tooltip-${space.id}`} {...props}>
-    //         <strong>{space.name}</strong> ({space.type})<br />
-    //         Trạng thái: {getStatusBadge(space.status, true)} {/* Hiển thị cả icon trong tooltip */}
-    //         <br />
-    //         Sức chứa: {space.capacity} người<br />
-    //         Giá: {space.priceHour.toLocaleString()} VNĐ/giờ
-    //     </Tooltip>
-    // );
-
-    // const handleViewDetails = (spaceId) => console.log(`View details for ${spaceId}`);
-    // const handleEditSpace = (spaceId) => console.log(`Edit space ${spaceId}`);
-    // const handleSetMaintenance = (spaceId) => console.log(`Set maintenance for ${spaceId}`);
-    // const handleToggleActive = (spaceId, currentStatus) => console.log(`Toggle active for ${spaceId}, current: ${currentStatus}`);
-    // const handleAddSpace = () => console.log('Open Add New Space form/modal');
-    // const handleVisualSpaceClick = (spaceId) => console.log(`Clicked on visual space ${spaceId}`);
-
-
-    // THÊM CONSOLE LOGS Ở ĐÂY
-    console.log("=> ITEMS_PER_PAGE:", ITEMS_PER_PAGE);
-    console.log("=> filteredSpaces length:", filteredSpaces.length);
-    console.log("=> totalPages calculated:", totalPages);
-    console.log("=> Current Page (for list view):", currentPage);
-    console.log("=> paginatedSpaces length (for list view):", paginatedSpaces.length);
-    console.log("=> SpaceManagementPage is rendering. Current viewMode:", viewMode, "Show advanced filters:", showAdvancedFilters);
+    // Ảnh chính sẽ là currentMainImage được truyền vào, hoặc ảnh đầu tiên trong mảng images
+    const mainDisplayUrl = currentMainImage || images[0].url;
 
     return (
-        // Nếu Container không được import, dòng này sẽ gây lỗi
-        // <Container fluid className="space-management-page">
-        //     {/* Tương tự cho Row, Col,... */}
+        <Row className="image-gallery-section g-2 mb-4">
+            <Col md={8} className="large-image-col mb-2 mb-md-0">
+                <Image src={mainDisplayUrl} alt="Main space view" fluid rounded className="gallery-main-image shadow-sm" />
+            </Col>
+            {images.length > 1 && ( // Chỉ hiển thị thumbnail nếu có nhiều hơn 1 ảnh
+                <Col md={4} className="thumbnail-grid-col">
+                    <Row xs={2} className="g-2">
+                        {images.map((img, idx) => (
+                            // Không hiển thị thumbnail của ảnh đang là ảnh chính (tùy chọn)
+                            // Hoặc luôn hiển thị và đánh dấu active
+                            // Hiện tại: luôn hiển thị
+                            <Col key={img.id || `thumb-${idx}`}>
+                                <Image
+                                    src={img.url}
+                                    alt={`View ${idx + 1}`}
+                                    fluid
+                                    rounded
+                                    className={`gallery-thumbnail shadow-sm ${img.url === mainDisplayUrl ? 'active' : ''}`}
+                                    onClick={() => onThumbnailClick(img.url)}
+                                />
+                            </Col>
+                        ))}
+                    </Row>
+                </Col>
+            )}
+        </Row>
+    );
+};
 
-        //     <Row className="page-header align-items-center mb-3">
-        //         <Col>
-        //             <h1>Space Management</h1>
-        //         </Col>
-        //         <Col xs="auto">
-        //             <Button variant="primary" onClick={handleAddSpace}>
-        //                 <FaPlus className="me-2" /> Thêm Không Gian Mới
-        //             </Button>
-        //         </Col>
-        //     </Row>
 
-        //     {/* START: THÊM KHU VỰC THỐNG KÊ */}
-        //     <Row className="mb-3 g-3">
-        //         <Col md={3} sm={6}>
-        //             <Card className="stat-card bg-primary text-white">
-        //                 <Card.Body>
-        //                     <Card.Title>Tổng Số Không Gian</Card.Title>
-        //                     <Card.Text className="fs-2 fw-bold">{stats.total}</Card.Text>
-        //                 </Card.Body>
-        //             </Card>
-        //         </Col>
-        //         <Col md={2} sm={6}>
-        //             <Card className="stat-card status-available-card">
-        //                 <Card.Body>
-        //                     <Card.Title><FaRegCheckCircle /> Còn Trống</Card.Title>
-        //                     <Card.Text className="fs-3 fw-bold">{stats.available}</Card.Text>
-        //                 </Card.Body>
-        //             </Card>
-        //         </Col>
-        //         <Col md={2} sm={6}>
-        //             <Card className="stat-card status-booked-card">
-        //                 <Card.Body>
-        //                     <Card.Title><FaRegClock /> Đã Đặt</Card.Title>
-        //                     <Card.Text className="fs-3 fw-bold">{stats.booked}</Card.Text>
-        //                 </Card.Body>
-        //             </Card>
-        //         </Col>
-        //         <Col md={2} sm={6}>
-        //             <Card className="stat-card status-maintenance-card">
-        //                 <Card.Body>
-        //                     <Card.Title><FaExclamationTriangle /> Bảo Trì</Card.Title>
-        //                     <Card.Text className="fs-3 fw-bold">{stats.maintenance}</Card.Text>
-        //                 </Card.Body>
-        //             </Card>
-        //         </Col>
-        //         <Col md={3} sm={6}> {/* Điều chỉnh md để vừa hàng */}
-        //             <Card className="stat-card status-inactive-card">
-        //                 <Card.Body>
-        //                     <Card.Title><FaBan /> Không Hoạt Động</Card.Title>
-        //                     <Card.Text className="fs-3 fw-bold">{stats.inactive}</Card.Text>
-        //                 </Card.Body>
-        //             </Card>
-        //         </Col>
-        //     </Row>
-        //     {/* END: THÊM KHU VỰC THỐNG KÊ */}
+const ActionPanel = ({ priceHour, dailyPrice, monthlyPrice, spaceName, capacity }) => (
+    <Card className="action-panel shadow-sm sticky-lg-top">
+        <Card.Body className="p-3 p-lg-4">
+            <div className="pricing-summary mb-3">
+                {priceHour != null && ( // Kiểm tra null hoặc undefined
+                    <h4 className="mb-0">
+                        <FaDollarSign /> {priceHour.toLocaleString('en-US')}
+                        <small className="text-muted fw-normal"> VND/hour</small>
+                    </h4>
+                )}
+                {dailyPrice != null && (
+                    <p className="mb-0 text-muted small">
+                        Or from {dailyPrice.toLocaleString('en-US')} VND/day
+                    </p>
+                )}
+                {monthlyPrice != null && (
+                    <p className="mb-0 text-muted small">
+                        Monthly plans available
+                    </p>
+                )}
+                {(priceHour == null && dailyPrice == null && monthlyPrice == null) && (
+                    <p className="text-muted">Contact for pricing</p>
+                )}
+            </div>
+            <Button variant="primary" size="lg" className="w-100 mb-2 fw-bold book-now-btn" onClick={() => alert(`Proceed to book ${spaceName}`)}>
+                <FaRegCalendarCheck className="me-2" /> Book Now
+            </Button>
+            <div className="text-center text-muted small mt-2">
+                <FaUsers className="me-1" /> Up to {capacity} people
+            </div>
+        </Card.Body>
+    </Card>
+);
 
-        //     <Card className="mb-3 filter-controls-card">
-        //         <Card.Body>
-        //             <Row className="align-items-end gy-3 mb-3">
-        //                 <Col md={3}>
-        //                     <Form.Group controlId="searchTerm">
-        //                         <Form.Label>Tìm kiếm theo tên</Form.Label>
-        //                         <InputGroup controlId="searchTerm">
-        //                             <Form.Control
-        //                                 type="text"
-        //                                 placeholder="Nhập tên không gian..."
-        //                                 value={searchTerm}
-        //                                 onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-        //                             />
-        //                             <InputGroup.Text><FaSearch /></InputGroup.Text>
-        //                         </InputGroup>
-        //                     </Form.Group>
-        //                 </Col>
-        //                 <Col md={2}>
-        //                     <Form.Group controlId="filterStatus">
-        //                         <Form.Label>Trạng thái</Form.Label>
-        //                         <Form.Select value={filterStatus} onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}>
-        //                             <option value="">Tất cả trạng thái</option>
-        //                             <option value="available">Còn trống</option>
-        //                             <option value="booked">Đã đặt</option>
-        //                             <option value="maintenance">Bảo trì</option>
-        //                             <option value="inactive">Không hoạt động</option>
-        //                         </Form.Select>
-        //                     </Form.Group>
-        //                 </Col>
-        //                 <Col md={2}>
-        //                     <Form.Group controlId="filterType">
-        //                         <Form.Label>Loại không gian</Form.Label>
-        //                         <Form.Select value={filterType} onChange={(e) => { setFilterType(e.target.value); setCurrentPage(1); }}>
-        //                             <option value="">Tất cả các loại</option>
-        //                             {spaceTypes.map(type => (
-        //                                 <option key={type} value={type}>{type}</option>
-        //                             ))}
-        //                         </Form.Select>
-        //                     </Form.Group>
-        //                 </Col>
-        //                 {/* START: THÊM FORM.GROUP CHO BỘ LỌC SỨC CHỨA */}
-        //                 <Col md={2}> {/* Điều chỉnh Col sizing */}
-        //                     <Form.Group controlId="filterCapacity">
-        //                         <Form.Label>Sức chứa tối thiểu</Form.Label>
-        //                         <Form.Control
-        //                             type="number"
-        //                             placeholder="VD: 5"
-        //                             min="1"
-        //                             value={filterCapacity}
-        //                             onChange={(e) => { setFilterCapacity(e.target.value); setCurrentPage(1); }}
-        //                         />
-        //                     </Form.Group>
-        //                 </Col>
-        //                 {/* END: THÊM FORM.GROUP CHO BỘ LỌC SỨC CHỨA */}
+const renderStars = (rating, size = "1em") => {
+    if (typeof rating !== 'number' || isNaN(rating)) return <span className="text-muted small">Not rated</span>;
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.4 && rating % 1 <= 0.9;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+    return (
+        <span style={{ fontSize: size, color: '#ffc107' }} title={`${rating.toFixed(1)} out of 5 stars`}>
+            {[...Array(fullStars)].map((_, i) => <FaStar key={`fs-${i}`} />)}
+            {halfStar && <FaStarHalfAlt key="hs" />}
+            {[...Array(emptyStars)].map((_, i) => <FaRegStar key={`es-${i}`} />)}
+        </span>
+    );
+};
 
-        //                 <Col md={3} className="text-md-end d-flex flex-column justify-content-end">
-        //                     {/* Nút bộ lọc nâng cao sẽ nằm cùng hàng với ButtonGroup chuyển view */}
-        //                     <div className="d-flex justify-content-end align-items-center">
-        //                         <Button
-        //                             variant="outline-secondary"
-        //                             onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-        //                             className="me-2"
-        //                             size="sm" // Đồng bộ kích thước với ButtonGroup
-        //                         >
-        //                             <FaFilter className="me-1" />
-        //                             {showAdvancedFilters ? 'Ẩn nâng cao' : 'Lọc nâng cao'}
-        //                         </Button>
-        //                         <ButtonGroup size="sm"> {/* Đặt size="sm" cho ButtonGroup */}
-        //                             <Button variant={viewMode === 'list' ? 'primary' : 'outline-primary'} onClick={() => setViewMode('list')}>
-        //                                 <FaThList />
-        //                             </Button>
-        //                             <Button variant={viewMode === 'visual' ? 'primary' : 'outline-primary'} onClick={() => setViewMode('visual')}>
-        //                                 <FaThLarge />
-        //                             </Button>
-        //                         </ButtonGroup>
-        //                     </div>
-        //                 </Col>
-        //             </Row>
+const amenityIconMap = {
+    'Air Conditioning': <FaSnowflake />, 'WiFi': <FaWifi />, 'High-Speed WiFi': <FaWifi />, 'Outdoor Terrace': <FaSun />,
+    'Printing': <FaPrint />, 'Lounge Area': <FaCouch />, 'Kitchen': <FaUtensils />, '24/7 Access': <FaKey />,
+    'Reception': <FaUserTie />, 'Projector': <BsShieldCheck />, 'Whiteboard': <BsPeopleFill />,
+    'Power Outlet': <BsGraphUp />, 'Ergonomic Chairs': <FaCouch />, 'Soundproofing': <BsChatSquareQuoteFill />,
+    default: <FaCheckCircle />
+};
 
-        //             {/* START: KHU VỰC BỘ LỌC NÂNG CAO (HIỂN THỊ CÓ ĐIỀU KIỆN) */}
-        //             {showAdvancedFilters && (
-        //                 <Row className="align-items-end gy-3 border-top pt-3 mt-2">
-        //                     <Col md={3}>
-        //                         <Form.Group controlId="filterPriceMin">
-        //                             <Form.Label>Giá tối thiểu (giờ)</Form.Label>
-        //                             <Form.Control
-        //                                 type="number"
-        //                                 placeholder="VD: 10000"
-        //                                 min="0"
-        //                                 value={filterPriceMin}
-        //                                 onChange={(e) => { setFilterPriceMin(e.target.value); setCurrentPage(1); }}
-        //                             />
-        //                         </Form.Group>
-        //                     </Col>
-        //                     <Col md={3}>
-        //                         <Form.Group controlId="filterPriceMax">
-        //                             <Form.Label>Giá tối đa (giờ)</Form.Label>
-        //                             <Form.Control
-        //                                 type="number"
-        //                                 placeholder="VD: 100000"
-        //                                 min="0"
-        //                                 value={filterPriceMax}
-        //                                 onChange={(e) => { setFilterPriceMax(e.target.value); setCurrentPage(1); }}
-        //                             />
-        //                         </Form.Group>
-        //                     </Col>
-        //                     {/* Thêm các bộ lọc nâng cao khác ở đây (ví dụ: tiện nghi) */}
-        //                 </Row>
-        //             )}
-        //             {/* END: KHU VỰC BỘ LỌC NÂNG CAO */}
+const SpaceDetailPage = () => {
+    const { spaceId } = useParams();
+    const navigate = useNavigate();
+    const [spaceDetails, setSpaceDetails] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [mainImageUrl, setMainImageUrl] = useState(''); // State cho ảnh chính đang hiển thị
 
-        //         </Card.Body>
-        //     </Card>
+    const [isStickyNavVisible, setIsStickyNavVisible] = useState(false);
+    const mainContentStartRef = useRef(null);
 
-        //     {viewMode === 'list' && (
-        //         <>
-        //             <Table striped bordered hover responsive className="spaces-table">
-        //                 <thead>
-        //                     <tr>
-        //                         <th>ID</th>
-        //                         <th>Tên Không Gian</th>
-        //                         <th>Loại</th>
-        //                         <th>Sức chứa</th>
-        //                         <th>Giá (giờ)</th>
-        //                         <th>Trạng thái</th>
-        //                         <th>Hành động</th>
-        //                     </tr>
-        //                 </thead>
-        //                 <tbody>
-        //                     {paginatedSpaces.length > 1 ? paginatedSpaces.map(space => (
-        //                         <tr key={space.id} className={`status-row-${space.status}`}>
-        //                             <td>{space.id}</td>
-        //                             <td>{space.name}</td>
-        //                             <td>{space.type}</td>
-        //                             <td className="text-center">{space.capacity}</td>
-        //                             <td>{space.priceHour.toLocaleString()} VNĐ</td>
-        //                             <td>{getStatusBadge(space.status)}</td>
-        //                             <td>
-        //                                 <ButtonGroup size="sm">
-        //                                     <OverlayTrigger placement="top" overlay={<Tooltip>Xem chi tiết</Tooltip>}>
-        //                                         <Button variant="outline-info" onClick={() => handleViewDetails(space.id)}><FaEye /></Button>
-        //                                     </OverlayTrigger>
-        //                                     <OverlayTrigger placement="top" overlay={<Tooltip>Chỉnh sửa</Tooltip>}>
-        //                                         <Button variant="outline-primary" onClick={() => handleEditSpace(space.id)}><FaEdit /></Button>
-        //                                     </OverlayTrigger>
-        //                                     <OverlayTrigger placement="top" overlay={<Tooltip>Bảo trì</Tooltip>}>
-        //                                         <Button variant="outline-warning" onClick={() => handleSetMaintenance(space.id)}><FaTools /></Button>
-        //                                     </OverlayTrigger>
-        //                                     <OverlayTrigger placement="top" overlay={space.status === 'inactive' ? <Tooltip>Kích hoạt</Tooltip> : <Tooltip>Vô hiệu hóa</Tooltip>}>
-        //                                         <Button
-        //                                             variant={space.status === 'inactive' ? "outline-success" : "outline-secondary"}
-        //                                             onClick={() => handleToggleActive(space.id, space.status)}
-        //                                         >
-        //                                             {space.status === 'inactive' ? <FaToggleOn /> : <FaToggleOff />}
-        //                                         </Button>
-        //                                     </OverlayTrigger>
-        //                                     {/* START: THÊM NÚT XEM LỊCH CHO LIST VIEW (YÊU CẦU 7) */}
-        //                                     <OverlayTrigger placement="top" overlay={<Tooltip>Xem lịch</Tooltip>}>
-        //                                         <Button variant="outline-secondary" onClick={() => handleViewCalendar(space.id, space.name)}><FaCalendarAlt /></Button>
-        //                                     </OverlayTrigger>
-        //                                     {/* END: THÊM NÚT XEM LỊCH CHO LIST VIEW */}
-        //                                 </ButtonGroup>
-        //                             </td>
-        //                         </tr>
-        //                     )) : (
-        //                         <tr>
-        //                             <td colSpan="7" className="text-center">Không tìm thấy không gian nào.</td>
-        //                         </tr>
-        //                     )}
-        //                 </tbody>
-        //             </Table>
-        //             {totalPages > 1 && (
-        //                 <Pagination className="justify-content-center">
-        //                     <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
-        //                     {[...Array(totalPages).keys()].map(num => (
-        //                         <Pagination.Item
-        //                             key={num + 1}
-        //                             active={num + 1 === currentPage}
-        //                             onClick={() => handlePageChange(num + 1)}
-        //                         >
-        //                             {num + 1}
-        //                         </Pagination.Item>
-        //                     ))}
-        //                     <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
-        //                 </Pagination>
-        //             )}
-        //         </>
-        //     )}
+    const sectionRefs = {
+        overview: useRef(null), amenities: useRef(null), pricing: useRef(null),
+        map: useRef(null), reviews: useRef(null), nearby: useRef(null),
+    };
 
-        //     {viewMode === 'visual' && (
-        //         <div className="visual-overview-grid">
-        //             {filteredSpaces.length > 0 ? filteredSpaces.map(space => (
-        //                 // REPLACE THE ENTIRE <Card> COMPONENT FOR VISUAL VIEW WITH THIS NEW VERSION:
-        //                 <Card
-        //                     key={space.id}
-        //                     className={`space-card status-border-${space.status}`} // Thay đổi class để chỉ áp dụng border, không phải background trực tiếp
-        //                 >
-        //                     <OverlayTrigger
-        //                         placement="top"
-        //                         delay={{ show: 350, hide: 200 }} // Điều chỉnh delay
-        //                         overlay={(props) => renderTooltip(props, space)}
-        //                     >
-        //                         {/* Phần này để click, có thể dùng để mở modal chi tiết nhanh */}
-        //                         <div className="space-card-clickable-content" onClick={() => handleViewDetails(space.id)}>
-        //                             <Card.Header className={`space-card-header status-bg-${space.status}`}>
-        //                                 <Card.Title className="space-card-name mb-0">{space.name}</Card.Title>
-        //                             </Card.Header>
-        //                             <Card.Body className="d-flex flex-column">
-        //                                 <div className="mb-1">
-        //                                     <small className="text-muted">{space.type}</small>
-        //                                 </div>
-        //                                 {/* START: ĐẢM BẢO ĐOẠN CODE NÀY TỒN TẠI VÀ ĐÚNG */}
-        //                                 <div className="d-flex align-items-center mb-2">
-        //                                     <FaUserFriends className="me-1 text-muted" title="Sức chứa" /> {/* Thêm title cho icon */}
-        //                                     <span className="fw-bold me-3">{space.capacity}</span>
-        //                                     <small className="text-muted ms-auto">Giá: <strong>{space.priceHour.toLocaleString()}</strong></small>
-        //                                 </div>
-        //                                 {/* END: ĐẢM BẢO ĐOẠN CODE NÀY TỒN TẠI VÀ ĐÚNG */}
-        //                                 <div className="mt-auto">
-        //                                     {getStatusBadge(space.status, false)} {/* false: không hiển thị icon trong badge trên card */}
-        //                                 </div>
-        //                             </Card.Body>
-        //                         </div>
-        //                     </OverlayTrigger>
-        //                     <Card.Footer className="space-card-actions-footer">
-        //                         <ButtonGroup size="sm" className="w-100">
-        //                             <OverlayTrigger placement="top" overlay={<Tooltip>Xem chi tiết</Tooltip>}>
-        //                                 <Button variant="outline-info" onClick={() => handleViewDetails(space.id)} className="flex-fill"><FaEye /></Button>
-        //                             </OverlayTrigger>
-        //                             <OverlayTrigger placement="top" overlay={<Tooltip>Chỉnh sửa</Tooltip>}>
-        //                                 <Button variant="outline-primary" onClick={() => handleEditSpace(space.id)} className="flex-fill"><FaEdit /></Button>
-        //                             </OverlayTrigger>
-        //                             <OverlayTrigger placement="top" overlay={<Tooltip>Bảo trì</Tooltip>}>
-        //                                 <Button variant="outline-warning" onClick={() => handleSetMaintenance(space.id)} className="flex-fill"><FaTools /></Button>
-        //                             </OverlayTrigger>
-        //                             <OverlayTrigger placement="top" overlay={space.status === 'inactive' ? <Tooltip>Kích hoạt</Tooltip> : <Tooltip>Vô hiệu hóa</Tooltip>}>
-        //                                 <Button
-        //                                     variant={space.status === 'inactive' ? "outline-success" : "outline-secondary"}
-        //                                     onClick={() => handleToggleActive(space.id, space.status)}
-        //                                     className="flex-fill"
-        //                                 >
-        //                                     {space.status === 'inactive' ? <FaToggleOn /> : <FaToggleOff />}
-        //                                 </Button>
-        //                             </OverlayTrigger>
-        //                             <OverlayTrigger placement="top" overlay={<Tooltip>Xem lịch</Tooltip>}>
-        //                                 <Button variant="outline-dark" onClick={() => handleViewCalendar(space.id, space.name)} className="flex-fill"><FaCalendarAlt /></Button>
-        //                             </OverlayTrigger>
-        //                         </ButtonGroup>
-        //                     </Card.Footer>
-        //                 </Card>
-        //                 // END OF REPLACEMENT FOR <Card> COMPONENT
-        //             )) : (
-        //                 <p className="text-center w-100">Không tìm thấy không gian nào phù hợp với bộ lọc.</p>
-        //             )}
-        //         </div>
-        //     )}
-        // </Container>
+    const scrollToSection = (sectionId) => {
+        sectionRefs[sectionId]?.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
-        <Container fluid className="space-management-page">
-            <h1>Minimal Render Test</h1>
-            <p>If this shows, the problem is in the commented out logic.</p>
-        </Container>
+    useEffect(() => {
+        const fetchDetails = async () => {
+            setLoading(true); setError(null);
+            try {
+                const data = await getMockSpaceDetailsById(spaceId); // Hàm mock API
+                if (data) {
+                    setSpaceDetails(data);
+                    // Thiết lập ảnh chính ban đầu từ mảng images (nếu có) hoặc imageUrl
+                    if (data.images && data.images.length > 0) {
+                        setMainImageUrl(data.images[0].url);
+                    } else if (data.imageUrl) {
+                        setMainImageUrl(data.imageUrl);
+                    } else {
+                        setMainImageUrl('https://via.placeholder.com/800x500/e0e0e0/6c757d?text=No+Image+Available');
+                    }
+                } else { setError(`Space with ID ${spaceId} not found.`); }
+            } catch (err) { setError(err.message || "Failed to load space details."); }
+            finally { setLoading(false); }
+        };
+        if (spaceId) fetchDetails();
+    }, [spaceId]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (mainContentStartRef.current) {
+                const rect = mainContentStartRef.current.getBoundingClientRect();
+                setIsStickyNavVisible(rect.top <= 70); // 70 là offset ví dụ
+            } else {
+                setIsStickyNavVisible(false); // Nếu ref chưa có thì ẩn nav
+            }
+        };
+        window.addEventListener('scroll', handleScroll);
+        // Gọi handleScroll một lần khi component mount để kiểm tra vị trí ban đầu
+        handleScroll();
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [loading]); // Re-run khi loading thay đổi để đảm bảo ref đã tồn tại
+
+    const handleThumbnailClick = (url) => {
+        setMainImageUrl(url);
+    };
+
+    if (loading) return <Container className="text-center mt-5 vh-100 d-flex justify-content-center align-items-center"><Spinner animation="border" variant="primary" style={{ width: '4rem', height: '4rem' }} /><p className="ms-3 fs-5">Loading Space Details...</p></Container>;
+    if (error) return <Container className="mt-5"><Alert variant="danger"><Alert.Heading>Error</Alert.Heading><p>{error}</p><Button as={Link} to="/spaces" variant="outline-primary">Back to Search</Button></Alert></Container>;
+    if (!spaceDetails) return <Container className="mt-5"><Alert variant="warning">Space details not available.</Alert></Container>;
+
+    const {
+        name, locationHierarchy, images, pricingInfo, amenitiesDetails, locationAddress,
+        overviewDetails, pricingTiers, reviews, averageRating, totalReviews, ratingBreakdown,
+        type, priceHour, capacity, latitude, longitude
+    } = spaceDetails;
+
+    const dailyPriceInfo = pricingTiers?.coworking?.find(p => p.id === 'cw_daily');
+    const monthlyPriceInfo = pricingTiers?.coworking?.find(p => p.id === 'cw_monthly');
+
+    const navItems = [
+        { key: 'overview', label: 'Overview', icon: <FaInfoCircle /> },
+        { key: 'amenities', label: 'Amenities', icon: <FaListUl /> },
+        { key: 'pricing', label: 'Pricing', icon: <FaMoneyBillWave /> },
+        { key: 'map', label: 'Map', icon: <FaMapMarkerAlt /> },
+        { key: 'reviews', label: 'Reviews', icon: <FaComments /> },
+        { key: 'nearby', label: 'Nearby', icon: <FaStreetView /> },
+    ];
+
+    const getStaticMapUrl = () => {
+        if (!GOOGLE_MAPS_API_KEY || GOOGLE_MAPS_API_KEY === "YOUR_GOOGLE_MAPS_API_KEY_HERE") {
+            return "https://via.placeholder.com/800x400/e0e0e0/6c757d?text=Map+API+Key+Missing+or+Invalid";
+        }
+        let markerLocation;
+        if (latitude != null && longitude != null) { // Kiểm tra null/undefined
+            markerLocation = `${latitude},${longitude}`;
+        } else if (locationAddress) {
+            markerLocation = encodeURIComponent(locationAddress);
+        } else {
+            return "https://via.placeholder.com/800x400/e0e0e0/6c757d?text=Location+Not+Available";
+        }
+        const params = new URLSearchParams({
+            center: markerLocation, zoom: '16', size: '800x400', maptype: 'roadmap',
+            markers: `color:orange|label:S|${markerLocation}`, key: GOOGLE_MAPS_API_KEY
+        });
+        return `https://maps.googleapis.com/maps/api/staticmap?${params.toString()}`;
+    };
+
+    return (
+        <div className="space-detail-page-wrapper">
+            {isStickyNavVisible && (
+                <Navbar bg="light" variant="light" fixed="top" className="sticky-section-nav shadow-sm">
+                    <Container fluid="lg">
+                        <Nav className="flex-row flex-nowrap overflow-auto">
+                            {navItems.map(item => (
+                                <Nav.Link key={item.key} onClick={() => scrollToSection(item.key)} className="px-3 text-nowrap">
+                                    {item.icon && React.cloneElement(item.icon, { className: "me-2" })}
+                                    {item.label}
+                                </Nav.Link>
+                            ))}
+                        </Nav>
+                    </Container>
+                </Navbar>
+            )}
+
+            <Container fluid="lg" className="space-detail-page-customer py-3 px-md-4">
+                <TopBar locationHierarchy={locationHierarchy} name={name} />
+                <MainSpaceHeader name={name} />
+
+                <Row className="main-layout-row">
+                    <Col lg={8} className="main-content-col">
+                        {/* Truyền mainImageUrl và images (toàn bộ mảng) vào ImageGallery */}
+                        <ImageGallery images={images || []} currentMainImage={mainImageUrl} onThumbnailClick={handleThumbnailClick} />
+                        <div ref={mainContentStartRef}></div>
+
+                        <section id="overview-section" ref={sectionRefs.overview} className="space-section card shadow-sm mb-4">
+                            <Card.Body className="p-4"><h3 className="section-title"><FaInfoCircle className="me-2 text-primary" />Overview</h3><p className="overview-text" style={{ whiteSpace: 'pre-line' }}>{overviewDetails}</p></Card.Body>
+                        </section>
+
+                        <section id="amenities-section" ref={sectionRefs.amenities} className="space-section card shadow-sm mb-4">
+                            <Card.Body className="p-4"><h3 className="section-title"><FaListUl className="me-2 text-primary" />Amenities</h3>
+                                {amenitiesDetails && amenitiesDetails.length > 0 ? (
+                                    <Row xs={1} sm={2} md={3} className="g-3 amenities-grid">
+                                        {amenitiesDetails.map((amenity, idx) => (
+                                            <Col key={amenity.id || idx}><div className="amenity-item d-flex align-items-center p-2">
+                                                <span className="amenity-icon me-2 text-muted">{React.cloneElement(amenityIconMap[amenity.name] || amenityIconMap.default, { size: "1.3em" })}</span>
+                                                {amenity.name}
+                                            </div></Col>
+                                        ))}
+                                    </Row>
+                                ) : <p className="text-muted">No specific amenities listed.</p>}
+                            </Card.Body>
+                        </section>
+
+                        <section id="pricing-section" ref={sectionRefs.pricing} className="space-section card shadow-sm mb-4">
+                            <Card.Body className="p-4"><h3 className="section-title"><FaMoneyBillWave className="me-2 text-primary" />Pricing Plans</h3>
+                                <Tabs defaultActiveKey="coworking_pricing" id="pricing-sub-tabs" className="mb-3 pricing-sub-nav-tabs">
+                                    {pricingTiers?.coworking?.length > 0 && <Tab eventKey="coworking_pricing" title="Coworking">
+                                        <Row xs={1} md={2} lg={3} className="g-3 mt-1">
+                                            {pricingTiers.coworking.map(plan => (
+                                                <Col key={plan.id} className="d-flex"><Card className={`pricing-option-card ${plan.popular ? 'popular' : ''}`}>
+                                                    {plan.popular && <div className="popular-badge">Most Popular</div>}
+                                                    <Card.Body className="text-center d-flex flex-column">
+                                                        <div className="pricing-icon mb-2">{React.cloneElement(amenityIconMap[plan.icon] || <FaUsers />, { size: "2em", className: "text-primary" })}</div>
+                                                        <Card.Subtitle className="mb-2 text-muted">{plan.name}</Card.Subtitle>
+                                                        <Card.Title className="h3 my-2 price-value">{plan.price.toLocaleString('en-US')}</Card.Title>
+                                                        <p className="text-muted small price-unit">VND {plan.unitText}</p>
+                                                        <ListGroup variant="flush" className="text-start small mt-auto">
+                                                            {plan.features?.map((feat, i) => <ListGroup.Item key={i} className="px-0 border-0"><FaCheckCircle className="text-success me-1" /> {feat}</ListGroup.Item>)}
+                                                        </ListGroup>
+                                                    </Card.Body>
+                                                </Card></Col>
+                                            ))}
+                                        </Row>
+                                    </Tab>}
+                                    {pricingTiers?.privateOffice?.length > 0 && <Tab eventKey="private_pricing" title="Private Office">
+                                        <Row xs={1} md={2} lg={3} className="g-3 mt-1">
+                                            {pricingTiers.privateOffice.map(plan => (
+                                                <Col key={plan.id} className="d-flex"><Card className={`pricing-option-card ${plan.popular ? 'popular' : ''}`}>
+                                                    {plan.popular && <div className="popular-badge">Most Popular</div>}
+                                                    <Card.Body className="text-center d-flex flex-column">
+                                                        <div className="pricing-icon mb-2">{React.cloneElement(amenityIconMap[plan.icon] || <FaBuilding />, { size: "2em", className: "text-primary" })}</div>
+                                                        <Card.Subtitle className="mb-2 text-muted">{plan.name}</Card.Subtitle>
+                                                        <Card.Title className="h3 my-2 price-value">{plan.price.toLocaleString('en-US')}</Card.Title>
+                                                        <p className="text-muted small price-unit">VND {plan.unitText}</p>
+                                                        <ListGroup variant="flush" className="text-start small mt-auto">
+                                                            {plan.features?.map((feat, i) => <ListGroup.Item key={i} className="px-0 border-0"><FaCheckCircle className="text-success me-1" /> {feat}</ListGroup.Item>)}
+                                                        </ListGroup>
+                                                    </Card.Body>
+                                                </Card></Col>
+                                            ))}
+                                        </Row>
+                                    </Tab>}
+                                    {pricingTiers?.virtualOffice?.length > 0 && <Tab eventKey="virtual_pricing" title="Virtual Office">
+                                        <Row xs={1} md={2} lg={3} className="g-3 mt-1">
+                                            {pricingTiers.virtualOffice.map(plan => (
+                                                <Col key={plan.id} className="d-flex"><Card className={`pricing-option-card ${plan.popular ? 'popular' : ''}`}>
+                                                    {plan.popular && <div className="popular-badge">Most Popular</div>}
+                                                    <Card.Body className="text-center d-flex flex-column">
+                                                        <div className="pricing-icon mb-2">{React.cloneElement(amenityIconMap[plan.icon] || <FaUsers />, { size: "2em", className: "text-primary" })}</div>
+                                                        <Card.Subtitle className="mb-2 text-muted">{plan.name}</Card.Subtitle>
+                                                        <Card.Title className="h3 my-2 price-value">{plan.price.toLocaleString('en-US')}</Card.Title>
+                                                        <p className="text-muted small price-unit">VND {plan.unitText}</p>
+                                                        <ListGroup variant="flush" className="text-start small mt-auto">
+                                                            {plan.features?.map((feat, i) => <ListGroup.Item key={i} className="px-0 border-0"><FaCheckCircle className="text-success me-1" /> {feat}</ListGroup.Item>)}
+                                                        </ListGroup>
+                                                    </Card.Body>
+                                                </Card></Col>
+                                            ))}
+                                        </Row>
+                                    </Tab>}
+                                </Tabs>
+                            </Card.Body>
+                        </section>
+
+                        <section id="map-section" ref={sectionRefs.map} className="space-section card shadow-sm mb-4">
+                            <Card.Body className="p-4"><h3 className="section-title"><FaMapMarkerAlt className="me-2 text-primary" />Location & Map</h3>
+                                {locationAddress && <p className="lead mb-3">{locationAddress}</p>}
+                                <div className="interactive-map-container my-3">
+                                    <Image src={getStaticMapUrl()} fluid rounded alt={`Map of ${name}`} className="location-static-map" />
+                                    {(GOOGLE_MAPS_API_KEY === "YOUR_GOOGLE_MAPS_API_KEY_HERE" || !GOOGLE_MAPS_API_KEY) &&
+                                        <small className="d-block text-center text-danger mt-1">Google Maps API Key is missing or invalid. Please configure it.</small>
+                                    }
+                                </div>
+                                {overviewDetails && <> <h5 className="mt-4">About the Neighborhood</h5>
+                                    <p className="overview-text-block" style={{ whiteSpace: 'pre-line' }}>{overviewDetails.substring(0, Math.min(250, overviewDetails.length))}{overviewDetails.length > 250 ? "..." : ""}</p></>}
+                            </Card.Body>
+                        </section>
+
+                        <section id="reviews-section" ref={sectionRefs.reviews} className="space-section card shadow-sm mb-4">
+                            <Card.Body className="p-4"><h3 className="section-title"><FaComments className="me-2 text-primary" />Reviews ({totalReviews || 0})</h3>
+                                <Row>
+                                    <Col md={5} lg={4} className="mb-4 mb-md-0 review-summary-col">
+                                        <div className="text-center bg-light p-3 rounded mb-3">
+                                            <div className="display-2 fw-bolder text-primary">{averageRating.toFixed(1)}</div>
+                                            <div>{renderStars(averageRating, "1.8em")}</div>
+                                            <small className="text-muted">Based on {totalReviews} reviews</small>
+                                        </div>
+                                        <hr className="my-4" />
+                                        <h5>Rating Breakdown</h5>
+                                        {ratingBreakdown && ratingBreakdown.map(cat => (
+                                            <div key={cat.category} className="mb-2">
+                                                <div className="d-flex justify-content-between small">
+                                                    <span>{cat.category}</span>
+                                                    <span className="fw-medium">{cat.rating.toFixed(1)}</span>
+                                                </div>
+                                                <ProgressBar now={cat.percentage} style={{ height: '10px' }} />
+                                            </div>
+                                        ))}
+                                    </Col>
+                                    <Col md={7} lg={8} className="recent-reviews-col">
+                                        <h4>Recent Reviews</h4>
+                                        {reviews && reviews.length > 0 ? (
+                                            reviews.map(review => (
+                                                <Card key={review.id} className="mb-3 review-item-card">
+                                                    <Card.Body className="p-3"><div className="d-flex">
+                                                        <Image src={review.avatarUrl || 'https://i.pravatar.cc/50'} roundedCircle width={50} height={50} className="me-3 flex-shrink-0" />
+                                                        <div className="flex-grow-1">
+                                                            <div className="d-flex justify-content-between align-items-center mb-1">
+                                                                <strong className="review-user-name">{review.userName}</strong>
+                                                                <small className="text-muted review-date">{new Date(review.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</small>
+                                                            </div>
+                                                            <div className="mb-1 review-stars">{renderStars(review.rating)}</div>
+                                                            <p className="mb-0 review-text">{review.comment}</p>
+                                                        </div>
+                                                    </div></Card.Body>
+                                                </Card>
+                                            ))
+                                        ) : <p className="text-muted fst-italic">No reviews yet for this space.</p>}
+                                    </Col>
+                                </Row>
+                            </Card.Body>
+                        </section>
+
+                        <section id="nearby-section" ref={sectionRefs.nearby} className="space-section card shadow-sm mb-4">
+                            <Card.Body className="p-4"><h3 className="section-title"><FaStreetView className="me-2 text-primary" />Nearby Spaces</h3>
+                                <p className="text-muted">This section will show other available spaces in the vicinity. (Functionality to be implemented)</p>
+                            </Card.Body>
+                        </section>
+                    </Col>
+
+                    <Col lg={4} className="action-panel-col">
+                        <ActionPanel
+                            priceHour={priceHour}
+                            dailyPrice={dailyPriceInfo?.price}
+                            monthlyPrice={monthlyPriceInfo?.price}
+                            spaceName={name}
+                            capacity={capacity}
+                        />
+                    </Col>
+                </Row>
+            </Container>
+        </div>
     );
 };
 

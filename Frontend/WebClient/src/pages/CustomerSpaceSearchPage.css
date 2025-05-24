@@ -1,0 +1,86 @@
+/* src/pages/CustomerSpaceSearchPage.css */
+
+.customer-space-search-page .page-title {
+    font-weight: 300;
+    /* Lighter font weight for main title */
+    color: #333;
+}
+
+.customer-space-search-page .filter-sidebar .card-header {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.customer-space-search-page .filter-sidebar .form-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.customer-space-search-page .filter-sidebar .form-select,
+.customer-space-search-page .filter-sidebar .form-control {
+    font-size: 0.9rem;
+}
+
+
+.space-result-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    cursor: pointer;
+    border: 1px solid #e0e0e0;
+}
+
+.space-result-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.space-result-card-img {
+    height: 200px;
+    object-fit: cover;
+}
+
+.space-result-card .space-name-link {
+    color: var(--bs-primary);
+    /* Link color */
+    font-weight: 600;
+    font-size: 1.15rem;
+    margin-bottom: 0.25rem !important;
+}
+
+.space-result-card .space-name-link:hover {
+    text-decoration: underline;
+}
+
+.space-result-card .text-muted {
+    font-size: 0.85rem;
+}
+
+.space-result-card .price-tag {
+    font-size: 1.1rem;
+    color: #28a745;
+    /* Success color for price */
+}
+
+.space-result-card .price-tag svg {
+    vertical-align: -0.125em;
+    /* Align dollar sign better */
+}
+
+.space-result-card .stretched-link-button {
+    /* This button is mostly for visual cue, the card itself is clickable */
+    /* We can hide it if the card click is preferred, or style it differently */
+    font-size: 0.9rem;
+}
+
+.shadow-hover:hover {
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+}
+
+/* Pagination styling if needed */
+.customer-space-search-page .pagination .page-link {
+    font-size: 0.9rem;
+}
+
+.customer-space-search-page .pagination .page-item.active .page-link {
+    font-weight: bold;
+}

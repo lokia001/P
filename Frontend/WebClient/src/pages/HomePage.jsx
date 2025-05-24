@@ -25,11 +25,11 @@ function HomePage() {
             <div className="container"> {/* Bọc các phần nội dung chính bên trong container */}
                 <WhyBook />
                 <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', padding: '40px 20px' }}>
-                    <WorkplaceAnywhere />
-                    <HelpedCompanies />
+                    {/* <WorkplaceAnywhere /> */}
+                    {/* <HelpedCompanies /> */}
                 </div>
-                <TopCities />
-                <NewestOffices />
+                {/* <TopCities /> */}
+                {/* <NewestOffices /> */}
                 <FindAnywhere />
                 <WhatIsCoworker />
                 <CoworkingDetails />
